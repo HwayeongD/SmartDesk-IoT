@@ -1,22 +1,17 @@
-#include <SoftwareSerial.h> 
+#include <SoftwareSerial.h>
 
-int RX = 3;
-int TX = 2;
-SoftwareSerial ESP01(RX, TX); 
+SoftwareSerial mySerial(2, 3); // RX, TX
 
-void setup() { 
-  Serial.begin(115200);  //아두이노 우노 보드레이트 9600
-  ESP01.begin(115200);   //와이파이 모듈 보드레이트 115200 / 74880
-  ESP01.setTimeout(5000); 
-  delay(1000);
-  Serial.print("Start");
-} 
+void setup() {
+  Serial.begin(9600);
+  mySerial.begin(115200);//기본 통신 속도가 9600인 제품은 9600으로 수정해 주세요
+}
 
-void loop() { 
-  if (Serial.available()){
-    ESP01.write(ESP01.read()); 
-  } 
-  if (ESP01.available()) { 
-    Serial.write(ESP01.read()); 
+void loop() {
+  if (mySerial.available()) {
+    Serial.write(mySerial.read());
+  }
+  if (Serial.available()) {
+    mySerial.write(Serial.read());
   }
 }
