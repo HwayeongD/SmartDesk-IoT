@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 
 // WebSocket 서버 생성
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ host: '0.0.0.0', port: 8080 });
 
 // 클라이언트가 연결되었을 때 처리
 wss.on('connection', (ws) => {
@@ -12,7 +12,7 @@ wss.on('connection', (ws) => {
     console.log('받은 메시지: ', message);
 
     // 클라이언트에게 메시지 전송
-    ws.send('서버가 메시지를 받았습니다.');
+    ws.send('서버가 받았습니다.');
   });
 
   // 클라이언트와 연결이 끊겼을 때 처리
