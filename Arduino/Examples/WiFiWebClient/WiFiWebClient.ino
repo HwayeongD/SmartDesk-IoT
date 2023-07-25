@@ -1,5 +1,4 @@
 #include <WiFiS3.h>
-#include <WebSocketsClient.h>
 #include "arduino_secrets.h"
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
@@ -8,11 +7,9 @@ char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as k
 int keyIndex = 0;            // your network key index number (needed only for WEP)
 
 int status = WL_IDLE_STATUS;
-char server[] = "ws://192.168.171.2";    // WebSocket server address
-int port = 8080;
+char server[] = "192.168.171.2";    // WebSocket server address
 
 WiFiClient wifiClient;
-WebSocketsClient webSocket;
 
 /* -------------------------------------------------------------------------- */
 void setup() {
@@ -48,36 +45,52 @@ void setup() {
 
   printWifiStatus();
 
-  // Connect to the WebSocket server
-  webSocket.begin(server, port, "/");  // Connect to the WebSocket server
-  webSocket.onEvent(webSocketEvent);   // Set up event handler for WebSocket events
+  Serial.println("\nStarting connection to server...");
+  // if you get a connection, report back via serial:
+  if (wifiClient.connect("server", 8080)) {
+    Serial.println("connected to server");
+    // Make a HTTP request:
+    // wifiClient.println("GET /tables/list/ HTTP/1.1");
+    wifiClient.println("GET / HTTP/1.1");
+    wifiClient.println("Host: 192.168.171.2");
+    wifiClient.println("Connection: close");
+    wifiClient.println();
+  }
+}
+
+
+/* just wrap the received data up to 80 columns in the serial print*/
+/* -------------------------------------------------------------------------- */
+void read_response() {
+/* -------------------------------------------------------------------------- */  
+  uint32_t received_data_num = 0;
+  while (wifiClient.available()) {
+    /* actual data reception */
+    char c = wifiClient.read();
+    /* print data to serial port */
+    Serial.print(c);
+    /* wrap data to 80 columns*/
+    received_data_num++;
+    if(received_data_num % 80 == 0) { 
+      Serial.println();
+    }
+  }  
 }
 
 /* -------------------------------------------------------------------------- */
 void loop() {
 /* -------------------------------------------------------------------------- */
   // Maintain the WebSocket connection
-  webSocket.loop();
-}
+  read_response();
 
-/* -------------------------------------------------------------------------- */
-void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
-/* -------------------------------------------------------------------------- */
-  switch (type) {
-    case WStype_DISCONNECTED:
-      Serial.println("Disconnected from WebSocket server");
-      break;
-    case WStype_CONNECTED:
-      Serial.println("Connected to WebSocket server");
-      break;
-    case WStype_TEXT:
-      // Handle incoming text data from the WebSocket server
-      Serial.print("Received data: ");
-      for (size_t i = 0; i < length; i++) {
-        Serial.print((char)payload[i]);
-      }
-      Serial.println();
-      break;
+  // if the server's disconnected, stop the client:
+  if (!wifiClient.connected()) {
+    Serial.println();
+    Serial.println("disconnecting from server.");
+    wifiClient.stop();
+
+    // do nothing forevermore:
+    while (true);
   }
 }
 

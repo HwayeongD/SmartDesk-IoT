@@ -10,22 +10,26 @@
 
   <script>
     const socket = new WebSocket('ws://192.168.171.2:8080');
-    console.log(socket)
     // 서버로부터 메시지를 받았을 때 처리
     socket.onmessage = function (event) {
       console.log(event)
-      const outputDiv = document.getElementById('output');
-      outputDiv.innerHTML = '받은 메시지: ' + event.data;
-      
+      // const outputDiv = document.getElementById('output');
+      // outputDiv.innerHTML = '받은 메시지: ' + event.data;
+      console.log('받은 메시지 : ' + event.data)
     };
 
     // 메시지를 서버로 전송
     function sendMessage() {
-      const messageInput = document.getElementById('messageInput');
-      const message = messageInput.value;
-      socket.send(message);
-      messageInput.value = '';
+      // const messageInput = document.getElementById('messageInput');
+      // const message = messageInput.value;
+      // socket.send(message);
+      socket.send(123)
+      // messageInput.value = '';
     }
+    setTimeout(function() {
+      console.log(socket);
+      sendMessage();
+    }, 500);
   </script>
 </body>
 </html>
