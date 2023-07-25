@@ -6,15 +6,17 @@
 <body>
   <input type="text" id="messageInput" />
   <button onclick="sendMessage()">메시지 전송</button>
-  <div id="output"></div>
+  <div id="output">  </div>
 
   <script>
-    const socket = new WebSocket('ws://localhost:8080');
-
+    const socket = new WebSocket('ws://192.168.171.2:8080');
+    console.log(socket)
     // 서버로부터 메시지를 받았을 때 처리
     socket.onmessage = function (event) {
+      console.log(event)
       const outputDiv = document.getElementById('output');
       outputDiv.innerHTML = '받은 메시지: ' + event.data;
+      
     };
 
     // 메시지를 서버로 전송
