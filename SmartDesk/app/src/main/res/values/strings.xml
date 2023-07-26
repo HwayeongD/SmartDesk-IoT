@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">SmartDesk</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="Login">로그인</string>
+    <string name="navi_name_home">홈</string>
+    <string name="navi_name_seat">좌석예약</string>
+    <string name="navi_name_calendar">일정</string>
+    <string name="navi_name_profile">내정보</string>
+    <string name="btn_name_login">로그인</string>
 </resources>

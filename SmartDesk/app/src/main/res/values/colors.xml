@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="main_blue">#87C0F1</color>
-    <color name="gray">#DADADA</color>
+    <!--  main color (4)  -->
+    <color name="main_dark_blue">#1D5D9B</color>
+    <color name="main_light_blue">#75C2F6</color>
+    <color name="main_dark_yellow">#F4D160</color>
+    <color name="main_light_yellow">#FBEEAC</color>
+    <!--  navi color  -->
+    <color name="navi_dark_gray">#716B6B</color>
+    <color name="navi_light_gray">#F2EEEE</color>
+    <!--  button color  -->
+    <color name="btn_ligh_blue">#87C0F1</color>
+    <!--  common color  -->
+    <color name="comm_light_gray">#DADADA</color>
 </resources>

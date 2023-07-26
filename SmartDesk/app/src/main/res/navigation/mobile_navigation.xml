@@ -8,18 +8,26 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.smartdesk.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:label="@string/navi_name_home"
+        tools:layout="@layout/fragment_home"
+        />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.smartdesk.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_seat"
+        android:name="com.example.smartdesk.ui.seat.SeatFragment"
+        android:label="@string/navi_name_seat"
+        tools:layout="@layout/fragment_seat" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.smartdesk.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_calendar"
+        android:name="com.example.smartdesk.ui.calendar.CalendarFragment"
+        android:label="@string/navi_name_calendar"
+        tools:layout="@layout/fragment_calendar" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.smartdesk.ui.profile.ProfileFragment"
+        android:label="@string/navi_name_profile"
+        tools:layout="@layout/fragment_profile" />
+
 </navigation>
