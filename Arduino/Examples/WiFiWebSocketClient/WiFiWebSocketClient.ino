@@ -1,9 +1,7 @@
 #include <WiFiS3.h>
 #include <WebSocketsClient.h>
-// #include "arduino_secrets.h"
+#include "arduino_secrets.h"
 
-#define SECRET_SSID "HJC"
-#define SECRET_PASS "76038169"
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;        // your network SSID (name)
@@ -39,8 +37,8 @@ void setup() {
   printWifiStatus();
 
   // Connect to the WebSocket server
-  webSocket.begin("echo.websocket.org", 80, "/");
-  // webSocket.begin("192.168.171.2", 8080, "/");
+  // webSocket.begin("echo.websocket.org", 80, "/");
+  webSocket.begin("192.168.171.2", 8080, "/");
   delay(3000);
   // Set up event handler for WebSocket events
   webSocket.onEvent(webSocketEvent);

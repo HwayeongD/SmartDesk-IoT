@@ -40,18 +40,18 @@ void setup() {
     status = WiFi.begin(ssid, pass);
 
     // Wait 10 seconds for connection:
-    delay(10000);
+    delay(3000);
   }
 
   printWifiStatus();
 
   Serial.println("\nStarting connection to server...");
   // if you get a connection, report back via serial:
-  if (wifiClient.connect("server", 8080)) {
+  if (wifiClient.connect(server, 8000)) {
     Serial.println("connected to server");
     // Make a HTTP request:
     // wifiClient.println("GET /tables/list/ HTTP/1.1");
-    wifiClient.println("GET / HTTP/1.1");
+    wifiClient.println("GET /tables/list/ HTTP/1.1");
     wifiClient.println("Host: 192.168.171.2");
     wifiClient.println("Connection: close");
     wifiClient.println();

@@ -2,7 +2,7 @@ const WebSocket = require('ws');
 
 // 웹 소켓 서버 생성
 const wss = new WebSocket.Server({ host: '0.0.0.0', port: 8080 });
-
+let cnt = 0;
 // 허용할 클라이언트 IP 주소들을 배열로 정의합니다.
 const allowedIPs = ['127.0.0.1', '192.168.171.72', '192.168.171.2', '192.168.171.151'];
 
@@ -25,7 +25,8 @@ wss.on('connection', (ws, req) => {
     console.log(`받은 메시지(${clientIP}):`, message.toString());
 
     // 클라이언트에게 메시지 전송
-    ws.send('서버가 받았습니다.');
+    ws.send('서버가 받았습니다.' + cnt);
+    cnt++;
   });
 
   // 클라이언트와 연결이 끊겼을 때 처리
