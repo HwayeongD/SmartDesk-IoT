@@ -10,6 +10,14 @@
 
   this example is in the public domain
 */
+/*
+  책상에서 필요한 데이터
+    - 닉네임, 개인 선호 높이, 현재 책상 높이, 부서, 상태
+  DP에 표시할 데이터
+    - 닉네임, 현재 책상 높이, 부서, 상태
+  모터 제어 시 필요한 데이터
+    - 현재 책상 높이, 개인 선호 높이
+*/
 #include <ArduinoHttpClient.h>
 #include <WiFiS3.h>
 #include "arduino_secrets.h"
@@ -17,13 +25,15 @@
 #include "Arduino_LED_Matrix.h"
 ArduinoLEDMatrix matrix;
 
+#define TABLE_ID 15;
+
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 /////// WiFi Settings ///////
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-char serverAddress[] = "192.168.171.2";  // server address
-int port = 8080;
+char serverAddress[] = "hjj.kro.kr";  // server address
+int port = 8081;
 
 WiFiClient wifi;
 WebSocketClient client = WebSocketClient(wifi, serverAddress, port);
@@ -59,12 +69,13 @@ void loop() {
   client.begin();
 
   while (client.connected()) {
-    Serial.print("Sending hello ");
-    Serial.println(count);
+    Serial.println("D,%d", TABLE_ID);
+
+    Serial.println("Send Table ID, trial : ", count);
 
     // send a hello #
     client.beginMessage(TYPE_TEXT);
-    client.print("hello ");
+    client.println("D");
     client.print(count);
     client.endMessage();
     delay(50);
@@ -80,7 +91,7 @@ void loop() {
     }
 
     // wait 5 seconds
-    delay(5000);
+    delay(3000);
   }
 
   Serial.println("disconnected");

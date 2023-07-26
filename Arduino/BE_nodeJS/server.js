@@ -19,6 +19,7 @@ wss.on('connection', (ws, req) => {
   }
 
   console.log(`클라이언트 ${clientIP}가 연결되었습니다.`);
+  ws.send('서버가 초기화로 보낸 데이터 : 456');
 
   // 클라이언트로부터 메시지를 받았을 때 처리
   ws.on('message', (message) => {
