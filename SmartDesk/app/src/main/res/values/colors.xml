@@ -11,7 +11,7 @@
     <color name="navi_dark_gray">#716B6B</color>
     <color name="navi_light_gray">#F2EEEE</color>
     <!--  button color  -->
-    <color name="btn_ligh_blue">#87C0F1</color>
+    <color name="btn_light_blue">#87C0F1</color>
     <!--  common color  -->
     <color name="comm_light_gray">#DADADA</color>
 </resources>
