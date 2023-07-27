@@ -14,4 +14,5 @@
     <color name="btn_light_blue">#87C0F1</color>
     <!--  common color  -->
     <color name="comm_light_gray">#DADADA</color>
+    <color name="comm_orange">#FF7F00</color>
 </resources>
