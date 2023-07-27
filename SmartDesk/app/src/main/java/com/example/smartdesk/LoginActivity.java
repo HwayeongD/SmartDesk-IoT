@@ -86,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (!TextUtils.isEmpty(inputPwd)) {
                     textInputLayout2.setError(null); // Clear the error message if not empty
                 }
+
+                // 모두 입력했으면 main 페이지로 이동하기
                 if (!TextUtils.isEmpty(inputId) && !TextUtils.isEmpty(inputPwd)) {
                     // Both fields are not empty, proceed with login
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
