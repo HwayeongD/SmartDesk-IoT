@@ -25,7 +25,7 @@
 #include "Arduino_LED_Matrix.h"
 ArduinoLEDMatrix matrix;
 
-#define TABLE_ID 15;
+#define TABLE_ID 15
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 /////// WiFi Settings ///////
