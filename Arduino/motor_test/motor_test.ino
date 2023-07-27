@@ -1,6 +1,6 @@
 // 참조
 #include <SoftwareSerial.h>
-#include <MsTimer2.h>
+// #include <MsTimer2.h>
 
 // 상수
 #define Dir1Pin 3

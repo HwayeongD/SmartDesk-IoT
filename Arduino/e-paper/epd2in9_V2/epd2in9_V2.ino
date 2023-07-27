@@ -12,7 +12,7 @@ Epd epd;
 
 // display status value
 char name[] = "Jaechun";
-bool status = true;
+bool status = false;
 char team_name[] = "D4";
 const char* status_print = "";
 
