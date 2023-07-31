@@ -24,9 +24,24 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView scheduleTime = binding.todayScheduleTime;
+        final TextView scheduleContent = binding.todayScheduleContent;
+
+        homeViewModel.getTextTime().observe(getViewLifecycleOwner(), scheduleTime::setText);
+        homeViewModel.getTextContent().observe(getViewLifecycleOwner(), scheduleContent::setText);
+
+        setEmpInfo();
+
         return root;
+    }
+    
+    // 응답받은 사원정보를 화면에 출력
+    public void setEmpInfo() {
+
+    }
+
+    public void btnScheduleClick(View view) {
+        Toast.makeText(this.getContext(), "schedule btn is clicked", Toast.LENGTH_LONG).show();
     }
 
     @Override
