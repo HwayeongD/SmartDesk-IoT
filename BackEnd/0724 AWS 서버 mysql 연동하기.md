@@ -104,7 +104,11 @@ value ([value],[value],[value]);
 
 ## springboot에서 mysql 연동하기
 
-`url: jdbc:mysql://i9A301.p.ssafy.io:3306/SERVER?serverTimezone=Asia/Seoul&characterEncoding=UTF-8`
+```yml
+url: jdbc:mysql://i9A301.p.ssafy.io:3306/SERVER?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+
+
+```
 
 
 
