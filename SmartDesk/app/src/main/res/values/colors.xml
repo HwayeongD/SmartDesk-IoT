@@ -12,6 +12,10 @@
     <color name="navi_light_gray">#F2EEEE</color>
     <!--  button color  -->
     <color name="btn_light_blue">#87C0F1</color>
+    <!--  home fragment color  -->
+    <color name="home_light_blue">#CFE7FF</color>
+    <!--  info color  -->
+    <color name="info_orange">#FF7F00</color>
     <!--  common color  -->
     <color name="comm_light_gray">#DADADA</color>
 </resources>
