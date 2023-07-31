@@ -80,7 +80,7 @@ void loop()
       //한 후의 averageDistance값을 명찰에 업데이트 해주기
       flag = 0;
     }
-   
+  }
 }
 
 void sonicvalue(){

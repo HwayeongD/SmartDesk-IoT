@@ -15,7 +15,7 @@ char name[] = "Jaechun";
 bool status = false;
 char team_name[] = "D4";
 const char* status_print = "";
-
+char dist[] = "75cm";
 void dp_init();
 
 void setup() {
@@ -96,7 +96,15 @@ void dp_init(){
   epd.SetFrameMemory(paint.GetImage(), 10, 10, paint.GetWidth(), paint.GetHeight());//사각형 위치
   epd.DisplayFrame();
 
+  paint.SetWidth(40); // 우리가 화면 보는 기준으로 세로
+  paint.SetHeight(150); 
 
+  paint.Clear(COLORED); 
+  paint.DrawStringAt(5, 10, dist, &Font20, UNCOLORED); // 사각형 안에서의 글씨 위치
+  epd.SetFrameMemory(paint.GetImage(), 10, 220, paint.GetWidth(), paint.GetHeight());//사각형 위치
+  epd.DisplayFrame();
+  
+  
   delay(2000);
 
   if (epd.Init() != 0) {
