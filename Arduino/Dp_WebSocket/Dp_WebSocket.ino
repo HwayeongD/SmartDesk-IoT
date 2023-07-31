@@ -25,7 +25,7 @@
 #include "Arduino_LED_Matrix.h"
 ArduinoLEDMatrix matrix;
 
-#define TABLE_ID 15;
+#define TABLE_ID 15
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 /////// WiFi Settings ///////
@@ -38,7 +38,6 @@ int port = 8081;
 WiFiClient wifi;
 WebSocketClient client = WebSocketClient(wifi, serverAddress, port);
 int status = WL_IDLE_STATUS;
-int count = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -62,29 +61,37 @@ void setup() {
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
+
+  Serial.println("starting WebSocket client");
+  client.begin();
+  client.beginMessage(TYPE_TEXT);
+  client.print("Hand Shake Test");
+  client.endMessage();
+  delay(100);
 }
 
 void loop() {
-  Serial.println("starting WebSocket client");
-  client.begin();
 
   while (client.connected()) {
-    Serial.println("D,%d", TABLE_ID);
+    
+    Serial.print("Send Table ID : ");
+    Serial.print(TABLE_ID);
 
-    Serial.println("Send Table ID, trial : ", count);
 
     // send a hello #
     client.beginMessage(TYPE_TEXT);
-    client.println("D");
-    client.print(count);
+    client.print("Send Table ID : ");
+    client.print(TABLE_ID);
+    client.print(", ");
+    client.print("80");
+    
     client.endMessage();
     delay(50);
     // increment count for next message
-    count++;
 
     // check if a message is available to be received
     int messageSize = client.parseMessage();
-
+    Serial.println(messageSize);
     if (messageSize > 0) {
       Serial.println("Received a message:");
       Serial.println(client.readString());
