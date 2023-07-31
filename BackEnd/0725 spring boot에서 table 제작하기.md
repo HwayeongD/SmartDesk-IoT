@@ -148,6 +148,15 @@
 
 
 
+#### @GeneratedValue 에 대해서.
+
+- 해당 엔티티의 기본 키(primary key) 의 생성 전략을 지정하는데 사용된다.
+
+1. `GenerationType.IDENTITY`: 기본 키가 데이터베이스에서 자동으로 생성됩니다 (예: 자동 증가).
+2. `GenerationType.SEQUENCE`: 기본 키가 데이터베이스 시퀀스(sequence)에 의해 생성됩니다.
+3. `GenerationType.TABLE`: 기본 키가 테이블을 이용하여 생성됩니다.
+4. `GenerationType.AUTO`: JPA 제공자가 기본 키 생성 전략을 자동으로 선택합니다.
+
 
 
 

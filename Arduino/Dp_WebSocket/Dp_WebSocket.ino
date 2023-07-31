@@ -38,7 +38,6 @@ int port = 8081;
 WiFiClient wifi;
 WebSocketClient client = WebSocketClient(wifi, serverAddress, port);
 int status = WL_IDLE_STATUS;
-int count = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -78,16 +77,17 @@ void loop() {
     Serial.print("Send Table ID : ");
     Serial.print(TABLE_ID);
 
-    Serial.println("Send Table ID, trial : ");
 
     // send a hello #
     client.beginMessage(TYPE_TEXT);
-    client.print("Hello : ");
-    client.print(count);
+    client.print("Send Table ID : ");
+    client.print(TABLE_ID);
+    client.print(", ");
+    client.print("80");
+    
     client.endMessage();
     delay(50);
     // increment count for next message
-    count++;
 
     // check if a message is available to be received
     int messageSize = client.parseMessage();
