@@ -2,9 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 갤러리 접근 권한 추가 -->
+    <!-- 갤러리, 카메라 접근 권한 추가 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    <!-- 카메라를 사용하기 위한 uses-feature 설정 -->
+    <uses-feature android:name="android.hardware.camera2" />
+    
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -30,6 +34,17 @@
             android:exported="true"
             android:label="@string/app_name">
         </activity>
+        
+
+<!--        <provider-->
+<!--            android:name="android.content.SearchRecentSuggestionsProvider"-->
+<!--            android:authorities="com.example.smartdesk"-->
+<!--            android:exported="false"-->
+<!--            android:grantUriPermissions="true" >-->
+<!--            <meta-data-->
+<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
+<!--                android:resource="@xml/file_paths" />-->
+<!--        </provider>-->
     </application>
 
 </manifest>
