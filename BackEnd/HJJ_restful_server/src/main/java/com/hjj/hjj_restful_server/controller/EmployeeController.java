@@ -256,6 +256,29 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 자리 변경
+    @PutMapping("seats/change")
+    public ResponseEntity<String> SeatChange(@RequestBody Map<String, Object> requestBody) {
+        Long empId = Long.valueOf(requestBody.get("empId").toString());
+        Long seatId = Long.valueOf(requestBody.get("seatId").toString());
+
+        EMPSeatDTO cancelSeat = empSeatService.findByempId(empId);
+        DeskDTO cancelDesk = deskService.findByseatId(cancelSeat.getSeatId());
+
+
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+//    empId, seatId 받아옴
+//    사람, 새로운 자리
+//
+//1. 이전 자리 정보 삭제
+//    사람 -> 좌석 정보 확인
+//    좌석 정보 -> 사람 정보 지우고
+//    사람 -> 좌석 정보 갱신
+//    새로운 좌석 -> 사람 정보 입력
+
 
 //    private String toJson(EmployeeDTO employeeDTO) {
 //        if (employeeDTO == null) {
