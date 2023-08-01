@@ -1,23 +1,23 @@
-# 주제
+<div align=center><h1> 현직자 </h1></div>
+<div align=center><h2> 현명한 직장인의 자리 </h2></div>
 
-## 현명한 직장인의 자리
 
-<div align=center><h1>📚 STACKS</h1></div>
+
+<div align=center><h3>📚 STACKS</h3></div>
 <div align=center> 
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">
 <img src="https://img.shields.io/badge/c-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white">
 <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> <br>
-
 <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
-<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
-
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"><br>
 <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white"><br>
 <img src="https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
 <img src="https://img.shields.io/badge/android-3DDC84?style=for-the-badge&logo=android&logoColor=black"> <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
 
 </div>
 
-# 기능 명세서
+<div align=center><h2> 기능 명세서 </h2></div>
+
 | | | | | | |
 |-|-|-|-|-|-|
 |완료 여부|구분|주 기능|상세 기능|내용|비고|
