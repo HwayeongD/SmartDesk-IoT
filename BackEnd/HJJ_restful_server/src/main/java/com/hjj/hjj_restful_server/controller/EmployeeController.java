@@ -27,6 +27,7 @@ public class EmployeeController {
     private final ScheduleService scheduleService;
     private final EMPSeatService empSeatService;
     private final DeskService deskService;
+    private final DepartmentService departmentService;
 
     // 웹소켓 주입
     private final WebSocketChatHandler webSocketChatHandler;
@@ -115,6 +116,13 @@ public class EmployeeController {
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        Byte status = empAttendanceDTO.getStatus();
 
         // 전일 좌석 정보 가져옴.
         Long prevSeat = empSeatDTO.getPrevSeat();
@@ -130,6 +138,9 @@ public class EmployeeController {
 
         if(byPrevSeat.getEmpId() == null){  // 자리가 빈거임.
             reserveSuccess = true;
+
+            // 자동으로 자리 예약!
+
         }
         else{
             reserveSuccess = false;
@@ -201,6 +212,15 @@ public class EmployeeController {
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
+
+
+//    // 자리 선택 (예약)
+//    @PutMapping("seats")
+//    public ResponseEntity<String> SeatReservation(@RequestBody Map<String, Object> requestBody){
+//
+//
+//
+//    }
 
 
 //    private String toJson(EmployeeDTO employeeDTO) {
