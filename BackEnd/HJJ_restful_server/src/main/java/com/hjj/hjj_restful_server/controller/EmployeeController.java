@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,16 +37,28 @@ public class EmployeeController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@ModelAttribute EmployeeDTO employeeDTO, HttpSession session) {
-        EmployeeDTO loginResult = employeeService.login(employeeDTO);
+    public ResponseEntity<String> login(@RequestBody Map<String, Object> requestBody) {
+        Long empId = Long.valueOf(requestBody.get("empId").toString());
+        String password = (String) requestBody.get("password");
+        EmployeeDTO loginResult = employeeService.login(empId, password);
         if (loginResult != null) {
-            session.setAttribute("loginId", loginResult.getEmpId());
-            // 여기서 loginResult를 JSON으로 변환해서 반환
             // 211.192.210.157 준섭 아이피
-            webSocketChatHandler.sendMessageToSpecificIP("211.192.210.130", "여기에 메시지를 입력하세요.");
-            return new ResponseEntity<>(toJson(loginResult), HttpStatus.OK);
+            //webSocketChatHandler.sendMessageToSpecificIP("211.192.210.130", "여기에 메시지를 입력하세요.");
+
+            String json =
+                    "{ \"empId\": \"" + loginResult.getEmpId() +
+                            "\", \"name\": \"" + loginResult.getName() +
+                            "\", \"nickname\": \"" + loginResult.getNickname() +
+                            "\", \"password\": \"" + loginResult.getPassword() +
+                            "\", \"teamId\": \"" + loginResult.getTeamId() +
+                            "\", \"image\": \"" + loginResult.getImage() +
+                            "\" }";
+            return new ResponseEntity<>(json, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Login failed", HttpStatus.UNAUTHORIZED);
+
+            String json =  "{ \"resultCode\": \" 100 \" }";
+
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
     }
     
@@ -90,37 +103,21 @@ public class EmployeeController {
                         "\", \"calDetail\": \"" + calDetail +
                         "\", \"seatId\": \"" + seatId +
                         "\", \"personalDeskHeight\": \"" + personalDeskHeight + "\" }";
-
-
         return json;
 
     }
 
-    // 프로필 사진 변경
-    @PutMapping("/home/{empId}/profile")
-    public void ProfileChange(@PathVariable Long empId, @RequestBody String _image) {
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-
-    }
-
+//    // 프로필 사진 변경
+//    @PutMapping("/home/{empId}/profile")
+//    public void ProfileChange(@PathVariable Long empId, @RequestBody String _image) {
+//        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+//    }
 
 
     private String toJson(EmployeeDTO employeeDTO) {
         if (employeeDTO == null) {
             return "{}"; // Return an empty JSON object or appropriate default response when the object is null.
         }
-
-        // Here, you can implement the logic to convert EmployeeDTO to JSON manually,
-        // or use libraries like Jackson, Gson, etc., to convert the object to JSON.
-
-        // Example manual conversion:
-//        String json = "{\"emp_id\": \"" + employeeDTO.getEmpId() + "\", "
-//                + "\"image\": \"" + employeeDTO.getImage() + "\", "
-//                + "\"name\": \"" + employeeDTO.getName() + "\", "
-//                + "\"nickname\": \"" + employeeDTO.getNickname() + "\", "
-//                + "\"password\": \"" + employeeDTO.getPassword() + "\", "
-//                + "\"team_id\": \"" + employeeDTO.getTeamId() + "\"}";
-
         return employeeDTO.toString();
     }
 }
