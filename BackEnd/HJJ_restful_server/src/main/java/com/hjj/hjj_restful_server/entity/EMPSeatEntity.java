@@ -16,7 +16,7 @@ public class EMPSeatEntity {
     private Long empId;
 
     @Column
-    private Long prevSear;
+    private Long prevSeat;
 
     @Column
     private Long seatId;
@@ -30,7 +30,7 @@ public class EMPSeatEntity {
     public static EMPSeatEntity toEMPSeatEntity(EMPSeatDTO empSeatDTO) {
         EMPSeatEntity empSeatEntity = new EMPSeatEntity();
         empSeatEntity.setEmpId(empSeatDTO.getEmpId());
-        empSeatEntity.setPrevSear(empSeatDTO.getPrevSear());
+        empSeatEntity.setPrevSeat(empSeatDTO.getPrevSeat());
         empSeatEntity.setSeatId(empSeatDTO.getSeatId());
         empSeatEntity.setPersonalDeskHeight(empSeatDTO.getPersonalDeskHeight());
         empSeatEntity.setAutoBook(empSeatDTO.isAutoBook());

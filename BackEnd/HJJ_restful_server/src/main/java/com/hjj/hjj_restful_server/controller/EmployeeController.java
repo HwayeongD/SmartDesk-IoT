@@ -1,15 +1,9 @@
 package com.hjj.hjj_restful_server.controller;
 
 
-import com.hjj.hjj_restful_server.dto.EMPAttendanceDTO;
-import com.hjj.hjj_restful_server.dto.EMPSeatDTO;
-import com.hjj.hjj_restful_server.dto.EmployeeDTO;
-import com.hjj.hjj_restful_server.dto.ScheduleDTO;
+import com.hjj.hjj_restful_server.dto.*;
 import com.hjj.hjj_restful_server.handler.WebSocketChatHandler;
-import com.hjj.hjj_restful_server.service.EMPAttendanceService;
-import com.hjj.hjj_restful_server.service.EMPSeatService;
-import com.hjj.hjj_restful_server.service.EmployeeService;
-import com.hjj.hjj_restful_server.service.ScheduleService;
+import com.hjj.hjj_restful_server.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.json.JSONObject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -31,6 +26,7 @@ public class EmployeeController {
     private final EMPAttendanceService empAttendanceService;
     private final ScheduleService scheduleService;
     private final EMPSeatService empSeatService;
+    private final DeskService deskService;
 
     // 웹소켓 주입
     private final WebSocketChatHandler webSocketChatHandler;
@@ -110,13 +106,54 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+
+    @GetMapping("/home/{empId}/first")
+    public ResponseEntity<String> FirstInquiry(@PathVariable Long empId) {
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        if (employeeDTO == null) {
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+
+        // 전일 좌석 정보 가져옴.
+        Long prevSeat = empSeatDTO.getPrevSeat();
+
+        // 책상 정보 가져옴.
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        if(byPrevSeat == null){ // 책상 존재 여부
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean reserveSuccess;
+
+        if(byPrevSeat.getEmpId() == null){  // 자리가 빈거임.
+            reserveSuccess = true;
+        }
+        else{
+            reserveSuccess = false;
+        }
+
+        ResponseEntity<String> info = MainPageInquiry(empId);
+
+        String json = info.getBody();
+        System.out.println(json);
+
+        JSONObject jsonObject = new JSONObject(json);
+        jsonObject.put("reserveSuccess", reserveSuccess);
+
+        json = jsonObject.toString();
+
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
     // 프로필 사진 변경
     @PutMapping("/home/{empId}/profile")
     public ResponseEntity<String> ProfileChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
             String json =  "{ \"resultCode\": \" 400 \" }";
-
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         String image = (String) requestBody.get("image");
@@ -128,11 +165,42 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 비밀번호 변경
+    @PutMapping("/home/{empId}/password")
+    public ResponseEntity<String> PasswordChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody)
+    {
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        if (employeeDTO == null) {
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
 
+        String password = (String) requestBody.get("password");
+        employeeDTO.setPassword(password);
+        employeeService.save(employeeDTO);
 
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
 
+    }
 
+    // 자동 예약 설정 변경
+    @PutMapping("/home/{empId}/auto")
+    public ResponseEntity<String> AutoBookChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody)
+    {
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        if (empSeatDTO == null) {
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
 
+        Boolean autoBook = (boolean) requestBody.get("autoBook");
+        empSeatDTO.setAutoBook(autoBook);
+        empSeatService.save(empSeatDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
 
 //    private String toJson(EmployeeDTO employeeDTO) {
