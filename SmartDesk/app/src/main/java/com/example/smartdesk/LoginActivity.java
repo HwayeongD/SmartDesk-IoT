@@ -8,17 +8,28 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 
+import com.example.smartdesk.data.Model.Employee;
+import com.example.smartdesk.data.RetrofitAPI;
+import com.example.smartdesk.data.RetrofitClient;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LoginActivity";
     private TextInputLayout textInputLayout1;
     private TextInputLayout textInputLayout2;
     private TextInputEditText editId;
@@ -75,10 +86,14 @@ public class LoginActivity extends AppCompatActivity {
                 String inputId = editId.getText().toString();
                 String inputPwd = editPwd.getText().toString();
 
+                // TODO: 각 if문들은 에러 띄우고 아무것도 없다. 따라서, 각 분기문 내부에 return 처리해주기
+                // TODO: 그래야 아래에서 정상인 상황에 굳이 모든 케이스에 대한 if 문으로 묶어줄 필요가 없다.
                 // 입력창이 비어있으면 Error 띄워주기
                 if (TextUtils.isEmpty(inputId)) {
                     textInputLayout1.setError("아이디를 입력해주세요.");
-                } else if (!TextUtils.isEmpty(inputId)) {
+                }
+                // TODO: 위와 반대인 케이스라는 것은 알겠으나, 어떤 기능인가 질문
+                else if (!TextUtils.isEmpty(inputId)) {
                     textInputLayout1.setError(null); // Clear the error message if not empty
                 }
                 if (TextUtils.isEmpty(inputPwd)) {
@@ -89,6 +104,38 @@ public class LoginActivity extends AppCompatActivity {
 
                 // 모두 입력했으면 main 페이지로 이동하기
                 if (!TextUtils.isEmpty(inputId) && !TextUtils.isEmpty(inputPwd)) {
+                    // TODO: Retrofit 통신 테스트용 - 수정 예정
+                    Employee employee = new Employee();
+                    employee.setEmpId(Long.parseLong(inputId));
+                    employee.setPassword(inputPwd);
+
+                    Retrofit retrofit = RetrofitClient.getClient();
+                    RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+                    retrofitAPI.getEmpData(employee).enqueue(new Callback<Employee>() {
+                        @Override
+                        public void onResponse(Call<Employee> call, Response<Employee> response) {
+                            if(response.isSuccessful()) {
+                                Employee data = response.body();
+                                Log.d(TAG, "성공");
+                                Log.d(TAG, data.getNickname());
+                            }
+                            else {
+                                Employee data = response.body();
+                                Log.d(TAG, "실패인가,,");
+                                Log.d(TAG, data.getResultCode());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Employee> call, Throwable t) {
+                            Log.d(TAG, "실패");
+
+                            t.printStackTrace();
+                        }
+                    });
+
+                    // TODO: 서버에서의 응답이 정상인 경우에만 아래 페이지 이동 로직이 적용되어야 할 것 같음
                     // Both fields are not empty, proceed with login
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
