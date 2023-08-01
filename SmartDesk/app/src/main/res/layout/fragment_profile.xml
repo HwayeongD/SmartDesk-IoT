@@ -79,15 +79,37 @@
             android:layout_height="2px"
             android:background="@color/comm_light_gray" />
 
-
-        <TextView
-            android:id="@+id/change_desk"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_margin="10dp"
-            android:text="즐겨찾는 책상 높이 변경"
-            android:textColor="@color/black" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/change_desk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:text="즐겨찾는 책상 높이 변경"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/desk_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingRight="21dp"
+                android:paddingBottom="10dp"
+                android:text="-"
+                android:textColor="@color/comm_orange"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
@@ -96,36 +118,48 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:gravity="center">
+                android:gravity="center"
+                android:layout_margin="10dp">
 
                 <TextView
                     android:id="@+id/change_option"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="좌석 자동 예약"
                     android:textColor="@color/black" />
 
                 <ImageView
                     android:id="@+id/info"
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
+                    android:layout_width="35dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/ic_info_48px"
-                    android:layout_marginTop="1dp"
-                    android:layout_marginLeft="3dp"/>
+                    android:paddingTop="5dp"
+                    android:paddingRight="15dp"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="5dp"
+                    android:layout_marginTop="3dp"/>
+
 
             </LinearLayout>
 
             <Switch
                 android:id="@+id/option_switch"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="160dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:paddingRight="21dp"
+                android:paddingBottom="10dp"
+                android:layout_marginLeft="150dp"
                 android:thumb="@drawable/ic_switch_thumb"
                 android:track="@drawable/ic_switch_track" />
 
