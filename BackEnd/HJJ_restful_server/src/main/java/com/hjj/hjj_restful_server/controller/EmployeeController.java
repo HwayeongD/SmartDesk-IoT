@@ -56,7 +56,7 @@ public class EmployeeController {
             return new ResponseEntity<>(json, HttpStatus.OK);
         } else {
 
-            String json =  "{ \"resultCode\": \" 100 \" }";
+            String json =  "{ \"resultCode\": \" 400 \" }";
 
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
@@ -64,10 +64,12 @@ public class EmployeeController {
     
     // 매인 페이지 조회
     @GetMapping("/home/{empId}")
-    public String MainPageInquiry(@PathVariable Long empId){
+    public ResponseEntity<String> MainPageInquiry(@PathVariable Long empId){
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
-            return "Employee not found";
+            String json =  "{ \"resultCode\": \" 400 \" }";
+
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         ScheduleDTO scheduleDTO = scheduleService.findRecentByEmpId(empId);
@@ -85,6 +87,7 @@ public class EmployeeController {
 
         Time workAttTime = empAttendanceDTO.getWorkAttTime();
         if(scheduleDTO == null){
+            // 시간이 null 일때 어떻게 할지 생각. 일단 쓰레기값 넣어둠.
             calTime = Timestamp.valueOf("2000-01-01 00:00:00.000");
             calDetail = "";
         }
@@ -103,21 +106,39 @@ public class EmployeeController {
                         "\", \"calDetail\": \"" + calDetail +
                         "\", \"seatId\": \"" + seatId +
                         "\", \"personalDeskHeight\": \"" + personalDeskHeight + "\" }";
-        return json;
 
+        return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-//    // 프로필 사진 변경
-//    @PutMapping("/home/{empId}/profile")
-//    public void ProfileChange(@PathVariable Long empId, @RequestBody String _image) {
-//        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-//    }
-
-
-    private String toJson(EmployeeDTO employeeDTO) {
+    // 프로필 사진 변경
+    @PutMapping("/home/{empId}/profile")
+    public ResponseEntity<String> ProfileChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
-            return "{}"; // Return an empty JSON object or appropriate default response when the object is null.
+            String json =  "{ \"resultCode\": \" 400 \" }";
+
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
-        return employeeDTO.toString();
+        String image = (String) requestBody.get("image");
+        employeeDTO.setImage(image);
+        employeeService.save(employeeDTO);
+
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
     }
+
+
+
+
+
+
+
+
+//    private String toJson(EmployeeDTO employeeDTO) {
+//        if (employeeDTO == null) {
+//            return "{}"; // Return an empty JSON object or appropriate default response when the object is null.
+//        }
+//        return employeeDTO.toString();
+//    }
 }
