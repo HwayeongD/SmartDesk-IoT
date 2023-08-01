@@ -138,12 +138,16 @@ public class EmployeeController {
         }
 
         boolean reserveSuccess;
+        String seatIp = byPrevSeat.getSeatIp();
 
         if(byPrevSeat.getEmpId() == null){  // 자리가 빈거임.
             reserveSuccess = true;
 
             // 자동으로 자리 예약!
 
+            // 모션데스킹 활동 요청 소켓 메세지
+            String socketMsg = nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+            webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
         }
         else{
             reserveSuccess = false;

@@ -19,7 +19,7 @@
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-char serverAddress[] = "192.168.171.2";  // server address
+char serverAddress[] = "i9a301.p.ssafy.io";  // server address
 int port = 8080;
 
 WiFiClient wifi;
@@ -49,7 +49,7 @@ void setup() {
 
 void loop() {
   Serial.println("starting WebSocket client");
-  client.begin();
+  client.begin("/ws/chat");
 
   while (client.connected()) {
     Serial.print("Sending hello ");
