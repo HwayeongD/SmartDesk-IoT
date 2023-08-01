@@ -16,6 +16,8 @@
 
 </div>
 
+---
+<br>
 <div align=center><h2> 기능 명세서 </h2></div>
 
 | | | | | | |
