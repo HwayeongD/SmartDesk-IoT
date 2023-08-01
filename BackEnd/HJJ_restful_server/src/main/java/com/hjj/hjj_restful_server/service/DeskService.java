@@ -1,7 +1,9 @@
 package com.hjj.hjj_restful_server.service;
 
 import com.hjj.hjj_restful_server.dto.DeskDTO;
+import com.hjj.hjj_restful_server.dto.EmployeeDTO;
 import com.hjj.hjj_restful_server.entity.DeskEntity;
+import com.hjj.hjj_restful_server.entity.EmployeeEntity;
 import com.hjj.hjj_restful_server.repository.DeskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,5 +23,10 @@ public class DeskService {
         else{
             return null;
         }
+    }
+
+    public void save(DeskDTO deskDTO){
+        DeskEntity deskEntity = DeskEntity.toDeskEntity(deskDTO);
+        deskRepository.save(deskEntity);
     }
 }

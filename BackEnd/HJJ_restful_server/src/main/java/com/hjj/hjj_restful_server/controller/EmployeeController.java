@@ -124,11 +124,14 @@ public class EmployeeController {
         String teamName = departmentDTO.getTeamName();
         Byte status = empAttendanceDTO.getStatus();
 
+
         // 전일 좌석 정보 가져옴.
         Long prevSeat = empSeatDTO.getPrevSeat();
 
         // 책상 정보 가져옴.
         DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+
+
         if(byPrevSeat == null){ // 책상 존재 여부
             String json = "{ \"resultCode\": \" 400 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
@@ -214,13 +217,40 @@ public class EmployeeController {
     }
 
 
-//    // 자리 선택 (예약)
-//    @PutMapping("seats")
-//    public ResponseEntity<String> SeatReservation(@RequestBody Map<String, Object> requestBody){
-//
-//
-//
-//    }
+    // 자리 선택 (예약)
+    @PutMapping("seats")
+    public ResponseEntity<String> SeatReservation(@RequestBody Map<String, Object> requestBody){
+        Long empId = Long.valueOf(requestBody.get("empId").toString());
+        Long seatId = Long.valueOf(requestBody.get("seatId").toString());
+
+        DeskDTO deskDTO = deskService.findByseatId(seatId);
+        if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        if (empSeatDTO.getSeatId() != null) {   // 이미 예약함
+            String json = "{ \"resultCode\": \" 400 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
+        deskDTO.setEmpId(empId);
+        empSeatDTO.setSeatId(seatId);
+        empSeatDTO.setPrevSeat(seatId);
+
+        deskService.save(deskDTO);
+        empSeatService.save(empSeatDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
 
 //    private String toJson(EmployeeDTO employeeDTO) {
