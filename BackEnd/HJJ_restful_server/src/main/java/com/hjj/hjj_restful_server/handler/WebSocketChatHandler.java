@@ -31,11 +31,11 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         
         // 클라이언트에게 받은 메세지 출력
         String input = message.getPayload();
-        System.out.println("Received message from client: " + input);
+        System.out.println("재천: " + input);
 
         // 수신을 완료하면 클라이언트에게 답장 보내기
-        TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
-        session.sendMessage(textMessage);
+        // TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
+        // session.sendMessage(textMessage);
         String clientIP = session.getRemoteAddress().getHostString();
 
 //        if ("211.192.210.130".equals(clientIP)) {
@@ -78,11 +78,12 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             try {
                 TextMessage textMessage = new TextMessage(message);
                 session.sendMessage(textMessage);
-                System.out.println("성공적으로 원하는 주소로 메세지를 보냈다!");
+                System.out.println("성공적으로 원하는 주소에메 세지를 보냈다!");
             } catch (IOException e) {
                 // Handle exception if needed
                 System.out.println("하 개망했다!");
             }
         }
     }
+
 }
