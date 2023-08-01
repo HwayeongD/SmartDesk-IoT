@@ -17,11 +17,11 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
-    public EmployeeDTO login(EmployeeDTO employeeDTO){
-        Optional<EmployeeEntity> byEmpId = employeeRepository.findByEmpId(employeeDTO.getEmpId());
+    public EmployeeDTO login(Long empId, String password){
+        Optional<EmployeeEntity> byEmpId = employeeRepository.findByEmpId(empId);
         if(byEmpId.isPresent()){
             EmployeeEntity employeeEntity = byEmpId.get();
-            if(employeeEntity.getPassword().equals(employeeDTO.getPassword())){
+            if(employeeEntity.getPassword().equals(password)){
                 EmployeeDTO dto = EmployeeDTO.toEmployeeDTO(employeeEntity);
                 return dto;
             }
