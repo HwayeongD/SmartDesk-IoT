@@ -7,6 +7,7 @@ import com.hjj.hjj_restful_server.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -112,6 +113,7 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+
     // 처음 접속했을때
     @GetMapping("/home/{empId}/first")
     public ResponseEntity<String> FirstInquiry(@PathVariable Long empId) {
@@ -150,6 +152,13 @@ public class EmployeeController {
         else{
             reserveSuccess = false;
         }
+
+        LocalTime currentTime;
+        currentTime = LocalTime.now();
+        Time time = Time.valueOf(currentTime);
+
+        empAttendanceDTO.setWorkAttTime(time);
+        empAttendanceService.save(empAttendanceDTO);
 
         ResponseEntity<String> info = MainPageInquiry(empId);
 
