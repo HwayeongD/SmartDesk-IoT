@@ -262,22 +262,27 @@ public class EmployeeController {
         Long empId = Long.valueOf(requestBody.get("empId").toString());
         Long seatId = Long.valueOf(requestBody.get("seatId").toString());
 
-        EMPSeatDTO cancelSeat = empSeatService.findByempId(empId);
-        DeskDTO cancelDesk = deskService.findByseatId(cancelSeat.getSeatId());
+        // 기존 자리 취소
+        EMPSeatDTO empSeat = empSeatService.findByempId(empId);
+        DeskDTO cancelDesk = deskService.findByseatId(empSeat.getSeatId());
+        cancelDesk.setEmpId(null);
+        deskService.save(cancelDesk);
 
+        // 자리 정보 갱신
+        empSeat.setSeatId(seatId);
+        empSeat.setPrevSeat(seatId);
+        empSeatService.save(empSeat);
 
+        // 책상에도 정보 입력
+
+        DeskDTO newDesk = deskService.findByseatId(seatId);
+        newDesk.setEmpId(empId);
+        deskService.save(newDesk);
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
-//    empId, seatId 받아옴
-//    사람, 새로운 자리
-//
-//1. 이전 자리 정보 삭제
-//    사람 -> 좌석 정보 확인
-//    좌석 정보 -> 사람 정보 지우고
-//    사람 -> 좌석 정보 갱신
-//    새로운 좌석 -> 사람 정보 입력
+
 
 
 //    private String toJson(EmployeeDTO employeeDTO) {
