@@ -22,4 +22,9 @@ public class DepartmentService {
             return null;
         }
     }
+
+    public void save(DepartmentDTO departmentDTO){
+        DepartmentEntity departmentEntity = DepartmentEntity.toDepartmentEntity(departmentDTO);
+        departmentRepository.save(departmentEntity);
+    }
 }

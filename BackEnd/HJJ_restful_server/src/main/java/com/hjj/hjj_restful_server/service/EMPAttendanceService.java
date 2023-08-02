@@ -23,4 +23,9 @@ public class EMPAttendanceService {
             return null;
         }
     }
+
+    public void save(EMPAttendanceDTO empAttendanceDTO){
+        EMPAttendanceEntity empAttendanceEntity = EMPAttendanceEntity.toEMPAttendanceEntity(empAttendanceDTO);
+        empAttendanceRepository.save(empAttendanceEntity);
+    }
 }

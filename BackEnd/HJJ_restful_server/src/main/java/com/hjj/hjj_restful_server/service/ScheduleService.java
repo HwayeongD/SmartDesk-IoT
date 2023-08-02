@@ -24,4 +24,9 @@ public class ScheduleService {
         }
     }
 
+    public void save(ScheduleDTO scheduleDTO){
+        ScheduleEntity scheduleEntity = ScheduleEntity.toScheduleEntity(scheduleDTO);
+        scheduleRepository.save(scheduleEntity);
+    }
+
 }
