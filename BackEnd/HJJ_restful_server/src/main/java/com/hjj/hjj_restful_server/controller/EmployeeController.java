@@ -283,7 +283,23 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 자리 예약 취소
+    @DeleteMapping("seats/{empId}")
+    public ResponseEntity<String> SeatCancel(@PathVariable Long empId) {
 
+        // 자리 취소
+        EMPSeatDTO empSeat = empSeatService.findByempId(empId);
+        DeskDTO cancelDesk = deskService.findByseatId(empSeat.getSeatId());
+        cancelDesk.setEmpId(null);
+        deskService.save(cancelDesk);
+
+        // 자리 정보 갱신
+        empSeat.setSeatId(null);
+        empSeatService.save(empSeat);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
 //    private String toJson(EmployeeDTO employeeDTO) {
 //        if (employeeDTO == null) {
