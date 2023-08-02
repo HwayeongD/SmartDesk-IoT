@@ -16,6 +16,9 @@ import org.json.JSONObject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -220,6 +223,24 @@ public class EmployeeController {
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
+
+    // 퇴근 요청
+    @PutMapping("home/{empId}/leave")
+    public ResponseEntity<String> ExitRequest(@PathVariable Long empId){
+        //현재 시간 저장
+        LocalTime currentTime;
+
+        currentTime = LocalTime.now();
+        Time time = Time.valueOf(currentTime);
+
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        empAttendanceDTO.setWorkEndTime(time);
+        empAttendanceService.save(empAttendanceDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
 
     // 선호 책상 높이 변경
     @PutMapping("home/{empId}/mydesk")
