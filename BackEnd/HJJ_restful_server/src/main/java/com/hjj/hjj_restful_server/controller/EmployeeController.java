@@ -6,6 +6,7 @@ import com.hjj.hjj_restful_server.handler.WebSocketChatHandler;
 import com.hjj.hjj_restful_server.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -220,6 +221,73 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 선호 책상 높이 변경
+    @PutMapping("home/{empId}/mydesk")
+    public ResponseEntity<String> ChangeDeskHeight(@PathVariable Long empId, Map<String, Object> requestBody){
+        Long personalDeskHeight = Long.valueOf(requestBody.get("personalDeskHeight").toString());
+
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        empSeatDTO.setPersonalDeskHeight(personalDeskHeight);
+        empSeatService.save(empSeatDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    // 아두이노로 책상 높이 조절 명령
+    @PutMapping("home/{empId}/mydesk/move")
+    public ResponseEntity<String> MoveDeskHeight(@PathVariable Long empId){
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    // 층별로 자리 불러오기
+    @GetMapping("seats/{floor}")
+    public ResponseEntity<String> SeatsByFloor(@PathVariable Long floor){
+        List<DeskDTO> deskDTOList = deskService.findByFloor(floor);
+
+        JSONArray jsonArray = new JSONArray();
+        for(DeskDTO deskDTO : deskDTOList){
+
+            JSONObject json = new JSONObject();
+
+            // 1. empId 확인
+            //Long empId = deskDTO.getEmpId();
+
+            // 2-1. 있으면 값 넣어주기.
+            if(deskDTO.getEmpId() != null){
+                Long empId = deskDTO.getEmpId();
+
+                // 3. empId 기준으로 nickname, teamname, status 가져와서 넣어주기.
+                EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+                String nickname = employeeDTO.getNickname();
+
+                DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+                String teamName = departmentDTO.getTeamName();
+
+                EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                Byte status = empAttendanceDTO.getStatus();
+
+                json.put("seatId", deskDTO.getSeatId());
+                json.put("nickname", nickname);
+                json.put("teamName", teamName);
+                json.put("status", status);
+                jsonArray.put(json);
+            }
+            else{
+                // 2-2. 없으면 seatId만 넣어주기.
+                json.put("seatId", deskDTO.getSeatId());
+                json.put("nickname", "");
+                json.put("teamName", "");
+                json.put("status", "");
+                jsonArray.put(json);
+            }
+        }
+        String jsonString = jsonArray.toString();
+
+        return new ResponseEntity<>(jsonString, HttpStatus.OK);
+    }
 
     // 자리 선택 (예약)
     @PutMapping("seats")
@@ -301,10 +369,7 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-//    private String toJson(EmployeeDTO employeeDTO) {
-//        if (employeeDTO == null) {
-//            return "{}"; // Return an empty JSON object or appropriate default response when the object is null.
-//        }
-//        return employeeDTO.toString();
-//    }
+
+
+
 }

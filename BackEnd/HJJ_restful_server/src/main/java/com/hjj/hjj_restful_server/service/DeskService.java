@@ -8,6 +8,8 @@ import com.hjj.hjj_restful_server.repository.DeskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,5 +30,20 @@ public class DeskService {
     public void save(DeskDTO deskDTO){
         DeskEntity deskEntity = DeskEntity.toDeskEntity(deskDTO);
         deskRepository.save(deskEntity);
+    }
+
+    public List<DeskDTO> findByFloor(Long floor){
+        List<DeskEntity> optionalDeskEntityList = deskRepository.findByFloor(floor);
+        if(optionalDeskEntityList.size()==0){
+            return null;
+        }
+        else{
+            List<DeskDTO> deskDTOList = new ArrayList<>();
+            for(DeskEntity entity : optionalDeskEntityList){
+                DeskDTO dto = DeskDTO.toDeskDTO(entity);
+                deskDTOList.add(dto);
+            }
+            return deskDTOList;
+        }
     }
 }
