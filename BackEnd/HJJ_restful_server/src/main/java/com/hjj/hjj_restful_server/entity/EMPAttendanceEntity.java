@@ -13,11 +13,9 @@ import java.sql.Time;
 @Table(name = "EMP_Attendance")
 public class EMPAttendanceEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
-
-    @Column(name = "empId")
     private Long empId;
 
     @Column(name = "workAttTime")

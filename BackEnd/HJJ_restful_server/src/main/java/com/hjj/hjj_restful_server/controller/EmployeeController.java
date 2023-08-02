@@ -6,6 +6,8 @@ import com.hjj.hjj_restful_server.handler.WebSocketChatHandler;
 import com.hjj.hjj_restful_server.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,10 @@ import org.json.JSONObject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -108,22 +114,17 @@ public class EmployeeController {
     }
 
 
+    // 처음 접속했을때
     @GetMapping("/home/{empId}/first")
     public ResponseEntity<String> FirstInquiry(@PathVariable Long empId) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 401 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-
-        String nickname = employeeDTO.getNickname();
-        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
-        String teamName = departmentDTO.getTeamName();
-        Byte status = empAttendanceDTO.getStatus();
-
 
         // 전일 좌석 정보 가져옴.
         Long prevSeat = empSeatDTO.getPrevSeat();
@@ -133,25 +134,31 @@ public class EmployeeController {
 
 
         if(byPrevSeat == null){ // 책상 존재 여부
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 402 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         boolean reserveSuccess;
-        String seatIp = byPrevSeat.getSeatIp();
+
 
         if(byPrevSeat.getEmpId() == null){  // 자리가 빈거임.
             reserveSuccess = true;
-
             // 자동으로 자리 예약!
-
-            // 모션데스킹 활동 요청 소켓 메세지
-            String socketMsg = nickname +","+ personalDeskHeight +","+ teamName +","+ status;
-            webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
-        }
+            Map<String, Object> reqbody = new HashMap<>();
+            reqbody.put("empId",empId.toString());
+            reqbody.put("seatId",prevSeat.toString());
+            SeatReservation(reqbody);
+       }
         else{
             reserveSuccess = false;
         }
+
+        LocalTime currentTime;
+        currentTime = LocalTime.now();
+        Time time = Time.valueOf(currentTime);
+
+        empAttendanceDTO.setWorkAttTime(time);
+        empAttendanceService.save(empAttendanceDTO);
 
         ResponseEntity<String> info = MainPageInquiry(empId);
 
@@ -220,6 +227,91 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 퇴근 요청
+    @PutMapping("home/{empId}/leave")
+    public ResponseEntity<String> ExitRequest(@PathVariable Long empId){
+        //현재 시간 저장
+        LocalTime currentTime;
+
+        currentTime = LocalTime.now();
+        Time time = Time.valueOf(currentTime);
+
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        empAttendanceDTO.setWorkEndTime(time);
+        empAttendanceService.save(empAttendanceDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+
+    // 선호 책상 높이 변경
+    @PutMapping("home/{empId}/mydesk")
+    public ResponseEntity<String> ChangeDeskHeight(@PathVariable Long empId, Map<String, Object> requestBody){
+        Long personalDeskHeight = Long.valueOf(requestBody.get("personalDeskHeight").toString());
+
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        empSeatDTO.setPersonalDeskHeight(personalDeskHeight);
+        empSeatService.save(empSeatDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    // 아두이노로 책상 높이 조절 명령
+    @PutMapping("home/{empId}/mydesk/move")
+    public ResponseEntity<String> MoveDeskHeight(@PathVariable Long empId){
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    // 층별로 자리 불러오기
+    @GetMapping("seats/{floor}")
+    public ResponseEntity<String> SeatsByFloor(@PathVariable Long floor){
+        List<DeskDTO> deskDTOList = deskService.findByFloor(floor);
+
+        JSONArray jsonArray = new JSONArray();
+        for(DeskDTO deskDTO : deskDTOList){
+
+            JSONObject json = new JSONObject();
+
+            // 1. empId 확인
+            //Long empId = deskDTO.getEmpId();
+
+            // 2-1. 있으면 값 넣어주기.
+            if(deskDTO.getEmpId() != null){
+                Long empId = deskDTO.getEmpId();
+
+                // 3. empId 기준으로 nickname, teamname, status 가져와서 넣어주기.
+                EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+                String nickname = employeeDTO.getNickname();
+
+                DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+                String teamName = departmentDTO.getTeamName();
+
+                EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                Byte status = empAttendanceDTO.getStatus();
+
+                json.put("seatId", deskDTO.getSeatId());
+                json.put("nickname", nickname);
+                json.put("teamName", teamName);
+                json.put("status", status);
+                jsonArray.put(json);
+            }
+            else{
+                // 2-2. 없으면 seatId만 넣어주기.
+                json.put("seatId", deskDTO.getSeatId());
+                json.put("nickname", "");
+                json.put("teamName", "");
+                json.put("status", "");
+                jsonArray.put(json);
+            }
+        }
+        String jsonString = jsonArray.toString();
+
+        return new ResponseEntity<>(jsonString, HttpStatus.OK);
+    }
 
     // 자리 선택 (예약)
     @PutMapping("seats")
@@ -229,19 +321,19 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 401 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 402 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         if (empSeatDTO.getSeatId() != null) {   // 이미 예약함
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 403 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -251,6 +343,23 @@ public class EmployeeController {
 
         deskService.save(deskDTO);
         empSeatService.save(empSeatDTO);
+
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        Byte status = empAttendanceDTO.getStatus();
+        Long prevSeat = empSeatDTO.getPrevSeat();
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        String seatIp = byPrevSeat.getSeatIp();
+
+        // 모션데스킹 활동 요청 소켓 메세지
+        String socketMsg = nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
+
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
@@ -301,10 +410,54 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-//    private String toJson(EmployeeDTO employeeDTO) {
-//        if (employeeDTO == null) {
-//            return "{}"; // Return an empty JSON object or appropriate default response when the object is null.
-//        }
-//        return employeeDTO.toString();
-//    }
+    // 개인 스케쥴 확인하기 (월별로)
+    @GetMapping("schedule/{empId}/{month}")
+    public ResponseEntity<String> GetScheduleMonth(@PathVariable Long month){
+        List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(month);
+
+        JSONArray jsonArray = new JSONArray();
+        for(ScheduleDTO scheduleDTO : scheduleDTOList){
+
+            JSONObject json = new JSONObject();
+
+            json.put("schId", scheduleDTO.getSchId());
+            json.put("start", scheduleDTO.getStart());
+            json.put("end", scheduleDTO.getEnd());
+            json.put("status", scheduleDTO.getStatus());
+            json.put("detail", scheduleDTO.getDetail());
+            jsonArray.put(json);
+        }
+        String jsonString = jsonArray.toString();
+
+        return new ResponseEntity<>(jsonString,HttpStatus.OK);
+    }
+
+    // 스케쥴 등록하기
+    @PostMapping("schedule/{empId}")
+    public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
+        /*
+        "{
+            ""start"" : ""시작 시간"",
+            ""end"" : ""끝 시간"",
+            ""status"" : ""상태"",
+            ""detail"" : ""내용""
+        }"
+         */
+        java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
+        java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
+        String status = requestBody.get("status").toString();
+        String detail = requestBody.get("detail").toString();
+
+        ScheduleDTO NewscheduleDTO =  new ScheduleDTO();
+        NewscheduleDTO.setEmpId(empId);
+        NewscheduleDTO.setStart(start);
+        NewscheduleDTO.setEnd(end);
+        NewscheduleDTO.setStatus(status);
+        NewscheduleDTO.setDetail(detail);
+        scheduleService.save(NewscheduleDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
 }

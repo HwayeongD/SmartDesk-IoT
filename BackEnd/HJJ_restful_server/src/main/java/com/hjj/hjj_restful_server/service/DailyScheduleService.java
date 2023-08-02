@@ -31,13 +31,18 @@ public class DailyScheduleService {
         }
     }
 
-    public DailyScheduleDTO findNowEndTime(){
-        Optional<DailyScheduleEntity> optionalDailyScheduleDTO = dailyScheduleRepository.findNowEndTime();
-        if(optionalDailyScheduleDTO.isPresent()){
-            return DailyScheduleDTO.todailyScheduleDTO(optionalDailyScheduleDTO.get());
+    public List<DailyScheduleDTO> findNowEndTime(){
+        List<DailyScheduleEntity> optionalDailyScheduleEntity = dailyScheduleRepository.findNowEndTime();
+        if(optionalDailyScheduleEntity.size() == 0){    // Empty
+            return null;
         }
         else{
-            return null;
+            List<DailyScheduleDTO> dailyScheduleDTOList = new ArrayList<>();
+            for (DailyScheduleEntity entity : optionalDailyScheduleEntity) {
+                DailyScheduleDTO dto = DailyScheduleDTO.todailyScheduleDTO(entity);
+                dailyScheduleDTOList.add(dto);
+            }
+            return dailyScheduleDTOList;
         }
     }
 

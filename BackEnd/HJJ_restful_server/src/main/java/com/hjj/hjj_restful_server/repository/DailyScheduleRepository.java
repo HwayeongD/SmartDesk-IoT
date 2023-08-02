@@ -15,7 +15,7 @@ public interface DailyScheduleRepository extends JpaRepository<DailyScheduleEnti
     @Query(value = "SELECT * FROM SERVER.Daily_Schedule WHERE startTime <= NOW() AND endTime > NOW()", nativeQuery = true)
     List<DailyScheduleEntity> findNowSchedule();
 
-    @Query(value = "SELECT FROM  SERVER.Daily_Schedule WHERE DATE_FORMAT(endTime, '%Y-%m-%d %H:%i') = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i')", nativeQuery = true)
-    Optional<DailyScheduleEntity> findNowEndTime();
+    @Query(value = "SELECT * FROM SERVER.Daily_Schedule WHERE DATE_FORMAT(endTime, '%Y-%m-%d %H:%i') = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i')", nativeQuery = true)
+    List<DailyScheduleEntity> findNowEndTime();
 
 }
