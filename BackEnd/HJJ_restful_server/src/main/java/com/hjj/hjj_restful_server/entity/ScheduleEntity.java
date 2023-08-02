@@ -12,7 +12,7 @@ import lombok.Setter;
 public class ScheduleEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long schId;
 
     @Column

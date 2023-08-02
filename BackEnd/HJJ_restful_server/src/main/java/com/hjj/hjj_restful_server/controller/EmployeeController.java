@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,23 +112,17 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-
+    // 처음 접속했을때
     @GetMapping("/home/{empId}/first")
     public ResponseEntity<String> FirstInquiry(@PathVariable Long empId) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 401 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-
-        String nickname = employeeDTO.getNickname();
-        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
-        String teamName = departmentDTO.getTeamName();
-        Byte status = empAttendanceDTO.getStatus();
-
 
         // 전일 좌석 정보 가져옴.
         Long prevSeat = empSeatDTO.getPrevSeat();
@@ -137,22 +132,21 @@ public class EmployeeController {
 
 
         if(byPrevSeat == null){ // 책상 존재 여부
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 402 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         boolean reserveSuccess;
-        String seatIp = byPrevSeat.getSeatIp();
+
 
         if(byPrevSeat.getEmpId() == null){  // 자리가 빈거임.
             reserveSuccess = true;
-
             // 자동으로 자리 예약!
-
-            // 모션데스킹 활동 요청 소켓 메세지
-            String socketMsg = nickname +","+ personalDeskHeight +","+ teamName +","+ status;
-            webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
-        }
+            Map<String, Object> reqbody = new HashMap<>();
+            reqbody.put("empId",empId.toString());
+            reqbody.put("seatId",prevSeat.toString());
+            SeatReservation(reqbody);
+       }
         else{
             reserveSuccess = false;
         }
@@ -318,19 +312,19 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 401 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 402 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         if (empSeatDTO.getSeatId() != null) {   // 이미 예약함
-            String json = "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 403 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -340,6 +334,23 @@ public class EmployeeController {
 
         deskService.save(deskDTO);
         empSeatService.save(empSeatDTO);
+
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        Byte status = empAttendanceDTO.getStatus();
+        Long prevSeat = empSeatDTO.getPrevSeat();
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        String seatIp = byPrevSeat.getSeatIp();
+
+        // 모션데스킹 활동 요청 소켓 메세지
+        String socketMsg = nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
+
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
@@ -390,7 +401,54 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 개인 스케쥴 확인하기 (월별로)
+    @GetMapping("schedule/{empId}/{month}")
+    public ResponseEntity<String> GetScheduleMonth(@PathVariable Long month){
+        List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(month);
 
+        JSONArray jsonArray = new JSONArray();
+        for(ScheduleDTO scheduleDTO : scheduleDTOList){
 
+            JSONObject json = new JSONObject();
+
+            json.put("schId", scheduleDTO.getSchId());
+            json.put("start", scheduleDTO.getStart());
+            json.put("end", scheduleDTO.getEnd());
+            json.put("status", scheduleDTO.getStatus());
+            json.put("detail", scheduleDTO.getDetail());
+            jsonArray.put(json);
+        }
+        String jsonString = jsonArray.toString();
+
+        return new ResponseEntity<>(jsonString,HttpStatus.OK);
+    }
+
+    // 스케쥴 등록하기
+    @PostMapping("schedule/{empId}")
+    public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
+        /*
+        "{
+            ""start"" : ""시작 시간"",
+            ""end"" : ""끝 시간"",
+            ""status"" : ""상태"",
+            ""detail"" : ""내용""
+        }"
+         */
+        java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
+        java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
+        String status = requestBody.get("status").toString();
+        String detail = requestBody.get("detail").toString();
+
+        ScheduleDTO NewscheduleDTO =  new ScheduleDTO();
+        NewscheduleDTO.setEmpId(empId);
+        NewscheduleDTO.setStart(start);
+        NewscheduleDTO.setEnd(end);
+        NewscheduleDTO.setStatus(status);
+        NewscheduleDTO.setDetail(detail);
+        scheduleService.save(NewscheduleDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
 }

@@ -12,10 +12,10 @@ import java.util.Optional;
 public interface DailyScheduleRepository extends JpaRepository<DailyScheduleEntity, Long> {
     Optional<DailyScheduleEntity> findByEmpId(Long empId);
 
-    @Query(value = "SELECT * FROM DailyScheduleEntity WHERE startTime <= NOW() AND endTime > NOW()", nativeQuery = true)
+    @Query(value = "SELECT * FROM SERVER.Daily_Schedule WHERE startTime <= NOW() AND endTime > NOW()", nativeQuery = true)
     List<DailyScheduleEntity> findNowSchedule();
 
-    @Query(value = "SELECT * FROM DailyScheduleEntity WHERE DATE_FORMAT(endTime, '%Y-%m-%d %H:%i') = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i')", nativeQuery = true)
+    @Query(value = "SELECT * FROM SERVER.Daily_Schedule WHERE DATE_FORMAT(endTime, '%Y-%m-%d %H:%i') = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i')", nativeQuery = true)
     List<DailyScheduleEntity> findNowEndTime();
 
 }
