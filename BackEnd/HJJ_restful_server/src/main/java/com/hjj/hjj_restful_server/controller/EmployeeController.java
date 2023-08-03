@@ -331,11 +331,15 @@ public class EmployeeController {
         Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
         String teamName = departmentDTO.getTeamName();
         Byte status = empAttendanceDTO.getStatus();
-        Long seatId = empSeatDTO.getSeatId();
 
-        Long prevSeat = empSeatDTO.getPrevSeat();
-        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
-        String seatIp = byPrevSeat.getSeatIp();
+        if(empSeatDTO.getSeatId() == null){
+            String json = "{ \"result\": \" D201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
+        Long seatId = empSeatDTO.getSeatId();
+        DeskDTO deskDTO = deskService.findByseatId(seatId);
+        String seatIp = deskDTO.getSeatIp();
 
         String socketMsg = "";
         if (personalDeskHeight == null) {
@@ -348,7 +352,7 @@ public class EmployeeController {
         // 모션데스킹 활동 요청 소켓 메세지
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"result\": \" D101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -361,9 +365,6 @@ public class EmployeeController {
         for(DeskDTO deskDTO : deskDTOList){
 
             JSONObject json = new JSONObject();
-
-            // 1. empId 확인
-            //Long empId = deskDTO.getEmpId();
 
             // 2-1. 있으면 값 넣어주기.
             if(deskDTO.getEmpId() != null){
@@ -407,21 +408,17 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"resultCode\": \" 401 \" }";
+            String json = "{ \"result\": \" S201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
-            String json = "{ \"resultCode\": \" 402 \" }";
+            String json = "{ \"result\": \" S202 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-        if (empSeatDTO.getSeatId() != null) {   // 이미 예약함
-            String json = "{ \"resultCode\": \" 403 \" }";
-            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
-        }
 
         deskDTO.setEmpId(empId);
         empSeatDTO.setSeatId(seatId);
@@ -453,7 +450,7 @@ public class EmployeeController {
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"result\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -462,6 +459,12 @@ public class EmployeeController {
     public ResponseEntity<String> SeatChange(@RequestBody Map<String, Object> requestBody) {
         Long empId = Long.valueOf(requestBody.get("empId").toString());
         Long seatId = Long.valueOf(requestBody.get("seatId").toString());
+
+        DeskDTO deskDTO = deskService.findByseatId(seatId);
+        if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
+            String json = "{ \"result\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
 
         // 기존 자리 취소
         EMPSeatDTO empSeat = empSeatService.findByempId(empId);
@@ -479,7 +482,7 @@ public class EmployeeController {
         newDesk.setEmpId(empId);
         deskService.save(newDesk);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"result\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -515,7 +518,7 @@ public class EmployeeController {
         String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"result\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
