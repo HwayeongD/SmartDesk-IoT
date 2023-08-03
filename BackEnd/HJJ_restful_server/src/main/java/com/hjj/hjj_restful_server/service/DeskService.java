@@ -27,6 +27,14 @@ public class DeskService {
         }
     }
 
+    public DeskDTO findByEmpId(Long empId){
+        Optional<DeskEntity> optionalDeskEntity = deskRepository.findByEmpId(empId);
+        if(optionalDeskEntity.isPresent()){
+            return DeskDTO.toDeskDTO(optionalDeskEntity.get());
+        }
+        else return null;
+    }
+
     public void save(DeskDTO deskDTO){
         DeskEntity deskEntity = DeskEntity.toDeskEntity(deskDTO);
         deskRepository.save(deskEntity);

@@ -191,16 +191,19 @@ public class EmployeeController {
     @PutMapping("/home/{empId}/auto")
     public ResponseEntity<String> AutoBookChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-        if (empSeatDTO == null) {
-            String json = "{ \"resultCode\": \" 400 \" }";
-            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
-        }
 
         Boolean autoBook = (boolean) requestBody.get("autoBook");
         empSeatDTO.setAutoBook(autoBook);
         empSeatService.save(empSeatDTO);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json;
+
+        if(autoBook) {
+            json = "{ \"result\": \" P101 \" }";
+        }
+        else{
+            json = "{ \"result\": \" P102 \" }";
+        }
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -232,6 +235,7 @@ public class EmployeeController {
         String socketMsg = "x,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
+
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -244,6 +248,10 @@ public class EmployeeController {
 
         // 카드로 사용자 정보 가져옴.
         EmployeeDTO employeeDTO = employeeService.findByEmpIdCard(empIdCard);
+        if(employeeDTO == null){
+            String json = "{ \"result\": \" P201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(employeeDTO.getEmpId());
 
         // 현재 시간 출근 시간에 저장
@@ -256,7 +264,7 @@ public class EmployeeController {
         empAttendanceDTO.setStatus(Byte.valueOf("1"));
         empAttendanceService.save(empAttendanceDTO);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"result\": \" P101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -270,30 +278,17 @@ public class EmployeeController {
         Time time = Time.valueOf(currentTime);
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        if(empAttendanceDTO.getWorkAttTime() == null){
+            String json = "{ \"result\": \" P201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
         empAttendanceDTO.setWorkEndTime(time);
         empAttendanceDTO.setStatus(Byte.valueOf("0"));
         empAttendanceService.save(empAttendanceDTO);
         
         // 예약 취소
         SeatCancel(empId);
-
-        // 여기 지워도 될듯 확인하기.
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
-        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-
-        String nickname = employeeDTO.getNickname();
-        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
-        String teamName = departmentDTO.getTeamName();
-        Byte status = empAttendanceDTO.getStatus();
-        Long prevSeat = empSeatDTO.getPrevSeat();
-        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
-        String seatIp = byPrevSeat.getSeatIp();
-
-        // 모션데스킹 활동 요청 소켓 메세지
-        String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
-        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
-
 
         String json = "{ \"workEndTime\": \"" + time + "\" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
@@ -302,14 +297,24 @@ public class EmployeeController {
 
     // 선호 책상 높이 변경
     @PutMapping("home/{empId}/mydesk")
-    public ResponseEntity<String> ChangeDeskHeight(@PathVariable Long empId, Map<String, Object> requestBody){
-        Long personalDeskHeight = Long.valueOf(requestBody.get("personalDeskHeight").toString());
+    public ResponseEntity<String> ChangeDeskHeight(@PathVariable Long empId){
+
+        DeskDTO deskDTO = deskService.findByEmpId(empId);
+        if(deskDTO == null){
+            String json = "{ \"result\": \" D201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+
+        Long personalDeskHeight = deskDTO.getDeskHeightNow();
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         empSeatDTO.setPersonalDeskHeight(personalDeskHeight);
         empSeatService.save(empSeatDTO);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("result","D101");
+        jsonObject.put("personalDeskHeight",personalDeskHeight);
+        String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -317,7 +322,31 @@ public class EmployeeController {
     @PutMapping("home/{empId}/mydesk/move")
     public ResponseEntity<String> MoveDeskHeight(@PathVariable Long empId){
 
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
 
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        Byte status = empAttendanceDTO.getStatus();
+        Long seatId = empSeatDTO.getSeatId();
+
+        Long prevSeat = empSeatDTO.getPrevSeat();
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        String seatIp = byPrevSeat.getSeatIp();
+
+        String socketMsg = "";
+        if (personalDeskHeight == null) {
+            String json = "{ \"result\": \" D202 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        else {
+            socketMsg = "g,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        }
+        // 모션데스킹 활동 요청 소켓 메세지
+        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
