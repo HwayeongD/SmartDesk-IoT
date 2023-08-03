@@ -288,7 +288,7 @@ public class EmployeeController {
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"workEndTime\": \"" + time + "\" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
