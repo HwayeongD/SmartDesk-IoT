@@ -44,23 +44,23 @@ public class EmployeeController {
         Long empId = Long.valueOf(requestBody.get("empId").toString());
         String password = (String) requestBody.get("password");
         EmployeeDTO loginResult = employeeService.login(empId, password);
-        if (loginResult != null) {
-            // 211.192.210.157 준섭 아이피
-            //webSocketChatHandler.sendMessageToSpecificIP("211.192.210.130", "여기에 메시지를 입력하세요.");
+        if (loginResult.getPassword() != null) {
 
-            String json =
-                    "{ \"empId\": \"" + loginResult.getEmpId() +
-                            "\", \"name\": \"" + loginResult.getName() +
-                            "\", \"nickname\": \"" + loginResult.getNickname() +
-                            "\", \"password\": \"" + loginResult.getPassword() +
-                            "\", \"teamId\": \"" + loginResult.getTeamId() +
-                            "\", \"image\": \"" + loginResult.getImage() +
-                            "\" }";
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("empId",loginResult.getEmpId());
+            jsonObject.put("name",loginResult.getName());
+            jsonObject.put("nickname",loginResult.getNickname());
+            jsonObject.put("password",loginResult.getPassword());
+            jsonObject.put("teamId",loginResult.getTeamId());
+            jsonObject.put("result","L101");
+
+            String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.OK);
         } else {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("result",loginResult.getName());
 
-            String json = "{ \"resultCode\": \" 400 \" }";
-
+            String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
     }
@@ -142,7 +142,6 @@ public class EmployeeController {
         jsonObject.put("reserveSuccess", reserveSuccess);
 
         String json = jsonObject.toString();
-
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -167,16 +166,22 @@ public class EmployeeController {
     @PutMapping("/home/{empId}/password")
     public ResponseEntity<String> PasswordChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-        if (employeeDTO == null) {
-            String json = "{ \"resultCode\": \" 400 \" }";
+        
+        String password = (String) requestBody.get("password");
+
+        if(!employeeDTO.getPassword().equals(password)){  // 비밀번호 틀릴 경우
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("result","P201");
+            String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
-
-        String password = (String) requestBody.get("password");
-        employeeDTO.setPassword(password);
+        
+        String newpassword = requestBody.get("newpassword").toString();
+        
+        employeeDTO.setPassword(newpassword);
         employeeService.save(employeeDTO);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"result\": \" P101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
 
     }
