@@ -25,12 +25,16 @@ public class EmployeeService {
                 EmployeeDTO dto = EmployeeDTO.toEmployeeDTO(employeeEntity);
                 return dto;
             }
-            else{
-                return null;
+            else{   // 비밀번호가 틀림
+                EmployeeDTO dto = new EmployeeDTO();
+                dto.setName("L202");
+                return dto;
             }
         }
-        else{
-            return null;
+        else{   // 사용자가 존재하지 않음.
+            EmployeeDTO dto = new EmployeeDTO();
+            dto.setName("L201");
+            return dto;
         }
     }
 
