@@ -38,11 +38,15 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String clientIP = session.getRemoteAddress().getHostName();
         System.out.println("[ " + clientIP + " ]: " + input);
         String[] item = input.split(" ");
+        if (item.length == 2) {
+            Long si = Long.valueOf(item[0]);
+            Long dh = Long.valueOf(item[1]);
+            DeskDTO deskDTO = deskService.findByseatId(si);
+            deskDTO.setDeskHeightNow(dh);
+            deskService.save(deskDTO);
+        }
 
-        Long si = Long.valueOf(item[0]);
-        Long dh = Long.valueOf(item[1]);
-        DeskDTO deskDTO = deskService.findByseatId(si);
-        deskDTO.setDeskHeightNow(dh);
+
         // 수신을 완료하면 클라이언트에게 답장 보내기
         // TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
         // session.sendMessage(textMessage);
@@ -52,7 +56,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 //        }
     }
 //  일정한 시간이 되었을 때 전체 책상에게 보내는 신호
-    @Scheduled(cron = "0 52 13 * * ?")
+    @Scheduled(cron = "0 30 14 * * ?")
     //@Scheduled(fixedRate = 5000)
     public void sendDataToAllClients() {
         String message = "a,,,,";
