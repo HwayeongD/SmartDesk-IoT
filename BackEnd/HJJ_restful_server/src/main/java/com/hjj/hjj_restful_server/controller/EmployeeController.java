@@ -4,22 +4,16 @@ package com.hjj.hjj_restful_server.controller;
 import com.hjj.hjj_restful_server.dto.*;
 import com.hjj.hjj_restful_server.handler.WebSocketChatHandler;
 import com.hjj.hjj_restful_server.service.*;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,11 +102,7 @@ public class EmployeeController {
     // 자동 예약 요청
     @GetMapping("/home/{empId}/first")
     public ResponseEntity<String> FirstInquiry(@PathVariable Long empId) {
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-
-        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
-        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+          EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
 
         // 전일 좌석 정보 가져옴.
         Long prevSeat = empSeatDTO.getPrevSeat();
@@ -259,7 +249,7 @@ public class EmployeeController {
         currentTime =LocalTime.now();
         Time time = Time.valueOf(currentTime);
 
-        System.out.println(time.toString());
+        System.out.println(time);
         empAttendanceDTO.setWorkAttTime(time);
         empAttendanceDTO.setStatus(Byte.valueOf("1"));
         empAttendanceService.save(empAttendanceDTO);
@@ -341,7 +331,7 @@ public class EmployeeController {
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         String seatIp = deskDTO.getSeatIp();
 
-        String socketMsg = "";
+        String socketMsg;
         if (personalDeskHeight == null) {
             String json = "{ \"result\": \" D202 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
@@ -439,7 +429,7 @@ public class EmployeeController {
         Long prevSeat = empSeatDTO.getPrevSeat();
         DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
         String seatIp = byPrevSeat.getSeatIp();
-        String socketMsg = "";
+        String socketMsg;
         if (personalDeskHeight == null) {
             socketMsg = "g,"+ nickname +","+ "-1" +","+ teamName +","+ status;
         }
