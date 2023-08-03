@@ -1,5 +1,7 @@
 package com.hjj.hjj_restful_server.handler;
 
+import com.hjj.hjj_restful_server.dto.DeskDTO;
+import com.hjj.hjj_restful_server.service.DeskService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,7 +45,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 //        }
     }
 //  일정한 시간이 되었을 때 전체 책상에게 보내는 신호
-    @Scheduled(cron = "0 0 10 * * ?")
+    @Scheduled(cron = "0 5 11 * * ?")
     public void sendDataToAllClients() {
         String message = "a,,,,";
         for (WebSocketSession session : activeSessions.values()) {
@@ -65,6 +67,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String clientIP = session.getRemoteAddress().getHostName();
         activeSessions.put(clientIP, session);
         System.out.println("[ " + clientIP + " ]가 웹소켓으로 접속했습니다!");
+
+
     }
     
     

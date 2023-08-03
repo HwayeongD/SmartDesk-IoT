@@ -197,10 +197,29 @@ public class EmployeeController {
     @PutMapping("/home/{empId}/away")
     public ResponseEntity<String> AwayToggle(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         Byte Status = Byte.valueOf(requestBody.get("status").toString());
-
+        // 자리비움 status = 2
+        // 자리비움 off status = 1
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         empAttendanceDTO.setStatus(Status);
         empAttendanceService.save(empAttendanceDTO);
+
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+
+        Byte status = empAttendanceDTO.getStatus();
+
+        Long prevSeat = empSeatDTO.getPrevSeat();
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        String seatIp = byPrevSeat.getSeatIp();
+
+        // 모션데스킹 활동 요청 소켓 메세지
+        String socketMsg = "x,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
@@ -221,6 +240,21 @@ public class EmployeeController {
         empAttendanceDTO.setWorkEndTime(time);
         empAttendanceService.save(empAttendanceDTO);
 
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        Byte status = empAttendanceDTO.getStatus();
+        Long prevSeat = empSeatDTO.getPrevSeat();
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        String seatIp = byPrevSeat.getSeatIp();
+
+        // 모션데스킹 활동 요청 소켓 메세지
+        String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
