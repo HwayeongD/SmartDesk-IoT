@@ -202,11 +202,34 @@ public class EmployeeController {
         empAttendanceDTO.setStatus(Status);
         empAttendanceService.save(empAttendanceDTO);
 
+
+
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
 
+    // 출근
+    @PutMapping("home/att")
+    public ResponseEntity<String> AttRequest(@RequestBody Map<String, Object> requestBody){
+        String empIdCard = requestBody.get("empIdCard").toString();
+
+        // 카드로 사용자 정보 가져옴.
+        EmployeeDTO employeeDTO = employeeService.findByEmpIdCard(empIdCard);
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(employeeDTO.getEmpId());
+
+        // 현재 시간 출근 시간에 저장
+        LocalTime currentTime;
+        currentTime =LocalTime.now();
+        Time time = Time.valueOf(currentTime);
+
+        empAttendanceDTO.setWorkAttTime(time);
+        empAttendanceDTO.setStatus(Byte.valueOf("1"));
+        empAttendanceService.save(empAttendanceDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
     // 퇴근 요청
     @PutMapping("home/{empId}/leave")

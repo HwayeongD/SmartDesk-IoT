@@ -8,8 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Long> {
-    // (select * from Employee where emp_id = ?)
     Optional<EmployeeEntity> findByEmpId(Long empId);
-    //@Query("SELECT e FROM EmployeeEntity e WHERE e.emp_id = :empId")
-    //Optional<EmployeeEntity> findByEmp_id(@Param("empId") Long empId);
+
+    Optional<EmployeeEntity> findByEmpIdCard(String empIdCard);
 }
