@@ -19,13 +19,16 @@ public class ScheduleEntity {
     private Long empId;
 
     @Column
+    private String head;
+
+    @Column
     private java.sql.Timestamp start;
 
     @Column
     private java.sql.Timestamp end;
 
     @Column
-    private String status;
+    private Byte status;
 
     @Column
     private String detail;
@@ -34,6 +37,7 @@ public class ScheduleEntity {
         ScheduleEntity scheduleEntity = new ScheduleEntity();
         scheduleEntity.setSchId(scheduleDTO.getSchId());
         scheduleEntity.setEmpId(scheduleDTO.getEmpId());
+        scheduleEntity.setHead(scheduleDTO.getHead());
         scheduleEntity.setStart(scheduleDTO.getStart());
         scheduleEntity.setEnd(scheduleDTO.getEnd());
         scheduleEntity.setStatus(scheduleDTO.getStatus());

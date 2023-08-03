@@ -75,42 +75,33 @@ public class EmployeeController {
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-        ScheduleDTO scheduleDTO = scheduleService.findRecentByEmpId(empId);
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-        String image;
-        String nickname = employeeDTO.getNickname();
-        if(employeeDTO.getImage() == null){
-            image = "";
-        }
-        else{
-            image = employeeDTO.getImage();
-        }
-        java.sql.Timestamp calTime;
-        String calDetail;
 
-        Time workAttTime = empAttendanceDTO.getWorkAttTime();
-        if(scheduleDTO == null){
-            // 시간이 null 일때 어떻게 할지 생각. 일단 쓰레기값 넣어둠.
-            calTime = Timestamp.valueOf("2000-01-01 00:00:00.000");
-            calDetail = "";
-        }
-        else{
-             calTime = scheduleDTO.getStart();
-            calDetail = scheduleDTO.getDetail();
-        }
-        Long seatId = empSeatDTO.getSeatId();
-        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
 
-        String json =
-                "{ \"nickname\": \"" + nickname +
-                        "\", \"image\": \"" + image +
-                        "\", \"workAttTime\": \"" + workAttTime +
-                        "\", \"calTime\": \"" + calTime +
-                        "\", \"calDetail\": \"" + calDetail +
-                        "\", \"seatId\": \"" + seatId +
-                        "\", \"personalDeskHeight\": \"" + personalDeskHeight + "\" }";
 
-        return new ResponseEntity<>(json, HttpStatus.OK);
+        JSONObject json = new JSONObject();
+        json.put("nickname", employeeDTO.getNickname());
+        if(empAttendanceDTO.getWorkAttTime() != null)
+            json.put("workAttTime", empAttendanceDTO.getWorkAttTime());
+        else
+            json.put("workAttTime", "");
+        if(empAttendanceDTO.getWorkEndTime() != null)
+            json.put("workEndTime", empAttendanceDTO.getWorkEndTime());
+        else
+            json.put("workEndTime", "");
+        json.put("status", empAttendanceDTO.getStatus());
+        if(empSeatDTO.getSeatId() != null)
+            json.put("seatId", empSeatDTO.getSeatId());
+        else
+            json.put("seatId", "");
+        if(empSeatDTO.getPersonalDeskHeight()!=null)
+            json.put("personalDeskHeight", empSeatDTO.getPersonalDeskHeight());
+        else
+            json.put("personalDeskHeight","");
+
+        String jsonString = json.toString();
+
+        return new ResponseEntity<>(jsonString, HttpStatus.OK);
     }
 
 
@@ -226,6 +217,21 @@ public class EmployeeController {
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
+
+    // 자리 비움 토글
+    @PutMapping("/home/{empId}/away")
+    public ResponseEntity<String> AwayToggle(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody){
+        Byte Status = Byte.valueOf(requestBody.get("status").toString());
+
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        empAttendanceDTO.setStatus(Status);
+        empAttendanceService.save(empAttendanceDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+
 
     // 퇴근 요청
     @PutMapping("home/{empId}/leave")
@@ -459,17 +465,10 @@ public class EmployeeController {
     // 스케쥴 등록하기
     @PostMapping("schedule/{empId}")
     public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
-        /*
-        "{
-            ""start"" : ""시작 시간"",
-            ""end"" : ""끝 시간"",
-            ""status"" : ""상태"",
-            ""detail"" : ""내용""
-        }"
-         */
+
         java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
         java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
-        String status = requestBody.get("status").toString();
+        Byte status = Byte.valueOf(requestBody.get("status").toString());
         String detail = requestBody.get("detail").toString();
 
         ScheduleDTO NewscheduleDTO =  new ScheduleDTO();
