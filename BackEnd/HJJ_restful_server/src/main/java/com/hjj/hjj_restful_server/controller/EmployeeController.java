@@ -59,18 +59,18 @@ public class EmployeeController {
             return new ResponseEntity<>(json, HttpStatus.OK);
         } else {
 
-            String json =  "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 400 \" }";
 
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
     }
-    
+
     // 매인 페이지 조회
     @GetMapping("/home/{empId}")
-    public ResponseEntity<String> MainPageInquiry(@PathVariable Long empId){
+    public ResponseEntity<String> MainPageInquiry(@PathVariable Long empId) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
-            String json =  "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 400 \" }";
 
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
@@ -78,26 +78,25 @@ public class EmployeeController {
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
 
 
-
         JSONObject json = new JSONObject();
         json.put("nickname", employeeDTO.getNickname());
-        if(empAttendanceDTO.getWorkAttTime() != null)
+        if (empAttendanceDTO.getWorkAttTime() != null)
             json.put("workAttTime", empAttendanceDTO.getWorkAttTime());
         else
             json.put("workAttTime", "");
-        if(empAttendanceDTO.getWorkEndTime() != null)
+        if (empAttendanceDTO.getWorkEndTime() != null)
             json.put("workEndTime", empAttendanceDTO.getWorkEndTime());
         else
             json.put("workEndTime", "");
         json.put("status", empAttendanceDTO.getStatus());
-        if(empSeatDTO.getSeatId() != null)
+        if (empSeatDTO.getSeatId() != null)
             json.put("seatId", empSeatDTO.getSeatId());
         else
             json.put("seatId", "");
-        if(empSeatDTO.getPersonalDeskHeight()!=null)
+        if (empSeatDTO.getPersonalDeskHeight() != null)
             json.put("personalDeskHeight", empSeatDTO.getPersonalDeskHeight());
         else
-            json.put("personalDeskHeight","");
+            json.put("personalDeskHeight", "");
 
         String jsonString = json.toString();
 
@@ -105,14 +104,11 @@ public class EmployeeController {
     }
 
 
-    // 처음 접속했을때
+    // 자동 예약 요청
     @GetMapping("/home/{empId}/first")
     public ResponseEntity<String> FirstInquiry(@PathVariable Long empId) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-        if (employeeDTO == null) {
-            String json = "{ \"resultCode\": \" 401 \" }";
-            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
-        }
+
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
@@ -123,43 +119,24 @@ public class EmployeeController {
         // 책상 정보 가져옴.
         DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
 
-
-        if(byPrevSeat == null){ // 책상 존재 여부
-            String json = "{ \"resultCode\": \" 402 \" }";
-            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
-        }
-
         boolean reserveSuccess;
 
-
-        if(byPrevSeat.getEmpId() == null){  // 자리가 빈거임.
+        if (byPrevSeat.getEmpId() == null) {  // 자리가 빈거임.
             reserveSuccess = true;
             // 자동으로 자리 예약!
             Map<String, Object> reqbody = new HashMap<>();
-            reqbody.put("empId",empId.toString());
-            reqbody.put("seatId",prevSeat.toString());
+            reqbody.put("empId", empId.toString());
+            reqbody.put("seatId", prevSeat.toString());
             SeatReservation(reqbody);
-       }
-        else{
+        } else {
             reserveSuccess = false;
         }
 
-        LocalTime currentTime;
-        currentTime = LocalTime.now();
-        Time time = Time.valueOf(currentTime);
-
-        empAttendanceDTO.setWorkAttTime(time);
-        empAttendanceService.save(empAttendanceDTO);
-
-        ResponseEntity<String> info = MainPageInquiry(empId);
-
-        String json = info.getBody();
-        System.out.println(json);
-
-        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("seatId", prevSeat);
         jsonObject.put("reserveSuccess", reserveSuccess);
 
-        json = jsonObject.toString();
+        String json = jsonObject.toString();
 
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -169,7 +146,7 @@ public class EmployeeController {
     public ResponseEntity<String> ProfileChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
-            String json =  "{ \"resultCode\": \" 400 \" }";
+            String json = "{ \"resultCode\": \" 400 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         String image = (String) requestBody.get("image");
@@ -183,8 +160,7 @@ public class EmployeeController {
 
     // 비밀번호 변경
     @PutMapping("/home/{empId}/password")
-    public ResponseEntity<String> PasswordChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody)
-    {
+    public ResponseEntity<String> PasswordChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
             String json = "{ \"resultCode\": \" 400 \" }";
@@ -202,8 +178,7 @@ public class EmployeeController {
 
     // 자동 예약 설정 변경
     @PutMapping("/home/{empId}/auto")
-    public ResponseEntity<String> AutoBookChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody)
-    {
+    public ResponseEntity<String> AutoBookChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
         if (empSeatDTO == null) {
             String json = "{ \"resultCode\": \" 400 \" }";
@@ -220,7 +195,7 @@ public class EmployeeController {
 
     // 자리 비움 토글
     @PutMapping("/home/{empId}/away")
-    public ResponseEntity<String> AwayToggle(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody){
+    public ResponseEntity<String> AwayToggle(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
         Byte Status = Byte.valueOf(requestBody.get("status").toString());
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
