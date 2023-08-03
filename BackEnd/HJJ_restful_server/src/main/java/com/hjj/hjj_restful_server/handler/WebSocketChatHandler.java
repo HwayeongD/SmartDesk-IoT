@@ -24,8 +24,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     private final static Logger LOG = Logger.getGlobal();
     private final Map<String, WebSocketSession> activeSessions = Collections.synchronizedMap(new ConcurrentHashMap<>());
-    
-    
+
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         
@@ -43,23 +42,21 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 //            session.sendMessage(textMessage1);
 //        }
     }
-// 5초마다 모든 클라이언트에게 보내기
-//    @Scheduled(fixedRate = 5000)
-//    public void sendDataToAllClients() {
-//        String message = "5초마다 보내는 데이터다 이것들아!!!!";
-//        for (WebSocketSession session : activeSessions.values()) {
-//            if (session.isOpen()) {
-//                try{
-//                    TextMessage textMessage  = new TextMessage(message);
-//                    session.sendMessage(textMessage);
-//                } catch (IOException e) {
-//                    //
-//                }
-//
-//            }
-//        }
-//    }
-
+//  일정한 시간이 되었을 때 전체 책상에게 보내는 신호
+    @Scheduled(cron = "0 0 10 * * ?")
+    public void sendDataToAllClients() {
+        String message = "a,,,,";
+        for (WebSocketSession session : activeSessions.values()) {
+            if (session.isOpen()) {
+                try{
+                    TextMessage textMessage  = new TextMessage(message);
+                    session.sendMessage(textMessage);
+                } catch (IOException e) {
+                    //
+                }
+            }
+        }
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -85,5 +82,4 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             }
         }
     }
-
 }
