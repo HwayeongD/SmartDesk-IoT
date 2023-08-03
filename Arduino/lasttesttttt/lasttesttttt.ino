@@ -2,7 +2,6 @@
 #include "epd2in9_V2.h"
 #include "epdpaint.h"
 #include "imagedata.h"
-#include <avr/interrupt.h>
 #include <cstdlib>
 
 #include <ArduinoHttpClient.h>
@@ -10,7 +9,7 @@
 #include "arduino_secrets.h"
 #include "Arduino_LED_Matrix.h"
 
-#define TABLE_ID 15
+#define TABLE_ID 301
 
 
 // dp paint
@@ -25,6 +24,11 @@
 #define trig 8
 #define echo 9
 
+//g : 출근, 선호높이
+//a : 새벽 책생 제어
+//x : 자리상태 변화
+//c : 취소, 퇴근
+
 //초음파 거리계산 부분 변수
 float duration;
 float distance;
@@ -35,19 +39,20 @@ int cnt = 100;
 int likeheight = 0;
 // 현재 높이
 int nowheight = 0;
-// 출근 상태 여부와 개인 선호 높이로 책상이 움직인 후인지 아닌지
-int state = 0; // 출근하면 1로 => 서버에서 출근했는지 여부를 받아서 판단
-int statechange = 0; // change한번 하고나면 1로 
+
+
 // 수동 조작할 때 flag가 1일 때만 코드가 돌아가도록
 int flag = 0;
-// 앱에서 선호높이 버튼 눌렀을 때 동작
-int changeflag = 0;
-// 취소 
-int cancleflag = 0;
-// 자리비움
-int absenceflag = 0;
-// 퇴근
-int gohomeflag = 0;
+// 앱에서 선호높이 버튼 눌렀을 때/출근일 때 동작
+int gflag = 0;
+// 취소 나 퇴근
+int cflag = 0;
+// 자리상태 변화
+int xflag = 0;
+// 새벽책상 제어
+int aflag = 0;
+// 선호높이만 없는 경우
+int nflag = 0;
 
 // LED Matrix
 ArduinoLEDMatrix matrix;
@@ -56,6 +61,7 @@ Paint paint(image, 0, 0);
 Epd epd;
 
 // display status value
+
 char* name = "";
 bool state_dp;
 char* team_name = "";
@@ -78,6 +84,7 @@ void sonicvalue();
 void dp_init();
 void send_MSG();
 void get_MSG();
+void dp_remove_init();
 
 void setup() 
 {
@@ -88,7 +95,7 @@ void setup()
   pinMode(trig, OUTPUT);
   pinMode(echo, INPUT);
 
-  Serial.begin(9600);
+  // Serial.begin(9600);
 
   while ( status != WL_CONNECTED) {
     //Serial.print("Attempting to connect to Network named: ");
@@ -97,10 +104,6 @@ void setup()
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(ssid, pass);
   }
-  matrix.loadSequence(frames);
-  matrix.begin();
-
-  matrix.play(true);
 
   // print the SSID of the network you're attached to:
   //Serial.print("SSID: ");
@@ -113,9 +116,14 @@ void setup()
 
   //Serial.println("starting WebSocket client");
   client.begin("/ws/chat");
-  client.beginMessage(TYPE_TEXT);
-  client.print("Hand Shake Test");
-  client.endMessage();
+  // client.beginMessage(TYPE_TEXT);
+  // client.print("Hand Shake Test");
+  // client.endMessage();
+
+  matrix.loadSequence(frames);
+  matrix.begin();
+  matrix.play(true);
+  dp_remove_init();
   delay(100);
 
 }
@@ -124,11 +132,13 @@ void loop()
 {
   get_MSG();
   // 서버에서 출근이나 선호높이 버튼을 눌러서 신호 보내줄 때 
-  if(changeflag == 1){
+  if(gflag == 1){
+    dp_init();
     likeheight = atoi(dist);
     sonicvalue();
     nowheight = nowDistance;
-
+    // Serial.println(likeheight);
+    // Serial.println(nowheight);
     if(likeheight>nowheight){
       while(1){
         sonicvalue();
@@ -138,14 +148,14 @@ void loop()
           digitalWrite(Dir2Pin, LOW);
           break;
         }
-
+        // Serial.println("올라감");
         digitalWrite(Dir1Pin, HIGH); //올라가는거
         digitalWrite(Dir2Pin, LOW);
         delay(10);
       }
-      changeflag = 0;
+      gflag = 0;
       nowheight = nowDistance;
-      dp_init();
+      nowDistance = likeheight;
       send_MSG();
     }
     else if(likeheight<nowheight){
@@ -157,16 +167,35 @@ void loop()
           digitalWrite(Dir2Pin, LOW);
           break;
         }
-
+        // Serial.println("내려감");
         digitalWrite(Dir1Pin, LOW); //내려가는거
         digitalWrite(Dir2Pin, HIGH);
         delay(10);
       }
-      changeflag = 0;
+      gflag = 0;
       nowheight = nowDistance;
-      dp_init();
+      nowDistance = likeheight;
       send_MSG();
     }
+  }
+  else if(cflag == 1){
+    dp_remove_init();
+    cflag=0;
+  }
+  else if(xflag == 1){
+    dp_init();
+    xflag=0;
+  }
+  else if(aflag == 1){
+    digitalWrite(Dir1Pin, LOW); //내려가는거
+    digitalWrite(Dir2Pin, HIGH);
+    delay(20000);
+    aflag = 0;
+  }
+  else if(nflag == 1){
+    sonicvalue();
+    dp_init();
+    nflag=0;
   }
   else{
     // 수동조작
@@ -178,14 +207,14 @@ void loop()
       flag = 1;
       digitalWrite(Dir1Pin, HIGH); // 올라가는거
       digitalWrite(Dir2Pin, LOW);
-      Serial.println("up");
+      //Serial.println("up");
       delay(100);
     }
     else if(downbtnstate == 1 && upbtnstate == 0){
       flag = 1;
       digitalWrite(Dir1Pin, LOW); // 내려가는거
       digitalWrite(Dir2Pin, HIGH);
-      Serial.println("down");
+      //Serial.println("down");
       delay(100);
     }
     else if (flag == 1 &&upbtnstate == 1 && downbtnstate == 1) {
@@ -251,7 +280,7 @@ void dp_init(){
 
     paint.Clear(COLORED); 
     paint.DrawStringAt(0, 0, "____________________________", &Font20, UNCOLORED); // 사각형 안에서의 글씨 위치
-    epd.SetFrameMemory(paint.GetImage(), 75, 0, paint.GetWidth(), paint.GetHeight());//사각형 위치
+    epd.SetFrameMemory(paint.GetImage(), 75, 10, paint.GetWidth(), paint.GetHeight());//사각형 위치
     //epd.DisplayFrame();
 
 
@@ -317,7 +346,6 @@ void dp_init(){
   }
 }
 
-
 void send_MSG(){
   int f = 0;
   while (f == 0){
@@ -349,34 +377,73 @@ void send_MSG(){
       // delay(500);
       break;
     }
-    else{
-      Serial.println("Connecting");
-    }
+    // else{
+    //   Serial.println("Connecting");
+    // }
   }
 }
+
+//g : 출근, 선호높이
+//a : 새벽 책생 제어
+//x : 자리상태 변화
+//c : 취소, 퇴근
 
 void get_MSG(){
   // 출근이나 선호높이 조정하는 경우랑 퇴근/취소하는 경우랑 자리비움에 대해서 flag 나눠서 생각해야할듯
   int messageSize = client.parseMessage();
   if (messageSize > 0) {
-    changeflag = 1;
     //Serial.println("Received a message from get_MSG");
     String msg = client.readString(); // 메시지를 String 객체로 받아옴
     char buffer[1024]; // 충분히 큰 버퍼를 준비 (동적 메모리 할당 대신 정적 배열 사용)
     msg.toCharArray(buffer, sizeof(buffer)); // String 객체를 char 배열로 복사
     //Serial.println(buffer);
-    name = strtok(buffer, ",");
+    char* statechange = strtok(buffer,",");
+    name = strtok(NULL, ",");
     dist = strtok(NULL, ",");
     team_name = strtok(NULL, ",");
     char* state_str = strtok(NULL, ",");
-    state_dp = (strcmp(state_str, "true") == 0);
-    //Serial.println("Parsed Data:");
-    //Serial.println(name);
-    //Serial.println(dist);
-    //Serial.println(team_name);
-   // Serial.println(state_dp);
+    state_dp = (strcmp(state_str, "1") == 0);
+    // Serial.println("Parsed Data:");
+    // Serial.println(statechange);
+    // Serial.println(name);
+    // Serial.println(dist);
+    // Serial.println(team_name);
+    // Serial.println(state_dp);
+
+    if((strcmp(statechange,"g")==0) && (strcmp(dist,"-1") != 0)){
+      // Serial.println("ggg");
+      gflag = 1;
+    }
+    else if(strcmp(statechange,"a")==0){
+      // Serial.println("aaa");
+      aflag = 1;
+    }
+    else if(strcmp(statechange,"x")==0){
+      // Serial.println("xxx");
+      xflag = 1;
+    }
+    else if(strcmp(statechange,"c")==0){
+      // Serial.println("ccc");
+      cflag = 1;
+    }
+    else if((strcmp(statechange,"g")==0) && (strcmp(dist,"-1") == 0)){
+      // Serial.println("nnn");
+      nflag = 1;
+    }
     nowDistance = 0;
-    dp_init();
+
+    //dp_init();
+
   }
 }
 
+void dp_remove_init(){
+  if (epd.Init() != 0) {
+    //Serial.print("e-Paper init failed");
+    return;
+  }
+    epd.ClearFrameMemory(0xFF);
+    epd.DisplayFrame();
+  
+    delay(100);
+}
