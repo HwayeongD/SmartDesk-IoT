@@ -97,6 +97,7 @@ public class EmployeeController {
             json.put("personalDeskHeight", empSeatDTO.getPersonalDeskHeight());
         else
             json.put("personalDeskHeight", "");
+        json.put("autoBook",empSeatDTO.isAutoBook());
 
         String jsonString = json.toString();
 
