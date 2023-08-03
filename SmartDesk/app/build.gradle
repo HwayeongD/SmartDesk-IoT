@@ -53,4 +53,5 @@ dependencies {
             replacedBy("org.jetbrains.kotlin:kotlin-stdlib", "kotlin-stdlib-jdk8 is now part of kotlin-stdlib")
         }
     }
+    implementation 'com.tomergoldst.android:tooltips:1.1.1'
 }

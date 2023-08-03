@@ -92,18 +92,13 @@ public class LoginActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(inputId)) {
                     textInputLayout1.setError("아이디를 입력해주세요.");
                 }
-                // TODO: 위와 반대인 케이스라는 것은 알겠으나, 어떤 기능인가 질문
-                else if (!TextUtils.isEmpty(inputId)) {
-                    textInputLayout1.setError(null); // Clear the error message if not empty
-                }
+
                 if (TextUtils.isEmpty(inputPwd)) {
                     textInputLayout2.setError("비밀번호를 입력해주세요.");
-                } else if (!TextUtils.isEmpty(inputPwd)) {
-                    textInputLayout2.setError(null); // Clear the error message if not empty
                 }
 
                 // 모두 입력했으면 main 페이지로 이동하기
-                if (!TextUtils.isEmpty(inputId) && !TextUtils.isEmpty(inputPwd)) {
+                else {
                     // TODO: Retrofit 통신 테스트용 - 수정 예정
                     Employee employee = new Employee();
                     employee.setEmpId(Long.parseLong(inputId));
@@ -119,6 +114,13 @@ public class LoginActivity extends AppCompatActivity {
                                 Employee data = response.body();
                                 Log.d(TAG, "성공");
                                 Log.d(TAG, data.getNickname());
+
+                                // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+
+                                finish();
+
                             }
                             else {
                                 Employee data = response.body();
@@ -132,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "실패");
 
                             t.printStackTrace();
+
                         }
                     });
 
