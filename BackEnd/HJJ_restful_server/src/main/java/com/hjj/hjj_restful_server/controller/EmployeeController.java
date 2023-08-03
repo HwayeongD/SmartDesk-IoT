@@ -245,6 +245,7 @@ public class EmployeeController {
         currentTime =LocalTime.now();
         Time time = Time.valueOf(currentTime);
 
+        System.out.println(time.toString());
         empAttendanceDTO.setWorkAttTime(time);
         empAttendanceDTO.setStatus(Byte.valueOf("1"));
         empAttendanceService.save(empAttendanceDTO);
@@ -309,6 +310,8 @@ public class EmployeeController {
     // 아두이노로 책상 높이 조절 명령
     @PutMapping("home/{empId}/mydesk/move")
     public ResponseEntity<String> MoveDeskHeight(@PathVariable Long empId){
+
+
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
