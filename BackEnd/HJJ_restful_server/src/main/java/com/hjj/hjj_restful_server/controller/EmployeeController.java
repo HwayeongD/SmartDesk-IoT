@@ -227,6 +227,21 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 자리 비움 토글
+    @PutMapping("/home/{empId}/away")
+    public ResponseEntity<String> AwayToggle(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody){
+        Byte Status = Byte.valueOf(requestBody.get("status").toString());
+
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        empAttendanceDTO.setStatus(Status);
+        empAttendanceService.save(empAttendanceDTO);
+
+        String json = "{ \"resultCode\": \" 201 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+
+
     // 퇴근 요청
     @PutMapping("home/{empId}/leave")
     public ResponseEntity<String> ExitRequest(@PathVariable Long empId){
