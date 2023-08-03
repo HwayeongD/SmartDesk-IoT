@@ -133,7 +133,12 @@ public class EmployeeController {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("seatId", prevSeat);
+        empSeatDTO = empSeatService.findByempId(empId);
+        if(empSeatDTO.getSeatId() != null)
+            jsonObject.put("seatId", empSeatDTO.getSeatId());
+        else
+            jsonObject.put("seatId", "");
+
         jsonObject.put("reserveSuccess", reserveSuccess);
 
         String json = jsonObject.toString();
