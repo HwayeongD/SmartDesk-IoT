@@ -325,6 +325,7 @@ public class EmployeeController {
         deskService.save(deskDTO);
         empSeatService.save(empSeatDTO);
 
+
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
 
@@ -336,9 +337,14 @@ public class EmployeeController {
         Long prevSeat = empSeatDTO.getPrevSeat();
         DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
         String seatIp = byPrevSeat.getSeatIp();
-
+        String socketMsg = "";
+        if (personalDeskHeight == null) {
+            socketMsg = "g,"+ nickname +","+ "-1" +","+ teamName +","+ status;
+        }
+        else {
+            socketMsg = "g,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        }
         // 모션데스킹 활동 요청 소켓 메세지
-        String socketMsg = nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
 
@@ -386,6 +392,24 @@ public class EmployeeController {
         // 자리 정보 갱신
         empSeat.setSeatId(null);
         empSeatService.save(empSeat);
+
+        // 자리 취소
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        Byte status = empAttendanceDTO.getStatus();
+        Long prevSeat = empSeatDTO.getPrevSeat();
+        DeskDTO byPrevSeat = deskService.findByseatId(prevSeat);
+        String seatIp = byPrevSeat.getSeatIp();
+
+        // 모션데스킹 활동 요청 소켓 메세지
+        String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
