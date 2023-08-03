@@ -435,17 +435,10 @@ public class EmployeeController {
     // 스케쥴 등록하기
     @PostMapping("schedule/{empId}")
     public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
-        /*
-        "{
-            ""start"" : ""시작 시간"",
-            ""end"" : ""끝 시간"",
-            ""status"" : ""상태"",
-            ""detail"" : ""내용""
-        }"
-         */
+
         java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
         java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
-        String status = requestBody.get("status").toString();
+        Byte status = Byte.valueOf(requestBody.get("status").toString());
         String detail = requestBody.get("detail").toString();
 
         ScheduleDTO NewscheduleDTO =  new ScheduleDTO();
