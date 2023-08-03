@@ -105,20 +105,21 @@ public class LoginActivity extends AppCompatActivity {
                 // 모두 입력했으면 main 페이지로 이동하기
                 if (!TextUtils.isEmpty(inputId) && !TextUtils.isEmpty(inputPwd)) {
                     // TODO: Retrofit 통신 테스트용 - 수정 예정
-                    Employee employee = new Employee();
-                    employee.setEmpId(Long.parseLong(inputId));
-                    employee.setPassword(inputPwd);
+                    Employee.getInstance().setEmpId(Long.parseLong(inputId));
+                    Employee.getInstance().setPassword(inputPwd);
 
                     Retrofit retrofit = RetrofitClient.getClient();
                     RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
 
-                    retrofitAPI.getEmpData(employee).enqueue(new Callback<Employee>() {
+                    retrofitAPI.getLoginAccess(Employee.getInstance()).enqueue(new Callback<Employee>() {
                         @Override
                         public void onResponse(Call<Employee> call, Response<Employee> response) {
                             if(response.isSuccessful()) {
                                 Employee data = response.body();
                                 Log.d(TAG, "성공");
                                 Log.d(TAG, data.getNickname());
+
+
                             }
                             else {
                                 Employee data = response.body();
