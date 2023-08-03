@@ -38,21 +38,24 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String clientIP = session.getRemoteAddress().getHostName();
         System.out.println("[ " + clientIP + " ]: " + input);
         String[] item = input.split(" ");
-
-        Long si = Long.valueOf(item[0]);
-        Long dh = Long.valueOf(item[1]);
-        DeskDTO deskDTO = deskService.findByseatId(si);
-        deskDTO.setDeskHeightNow(dh);
-        // 수신을 완료하면 클라이언트에게 답장 보내기
-        // TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
-        // session.sendMessage(textMessage);
+        if (item.length == 2) {
+            Long si = Long.valueOf(item[0]);
+            Long dh = Long.valueOf(item[1]);
+            DeskDTO deskDTO = deskService.findByseatId(si);
+            deskDTO.setDeskHeightNow(dh);
+            deskService.save(deskDTO);
+        }
+//         수신을 완료하면 클라이언트에게 답장 보내기
+//         TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
+//         session.sendMessage(textMessage);
 //        if ("211.192.210.130".equals(clientIP)) {
 //            TextMessage textMessage1 = new TextMessage("아주 나이스 서버에서 수신했습니다!");
 //            session.sendMessage(textMessage1);
 //        }
+
     }
 //  일정한 시간이 되었을 때 전체 책상에게 보내는 신호
-    @Scheduled(cron = "0 52 13 * * ?")
+    @Scheduled(cron = "0 30 14 * * ?")
     //@Scheduled(fixedRate = 5000)
     public void sendDataToAllClients() {
         String message = "a,,,,";
@@ -75,11 +78,12 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String clientIP = session.getRemoteAddress().getHostName();
         activeSessions.put(clientIP, session);
         System.out.println("[ " + clientIP + " ]가 웹소켓으로 접속했습니다!");
-
-
+        Long si = Long.valueOf("301");
+        DeskDTO deskDTO = deskService.findByseatId(si);
+        deskDTO.setSeatIp(clientIP);
+        deskService.save(deskDTO);
     }
-    
-    
+
     // 특정 IP로 메세지를 보냄
     public void sendMessageToSpecificIP(String ip, String message) {
         WebSocketSession session = activeSessions.get(ip);
@@ -87,10 +91,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             try {
                 TextMessage textMessage = new TextMessage(message);
                 session.sendMessage(textMessage);
-                System.out.println("성공적으로 원하는 주소에메 세지를 보냈다!");
+                System.out.println("성공적으로 [" + ip + "] 메세지를 보냈다!");
             } catch (IOException e) {
                 // Handle exception if needed
-                System.out.println("하 개망했다!");
+                System.out.println("하,, ["+ ip + "]에게 못보내서 개망했다!");
             }
         }
     }
