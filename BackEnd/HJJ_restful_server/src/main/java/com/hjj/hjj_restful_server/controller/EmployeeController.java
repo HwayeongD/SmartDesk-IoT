@@ -75,42 +75,33 @@ public class EmployeeController {
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-        ScheduleDTO scheduleDTO = scheduleService.findRecentByEmpId(empId);
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-        String image;
-        String nickname = employeeDTO.getNickname();
-        if(employeeDTO.getImage() == null){
-            image = "";
-        }
-        else{
-            image = employeeDTO.getImage();
-        }
-        java.sql.Timestamp calTime;
-        String calDetail;
 
-        Time workAttTime = empAttendanceDTO.getWorkAttTime();
-        if(scheduleDTO == null){
-            // 시간이 null 일때 어떻게 할지 생각. 일단 쓰레기값 넣어둠.
-            calTime = Timestamp.valueOf("2000-01-01 00:00:00.000");
-            calDetail = "";
-        }
-        else{
-             calTime = scheduleDTO.getStart();
-            calDetail = scheduleDTO.getDetail();
-        }
-        Long seatId = empSeatDTO.getSeatId();
-        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
 
-        String json =
-                "{ \"nickname\": \"" + nickname +
-                        "\", \"image\": \"" + image +
-                        "\", \"workAttTime\": \"" + workAttTime +
-                        "\", \"calTime\": \"" + calTime +
-                        "\", \"calDetail\": \"" + calDetail +
-                        "\", \"seatId\": \"" + seatId +
-                        "\", \"personalDeskHeight\": \"" + personalDeskHeight + "\" }";
 
-        return new ResponseEntity<>(json, HttpStatus.OK);
+        JSONObject json = new JSONObject();
+        json.put("nickname", employeeDTO.getNickname());
+        if(empAttendanceDTO.getWorkAttTime() != null)
+            json.put("workAttTime", empAttendanceDTO.getWorkAttTime());
+        else
+            json.put("workAttTime", "");
+        if(empAttendanceDTO.getWorkEndTime() != null)
+            json.put("workEndTime", empAttendanceDTO.getWorkEndTime());
+        else
+            json.put("workEndTime", "");
+        json.put("status", empAttendanceDTO.getStatus());
+        if(empSeatDTO.getSeatId() != null)
+            json.put("seatId", empSeatDTO.getSeatId());
+        else
+            json.put("seatId", "");
+        if(empSeatDTO.getPersonalDeskHeight()!=null)
+            json.put("personalDeskHeight", empSeatDTO.getPersonalDeskHeight());
+        else
+            json.put("personalDeskHeight","");
+
+        String jsonString = json.toString();
+
+        return new ResponseEntity<>(jsonString, HttpStatus.OK);
     }
 
 
