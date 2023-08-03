@@ -259,8 +259,13 @@ public class EmployeeController {
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         empAttendanceDTO.setWorkEndTime(time);
+        empAttendanceDTO.setStatus(Byte.valueOf("0"));
         empAttendanceService.save(empAttendanceDTO);
+        
+        // 예약 취소
+        SeatCancel(empId);
 
+        // 여기 지워도 될듯 확인하기.
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
@@ -276,6 +281,8 @@ public class EmployeeController {
         // 모션데스킹 활동 요청 소켓 메세지
         String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
+
+
         String json = "{ \"resultCode\": \" 201 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -425,7 +432,6 @@ public class EmployeeController {
         empSeatService.save(empSeat);
 
         // 책상에도 정보 입력
-
         DeskDTO newDesk = deskService.findByseatId(seatId);
         newDesk.setEmpId(empId);
         deskService.save(newDesk);
