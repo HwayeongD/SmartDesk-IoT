@@ -40,9 +40,9 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public void btnScheduleClick(View view) {
-        Toast.makeText(this.getContext(), "schedule btn is clicked", Toast.LENGTH_LONG).show();
-    }
+//    public void btnScheduleClick(View view) {
+//        Toast.makeText(this.getContext(), "schedule btn is clicked", Toast.LENGTH_LONG).show();
+//    }
 
     @Override
     public void onDestroyView() {

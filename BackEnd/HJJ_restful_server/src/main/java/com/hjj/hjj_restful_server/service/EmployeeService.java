@@ -44,6 +44,16 @@ public class EmployeeService {
         }
     }
 
+    public EmployeeDTO findByEmpIdCard(String empIdCard){
+        Optional<EmployeeEntity> optionalEmployeeEntity = employeeRepository.findByEmpIdCard(empIdCard);
+        if(optionalEmployeeEntity.isPresent()){
+            return EmployeeDTO.toEmployeeDTO(optionalEmployeeEntity.get());
+        }
+        else{
+            return null;
+        }
+    }
+
     public void save(EmployeeDTO employeeDTO){
         EmployeeEntity employeeEntity = EmployeeEntity.toEmployeeEntity(employeeDTO);
         employeeRepository.save(employeeEntity);

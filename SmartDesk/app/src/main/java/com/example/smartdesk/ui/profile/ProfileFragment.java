@@ -1,26 +1,20 @@
 package com.example.smartdesk.ui.profile;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartdesk.R;
 import com.example.smartdesk.databinding.FragmentProfileBinding;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
-import com.example.smartdesk.ui.dialog.OptionCodeTypeDialog;
 
 public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
@@ -42,22 +36,42 @@ public class ProfileFragment extends Fragment {
 //            startActivityForResult(intent, 1);
 //        }
 
+
+        TextView change_desk = root.findViewById(R.id.change_desk);
+        TextView desk_height = root.findViewById(R.id.desk_height);
+        TextView change_option = root.findViewById(R.id.change_option);
+        ImageView info = root.findViewById(R.id.info);
+
         // 책상 높이 버튼 클릭 시, 팝업 띄우기
-        TextView textView = root.findViewById(R.id.change_desk); // Replace 'textView' with the ID of your TextView
-        textView.setOnClickListener(new View.OnClickListener() {
+        change_desk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCustomDialog();
+                ConfirmDialog.getInstance(requireActivity()).showCheckDialog();
+            }
+        });
+        desk_height.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConfirmDialog.getInstance(requireActivity()).showCheckDialog();
+            }
+        });
+        // 좌석 자동 예약 클릭 시, info 띄우기
+        change_option.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConfirmDialog.getInstance(requireActivity()).showConfirmDialog();
+            }
+        });
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConfirmDialog.getInstance(requireActivity()).showConfirmDialog();
             }
         });
 
         return root;
     }
 
-    private void showCustomDialog() {
-        ConfirmDialog confirmDialog = new ConfirmDialog(requireContext());
-        confirmDialog.show();
-    }
 
     @Override
     public void onDestroyView() {

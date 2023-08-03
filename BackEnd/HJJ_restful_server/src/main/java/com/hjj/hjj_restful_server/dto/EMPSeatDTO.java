@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class EMPSeatDTO {
     private Long empId;
-    private Long prevSear;
+    private Long prevSeat;
     private Long seatId;
     private Long personalDeskHeight;
     private boolean autoBook;
@@ -20,7 +20,7 @@ public class EMPSeatDTO {
     public static EMPSeatDTO toEMPSeatDTO(EMPSeatEntity empSeatEntity) {
         EMPSeatDTO empSeatDTO = new EMPSeatDTO();
         empSeatDTO.setEmpId(empSeatEntity.getEmpId());
-        empSeatDTO.setPrevSear(empSeatEntity.getPrevSear());
+        empSeatDTO.setPrevSeat(empSeatEntity.getPrevSeat());
         empSeatDTO.setSeatId(empSeatEntity.getSeatId());
         empSeatDTO.setPersonalDeskHeight(empSeatEntity.getPersonalDeskHeight());
         empSeatDTO.setAutoBook(empSeatEntity.isAutoBook());

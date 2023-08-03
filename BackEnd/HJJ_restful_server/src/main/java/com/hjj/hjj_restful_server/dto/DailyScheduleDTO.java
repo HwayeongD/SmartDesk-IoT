@@ -16,7 +16,7 @@ public class DailyScheduleDTO {
     private java.sql.Timestamp startTime;
     private java.sql.Timestamp endTime;
 
-    public static DailyScheduleDTO dailyScheduleDTO(DailyScheduleEntity dailyScheduleEntity){
+    public static DailyScheduleDTO todailyScheduleDTO(DailyScheduleEntity dailyScheduleEntity){
         DailyScheduleDTO dailyScheduleDTO = new DailyScheduleDTO();
         dailyScheduleDTO.setEmpId(dailyScheduleEntity.getEmpId());
         dailyScheduleDTO.setDailyId(dailyScheduleEntity.getDailyId());

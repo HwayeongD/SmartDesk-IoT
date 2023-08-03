@@ -32,8 +32,8 @@ ArduinoLEDMatrix matrix;
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-char serverAddress[] = "hjj.kro.kr";  // server address
-int port = 8081;
+char serverAddress[] = "i9a301.p.ssafy.io";  // server address
+int port = 8080;
 
 WiFiClient wifi;
 WebSocketClient client = WebSocketClient(wifi, serverAddress, port);
@@ -63,7 +63,7 @@ void setup() {
   Serial.println(ip);
 
   Serial.println("starting WebSocket client");
-  client.begin();
+  client.begin("/ws/chat");
   client.beginMessage(TYPE_TEXT);
   client.print("Hand Shake Test");
   client.endMessage();

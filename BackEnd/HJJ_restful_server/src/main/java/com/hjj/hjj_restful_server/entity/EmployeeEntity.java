@@ -30,6 +30,10 @@ public class EmployeeEntity {
     @Column
     private String image;
 
+    @Column
+    private String empIdCard;
+
+
     public static EmployeeEntity toEmployeeEntity(EmployeeDTO employeeDTO){
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setEmpId(employeeDTO.getEmpId());
@@ -38,6 +42,7 @@ public class EmployeeEntity {
         employeeEntity.setPassword(employeeDTO.getPassword());
         employeeEntity.setTeamId(employeeDTO.getTeamId());
         employeeEntity.setImage(employeeDTO.getImage());
+        employeeEntity.setEmpIdCard(employeeDTO.getEmpIdCard());
         return employeeEntity;
     }
 }

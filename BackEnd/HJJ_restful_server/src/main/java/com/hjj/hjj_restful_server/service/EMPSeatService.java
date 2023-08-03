@@ -23,7 +23,10 @@ public class EMPSeatService {
         }
     }
 
-//    public void saveSeat(EMPSeatDTO empSeatDTO){
-//        EMPSeatEntity empSeatEntity = EMPSeatEntity.to
-//    }
+    public void save(EMPSeatDTO empSeatDTO){
+        EMPSeatEntity empSeatEntity = EMPSeatEntity.toEMPSeatEntity(empSeatDTO);
+        empSeatRepository.save(empSeatEntity);
+    }
+
+
 }
