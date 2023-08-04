@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="floor">
-        <item>2층</item>
-        <item>3층</item>
-        <item>4층</item>
+        <item><b><font size="15">층 선택</font></b></item>
+        <item><b><font size="15">2층</font></b></item>
+        <item><b><font size="15">3층</font></b></item>
+        <item><b><font size="15">4층 </font></b></item>
     </string-array>
 </resources>
