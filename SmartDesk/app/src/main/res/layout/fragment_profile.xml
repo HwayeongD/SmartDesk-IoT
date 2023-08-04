@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="20dp"
     android:layout_gravity="bottom"
+    android:layout_marginHorizontal="20dp"
     tools:context=".ui.profile.ProfileFragment">
 
 
@@ -14,9 +13,9 @@
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:layout_marginStart="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,8 +26,8 @@
             android:id="@+id/profile"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:tint="@color/black"
-            android:src="@drawable/ic_account_circle_48px" />
+            android:src="@drawable/ic_account_circle_48px"
+            app:tint="@color/black" />
 
         <TextView
             android:id="@+id/name"
@@ -38,7 +37,7 @@
             android:text="123"
             android:textColor="@color/black"
             android:textSize="35sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 
@@ -57,8 +56,8 @@
             android:id="@+id/change_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_margin="10dp"
+            android:padding="10dp"
             android:text="프로필 사진 변경"
             android:textColor="@color/black" />
 
@@ -71,8 +70,8 @@
             android:id="@+id/change_pw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_margin="10dp"
+            android:padding="10dp"
             android:text="비밀번호 변경"
             android:textColor="@color/black" />
 
@@ -107,7 +106,7 @@
                 android:paddingTop="10dp"
                 android:paddingRight="21dp"
                 android:paddingBottom="10dp"
-                android:text="- cm"
+                android:text="20cm"
                 android:textColor="@color/comm_orange"
                 android:textStyle="bold" />
 
@@ -126,8 +125,8 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_margin="10dp">
+                android:layout_margin="10dp"
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/change_option"
@@ -143,12 +142,12 @@
                     android:id="@+id/info"
                     android:layout_width="35dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_info_48px"
+                    android:layout_marginTop="3dp"
+                    android:paddingLeft="5dp"
                     android:paddingTop="5dp"
                     android:paddingRight="15dp"
                     android:paddingBottom="8dp"
-                    android:paddingLeft="5dp"
-                    android:layout_marginTop="3dp"/>
+                    android:src="@drawable/ic_info_48px" />
 
 
             </LinearLayout>
@@ -157,18 +156,14 @@
                 android:id="@+id/option_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="150dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="10dp"
                 android:paddingRight="21dp"
                 android:paddingBottom="10dp"
-                android:layout_marginLeft="150dp"
                 android:thumb="@drawable/ic_switch_thumb"
                 android:track="@drawable/ic_switch_track" />
 
         </LinearLayout>
-
-
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

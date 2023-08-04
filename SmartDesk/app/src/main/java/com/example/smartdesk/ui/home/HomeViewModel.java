@@ -1,26 +1,30 @@
 package com.example.smartdesk.ui.home;
 
+import android.widget.TextView;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class HomeViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mTextTime;
-    private final MutableLiveData<String> mTextContent;
+    private final MutableLiveData<String> mNickname;
+    private final MutableLiveData<String> mMySeat;
+    private final MutableLiveData<String> mMyDeskHeight;
 
     public HomeViewModel() {
-        mTextTime = new MutableLiveData<>();
-        mTextContent = new MutableLiveData<>();
-        mTextTime.setValue("10A.M.");
-        mTextContent.setValue("디자인팀과의 회의");
+        mNickname = new MutableLiveData<>();
+        mMySeat = new MutableLiveData<>();
+        mMyDeskHeight = new MutableLiveData<>();
     }
 
-    public LiveData<String> getTextTime() {
-        return mTextTime;
+    public LiveData<String> getNickname() {
+        return mNickname;
     }
 
-    public LiveData<String> getTextContent() {
-        return mTextContent;
+    public LiveData<String> getMySeat() {
+        return mMySeat;
     }
+
+    public LiveData<String> getMyDeskHeight() { return mMyDeskHeight; }
 }

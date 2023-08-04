@@ -53,16 +53,27 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView scheduleTime = binding.todayScheduleTime;
-        final TextView scheduleContent = binding.todayScheduleContent;
+        final TextView nickname = binding.homeBtnProfileName;
+        final TextView mySeat = binding.mySeat;
+        final TextView myDeskHeight = binding.myDeskHeight;
 
-        homeViewModel.getTextTime().observe(getViewLifecycleOwner(), scheduleTime::setText);
-        homeViewModel.getTextContent().observe(getViewLifecycleOwner(), scheduleContent::setText);
+        homeViewModel.getNickname().observe(getViewLifecycleOwner(), nickname::setText);
+        homeViewModel.getMySeat().observe(getViewLifecycleOwner(), mySeat::setText);
+        homeViewModel.getMyDeskHeight().observe(getViewLifecycleOwner(), myDeskHeight::setText);
 
+        // 좌석 정보 버튼 - 좌석페이지로 이동
         root.findViewById(R.id.home_btn_seat).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToSeatFragment();
+            }
+        });
+        
+        // 책상 높이 정보 버튼 - 선호 높이로 책상 조절 요청
+        root.findViewById(R.id.home_btn_desk).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reqMoveDesk();
             }
         });
 
@@ -102,6 +113,21 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    // 선호하는 책상 높이로 조절
+    private void reqMoveDesk() {
+        retrofitAPI.reqMoveDeskHeight(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
+            @Override
+            public void onResponse(Call<Employee> call, Response<Employee> response) {
+                Log.d(TAG, "My desk is moved");
+            }
+
+            @Override
+            public void onFailure(Call<Employee> call, Throwable t) {
+                Log.d(TAG, "My desk is NOT moved");
+            }
+        });
+    }
+
     private void empLeave() {
         retrofitAPI.reqLeave(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
             @Override
@@ -135,14 +161,14 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "Personal Auto Reserve: " + Employee.getInstance().getAutoBook());
                 // 자동 좌석 예약 기능 ON
                 if(Employee.getInstance().getAutoBook()) {
-                    showTimerDialog();
+                    if(((MainActivity) getActivity()).isFirst) {
+                        showTimerDialog();
+                    }
                 }
                 // 자동 좌석 예약 기능 OFF
                 else {
                     // 좌석페이지로 바로 이동
-                    if(((MainActivity) getActivity()).isFirst) {
-                        goToSeatFragment();
-                    }
+                    goToSeatFragment();
                 }
             }
         }
@@ -190,6 +216,7 @@ public class HomeFragment extends Fragment {
         noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                timerDialog.dismiss();
                 goToSeatFragment();
             }
         });
@@ -200,7 +227,7 @@ public class HomeFragment extends Fragment {
                 if(timerDialog.isShowing()) {
                     timerDialog.dismiss();
                     reqAutoReserve();
-                    //isAllowed = true;
+                    isAllowed = true;
                 }
             }
         }, 3000);

@@ -11,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
+import com.example.smartdesk.MainActivity;
 import com.example.smartdesk.R;
+import com.example.smartdesk.ui.home.HomeFragment;
 
 public class CustomDialog extends Dialog {
 
@@ -38,7 +41,6 @@ public class CustomDialog extends Dialog {
         //참조할 다이얼로그 화면을 연결한다.
         customDialog.setContentView(R.layout.check_dialog);
 
-
         //다이얼로그의 구성요소들이 동작할 코드작성
         ImageView warningImageView = customDialog.findViewById(R.id.check_dialog_image);
         TextView titleTextView = customDialog.findViewById(R.id.check_dialog_title);
@@ -52,14 +54,14 @@ public class CustomDialog extends Dialog {
         yesbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView textView = findViewById(R.id.check_dialog_content);
-                textView.setText("확인 버튼을 눌렀습니다. :)");
+                //reqChangeDeskHeight();
             }
         });
         Button no_btn = customDialog.findViewById(R.id.check_nobtn);
         no_btn.setOnClickListener(clickCancel);
         customDialog.show();
     }
+
     // 확인 팝업 커스텀
     public void showConfirmDialog() {
 
@@ -78,6 +80,18 @@ public class CustomDialog extends Dialog {
 
         yesbtn.setOnClickListener(clickCancel);
         customDialog.show();
+    }
+
+    // 좌석 예약 팝업 커스텀
+    public void setAutoSeatDialog() {
+        ImageView warningImageView = customDialog.findViewById(R.id.confirm_dialog_image);
+        TextView titleTextView = customDialog.findViewById(R.id.confirm_dialog_title);
+        TextView contentTextView = customDialog.findViewById(R.id.confirm_dialog_content);
+
+        warningImageView.setImageResource(R.drawable.ic_error_48px);
+        titleTextView.setText("예약 안내");
+        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
+        contentTextView.setText("최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
     }
 
     //취소버튼을 눌렀을때 일반적인 클릭리스너
