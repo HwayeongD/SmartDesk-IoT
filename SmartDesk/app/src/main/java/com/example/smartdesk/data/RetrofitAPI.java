@@ -19,9 +19,15 @@ public interface RetrofitAPI {
     @Headers("Content-type: application/json")
     Call<Employee> getLoginAccess(@Body Employee employee);
 
+    // 메인페이지 접속 - 사원 데이터 요청
     @GET("home/{empId}")
     Call<Employee> getEmpData(@Path("empId") String empId);
 
+    // 이전 좌석으로 자동 예약 요청
     @GET("home/{empId}/first")
     Call<Employee> reqAutoReserveSeat(@Path("empId") String empId);
+
+    // 퇴근 처리 요청
+    @PUT("home/{empId}/leave")
+    Call<Employee> reqLeave(@Path("empId") String empId);
 }

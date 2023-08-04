@@ -9,14 +9,28 @@
         android:id="@+id/navigation_home"
         android:name="com.example.smartdesk.ui.home.HomeFragment"
         android:label="@string/navi_name_home"
-        tools:layout="@layout/fragment_home"
-        />
+        tools:layout="@layout/fragment_home">
+
+        <!--    HomeFragment에서 SeatFragment로 이동하는 액션 정의    -->
+        <action
+            android:id="@+id/action_home_to_seat"
+            app:destination="@id/navigation_seat"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_seat"
         android:name="com.example.smartdesk.ui.seat.SeatFragment"
         android:label="@string/navi_name_seat"
-        tools:layout="@layout/fragment_seat" />
+        tools:layout="@layout/fragment_seat">
+
+        <action
+            android:id="@+id/action_seat_to_home"
+            app:destination="@+id/navigation_home"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_calendar"

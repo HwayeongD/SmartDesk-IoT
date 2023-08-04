@@ -9,9 +9,6 @@ public class Employee {
         if(employee == null) {
             employee = new Employee();
         }
-        if(employee.getPersonalAutoReserve() == null) {
-            employee.setPersonalAutoReserve(true);
-        }
 
         return employee;
     }
@@ -34,6 +31,9 @@ public class Employee {
     @SerializedName("workAttTime")
     private String workAttTime;
 
+    @SerializedName("workEndTime")
+    private String workEndTime;
+
     @SerializedName("calTime")
     private String calTime;
 
@@ -49,8 +49,8 @@ public class Employee {
     @SerializedName("personalDeskHeight")
     private String personalDeskHeight;
 
-    @SerializedName("personalAutoReserve")
-    private Boolean personalAutoReserve;
+    @SerializedName("autoBook")
+    private Boolean autoBook;
 
     public String getResultCode() {
         return resultCode;
@@ -100,6 +100,14 @@ public class Employee {
         this.workAttTime = workAttTime;
     }
 
+    public String getWorkEndTime() {
+        return workEndTime;
+    }
+
+    public void setWorkEndTime(String workEndTime) {
+        this.workEndTime = workEndTime;
+    }
+
     public String getCalTime() {
         return calTime;
     }
@@ -140,12 +148,12 @@ public class Employee {
         this.personalDeskHeight = personalDeskHeight;
     }
 
-    public Boolean getPersonalAutoReserve() {
-        return personalAutoReserve;
+    public Boolean getAutoBook() {
+        return autoBook;
     }
 
-    public void setPersonalAutoReserve(Boolean personalAutoReserve) {
-        this.personalAutoReserve = personalAutoReserve;
+    public void setAutoBook(Boolean autoBook) {
+        this.autoBook = autoBook;
     }
 
     public String printEmpData() {
@@ -155,6 +163,7 @@ public class Employee {
                 + ", calTime: " + getCalTime()
                 + ", calDetail: " + getCalDetail()
                 + ", seatId: " + getSeatId()
-                + ", personalDeskHeight" + getPersonalDeskHeight();
+                + ", personalDeskHeight: " + getPersonalDeskHeight()
+                + ", autoBook: " + getAutoBook();
     }
 }

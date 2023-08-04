@@ -25,7 +25,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -114,14 +113,11 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(TAG, "성공");
                                 Log.d(TAG, data.getNickname());
 
-<<<<<<< HEAD
-=======
                                 // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 finish();
->>>>>>> dongwoo
 
                             }
                             else {
@@ -136,16 +132,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "실패");
 
                             t.printStackTrace();
-
                         }
                     });
-
-                    // TODO: 서버에서의 응답이 정상인 경우에만 아래 페이지 이동 로직이 적용되어야 할 것 같음
-                    // Both fields are not empty, proceed with login
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-
-                    finish();
                 }
             }
         });
