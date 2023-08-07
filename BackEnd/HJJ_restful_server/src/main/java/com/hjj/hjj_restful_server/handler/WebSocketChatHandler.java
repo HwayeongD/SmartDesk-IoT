@@ -67,7 +67,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     //@Scheduled(fixedRate = 5000)
     public void sendDataToAllClients() {
 
-
         String message = "a,,,,";
         for (WebSocketSession session : activeSessions.values()) {
             if (session.isOpen()) {

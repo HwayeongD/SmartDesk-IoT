@@ -70,7 +70,7 @@ public class EmployeeController {
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-
+        ScheduleDTO scheduleDTO = scheduleService.findRecentByEmpId(empId);
 
         JSONObject json = new JSONObject();
         json.put("nickname", employeeDTO.getNickname());
@@ -92,6 +92,14 @@ public class EmployeeController {
         else
             json.put("personalDeskHeight", "");
         json.put("autoBook",empSeatDTO.isAutoBook());
+        if (scheduleDTO != null){
+            json.put("schStart", scheduleDTO.getStart());
+            json.put("schHead", scheduleDTO.getHead());
+        }
+        else{
+            json.put("schStart", "");
+            json.put("schHead", "");
+        }
 
         String jsonString = json.toString();
 
