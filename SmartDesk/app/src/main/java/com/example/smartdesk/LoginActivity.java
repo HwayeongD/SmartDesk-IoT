@@ -1,7 +1,5 @@
 package com.example.smartdesk;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -14,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smartdesk.data.Model.Employee;
 import com.example.smartdesk.data.RetrofitAPI;
@@ -113,20 +112,12 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(TAG, "성공");
                                 Log.d(TAG, data.getNickname());
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dongwoo
                                 // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 finish();
-<<<<<<< HEAD
-=======
 
->>>>>>> dongwoo
 
                             }
                             else {
