@@ -92,6 +92,8 @@ public class ProfileFragment extends Fragment {
         });
 
         Log.d(TAG, "isAutoReserve: " + isAutoReserve.isChecked());
+        // 좌석 자동 예약 토글 셋팅
+        isAutoReserve.setChecked(Employee.getInstance().getAutoBook());
         isAutoReserve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
