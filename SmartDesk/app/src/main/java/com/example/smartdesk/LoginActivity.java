@@ -1,8 +1,11 @@
 package com.example.smartdesk;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +23,9 @@ import com.example.smartdesk.data.RetrofitAPI;
 import com.example.smartdesk.data.RetrofitClient;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +51,14 @@ public class LoginActivity extends AppCompatActivity {
         editId = findViewById(R.id.edit_id);
         editPwd = findViewById(R.id.edit_pwd);
         btn_login = findViewById(R.id.btn_login);
+
+        // 로컬 데이터 확인 및 자동 로그인 처리 (SharedPreferences)
+        SharedPreferences sharedPreferences = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+        Long empId = sharedPreferences.getLong("empId", 0);
+        if(empId != 0) {
+            Employee.getInstance().setEmpId(empId);
+            goToMainActivity();
+        }
 
         // 입력창에 값을 입력하면 ERROR 제거하기
         // addTextChangedListener : 문자열 변경 감지 이벤트 리스너
@@ -113,21 +127,14 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(TAG, "성공");
                                 Log.d(TAG, data.getNickname());
 
-<<<<<<< HEAD
-=======
+                                // 자동로그인을 위한 사원ID 로컬 저장 (SharedPreferences)
+                                SharedPreferences sharedPreferences = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+                                SharedPreferences.Editor autoLoginEditor = sharedPreferences.edit();
+                                autoLoginEditor.putBoolean("auto", true);
+                                autoLoginEditor.putLong("empId", Employee.getInstance().getEmpId());
+                                autoLoginEditor.apply();
 
-
->>>>>>> dongwoo
-                                // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-
-                                finish();
-<<<<<<< HEAD
-=======
-
->>>>>>> dongwoo
-
+                                goToMainActivity();
                             }
                             else {
                                 Employee data = response.body();
@@ -146,6 +153,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void goToMainActivity() {
+        // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+
+        finish();
     }
 
     @Override       // Edittext 외부 터치시 키보드 내리기
