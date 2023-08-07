@@ -11,11 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
-import com.example.smartdesk.MainActivity;
 import com.example.smartdesk.R;
-import com.example.smartdesk.ui.home.HomeFragment;
 
 public class CustomDialog extends Dialog {
 
@@ -36,7 +33,7 @@ public class CustomDialog extends Dialog {
         return customDialog;
     }
 
-    //체크 팝업 커스텀
+    //책상 높이 변경 체크 팝업
     public void showCheckDialog() {
         //참조할 다이얼로그 화면을 연결한다.
         customDialog.setContentView(R.layout.check_dialog);
@@ -82,7 +79,7 @@ public class CustomDialog extends Dialog {
         customDialog.show();
     }
 
-    // 좌석 예약 팝업 커스텀
+    // 좌석 자동 예약 팝업 커스텀
     public void setAutoSeatDialog() {
         ImageView warningImageView = customDialog.findViewById(R.id.confirm_dialog_image);
         TextView titleTextView = customDialog.findViewById(R.id.confirm_dialog_title);
@@ -94,7 +91,95 @@ public class CustomDialog extends Dialog {
         contentTextView.setText("최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
     }
 
-    //취소버튼을 눌렀을때 일반적인 클릭리스너
+    // 좌석 예약 불가 팝업 커스텀
+    public void showNotAllowedDialog() {
+
+        customDialog.setContentView(R.layout.confirm_dialog);
+
+
+        ImageView warningImageView = customDialog.findViewById(R.id.confirm_dialog_image);
+        TextView titleTextView = customDialog.findViewById(R.id.confirm_dialog_title);
+        TextView contentTextView = customDialog.findViewById(R.id.confirm_dialog_content);
+        Button yesbtn = customDialog.findViewById(R.id.confirm_yesbtn);
+
+        warningImageView.setImageResource(R.drawable.ic_do_not_disturb_on_total_silence_48px);
+        titleTextView.setText("예약 불가");
+        titleTextView.setTextColor(Color.parseColor("FF0000"));
+        contentTextView.setText("이미 예약된 좌석입니다");
+
+        yesbtn.setOnClickListener(clickCancel);
+        customDialog.show();
+    }
+
+    //좌석 변경 체크 팝업
+    public void showChangeDeskDialog() {
+        //참조할 다이얼로그 화면을 연결한다.
+        customDialog.setContentView(R.layout.check_dialog);
+
+        //다이얼로그의 구성요소들이 동작할 코드작성
+        ImageView warningImageView = customDialog.findViewById(R.id.check_dialog_image);
+        TextView titleTextView = customDialog.findViewById(R.id.check_dialog_title);
+        TextView contentTextView = customDialog.findViewById(R.id.check_dialog_content);
+        Button yesbtn = customDialog.findViewById(R.id.check_yesbtn);
+
+        warningImageView.setImageResource(R.drawable.ic_error_48px);
+        titleTextView.setText("예약 변경");
+        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
+        contentTextView.setText("이미 예약된 좌석이 있습니다\n좌석을 변경하시겠습니까?");
+        yesbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //reqChangeDesk();
+            }
+        });
+        Button no_btn = customDialog.findViewById(R.id.check_nobtn);
+        no_btn.setOnClickListener(clickCancel);
+        customDialog.show();
+    }
+
+    // 예약 변경 확인 팝업
+    public void showChangeConfirmDialog() {
+
+        customDialog.setContentView(R.layout.confirm_dialog);
+
+
+        ImageView warningImageView = customDialog.findViewById(R.id.confirm_dialog_image);
+        TextView titleTextView = customDialog.findViewById(R.id.confirm_dialog_title);
+        TextView contentTextView = customDialog.findViewById(R.id.confirm_dialog_content);
+        Button yesbtn = customDialog.findViewById(R.id.confirm_yesbtn);
+
+        warningImageView.setImageResource(R.drawable.ic_check_circle_48px);
+        titleTextView.setText("예약 확인");
+        titleTextView.setTextColor(Color.parseColor("2FC600"));
+        contentTextView.setText("예약이 변경되었습니다.");
+
+        yesbtn.setOnClickListener(clickCancel);
+        customDialog.show();
+    }
+
+
+    // 예약 확인 팝업
+    public void showAllowConfirmDialog() {
+
+        customDialog.setContentView(R.layout.confirm_dialog);
+
+
+        ImageView warningImageView = customDialog.findViewById(R.id.confirm_dialog_image);
+        TextView titleTextView = customDialog.findViewById(R.id.confirm_dialog_title);
+        TextView contentTextView = customDialog.findViewById(R.id.confirm_dialog_content);
+        Button yesbtn = customDialog.findViewById(R.id.confirm_yesbtn);
+
+        warningImageView.setImageResource(R.drawable.ic_check_circle_48px);
+        titleTextView.setText("예약 확인");
+        titleTextView.setTextColor(Color.parseColor("2FC600"));
+        contentTextView.setText("예약이 확정되었습니다.");
+
+        yesbtn.setOnClickListener(clickCancel);
+        customDialog.show();
+    }
+
+
+    // 팝업창 닫을 때(확인 or 취소), 클릭리스너
     View.OnClickListener clickCancel = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
