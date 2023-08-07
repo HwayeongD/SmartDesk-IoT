@@ -28,4 +28,5 @@ public class EMPAttendanceService {
         EMPAttendanceEntity empAttendanceEntity = EMPAttendanceEntity.toEMPAttendanceEntity(empAttendanceDTO);
         empAttendanceRepository.save(empAttendanceEntity);
     }
+
 }

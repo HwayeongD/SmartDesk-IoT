@@ -1,7 +1,11 @@
 package com.hjj.hjj_restful_server.handler;
 
 import com.hjj.hjj_restful_server.dto.DeskDTO;
+import com.hjj.hjj_restful_server.repository.DeskRepository;
+import com.hjj.hjj_restful_server.repository.EMPAttendanceRepository;
+import com.hjj.hjj_restful_server.repository.EMPSeatRepository;
 import com.hjj.hjj_restful_server.service.DeskService;
+import com.hjj.hjj_restful_server.service.EMPAttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -29,6 +33,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     private final static Logger LOG = Logger.getGlobal();
     private final Map<String, WebSocketSession> activeSessions = Collections.synchronizedMap(new ConcurrentHashMap<>());
     private final DeskService deskService;
+    private final EMPAttendanceRepository empAttendanceRepository;
+    private final DeskRepository deskRepository;
+    private final EMPSeatRepository empSeatRepository;
+
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -55,9 +63,11 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     }
 //  일정한 시간이 되었을 때 전체 책상에게 보내는 신호
-    @Scheduled(cron = "0 30 14 * * ?")
+    @Scheduled(cron = "0 11 13 * * ?")
     //@Scheduled(fixedRate = 5000)
     public void sendDataToAllClients() {
+
+
         String message = "a,,,,";
         for (WebSocketSession session : activeSessions.values()) {
             if (session.isOpen()) {
@@ -69,6 +79,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 }
             }
         }
+        empAttendanceRepository.resetTable();
+        empSeatRepository.resetTable();
+        deskRepository.resetTable();
     }
 
     @Override
@@ -97,5 +110,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 System.out.println("하,, ["+ ip + "]에게 못보내서 개망했다!");
             }
         }
+
     }
 }
