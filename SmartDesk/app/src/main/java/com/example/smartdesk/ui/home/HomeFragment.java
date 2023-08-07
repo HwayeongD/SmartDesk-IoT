@@ -81,6 +81,7 @@ public class HomeFragment extends Fragment {
         root.findViewById(R.id.home_btn_exit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: 퇴근 확인 팝업 발생 후 처리
                 empLeave();
             }
         });
@@ -167,8 +168,10 @@ public class HomeFragment extends Fragment {
                 }
                 // 자동 좌석 예약 기능 OFF
                 else {
-                    // 좌석페이지로 바로 이동
-                    goToSeatFragment();
+                    if(((MainActivity) getActivity()).isFirst) {
+                        // 좌석페이지로 바로 이동
+                        goToSeatFragment();
+                    }
                 }
             }
         }
