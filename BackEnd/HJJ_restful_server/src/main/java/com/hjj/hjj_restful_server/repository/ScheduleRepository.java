@@ -4,6 +4,7 @@ import com.hjj.hjj_restful_server.entity.ScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,7 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     List<ScheduleEntity> findByMonth(Long month);
 
     Optional<ScheduleEntity> findBySchId(Long schId);
+
+    @Transactional
+    Optional<ScheduleEntity> deleteBySchId(Long schId);
 }

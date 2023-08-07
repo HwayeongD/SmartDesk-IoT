@@ -608,6 +608,15 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-
+    @DeleteMapping("schedule/{empId}/{schId}")
+    public ResponseEntity<String> DeleteSchedule(@PathVariable Long empId, @PathVariable Long schId){
+        if(scheduleService.findBySchId(schId) == null){
+            String json = "{ \"resultCode\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        scheduleService.deleteSchedule(schId);
+        String json = "{ \"resultCode\": \" S101 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
 }

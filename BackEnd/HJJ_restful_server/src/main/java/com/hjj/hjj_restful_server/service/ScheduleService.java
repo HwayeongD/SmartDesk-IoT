@@ -56,4 +56,8 @@ public class ScheduleService {
         scheduleRepository.save(scheduleEntity);
     }
 
+    public void deleteSchedule(Long schId){
+        scheduleRepository.deleteBySchId(schId);
+    }
+
 }
