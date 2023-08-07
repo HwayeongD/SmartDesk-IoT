@@ -15,4 +15,6 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
 
     @Query(value = "SELECT * FROM SERVER.Schedule WHERE MONTH(start) = :month ORDER BY start ASC", nativeQuery = true )
     List<ScheduleEntity> findByMonth(Long month);
+
+    Optional<ScheduleEntity> findBySchId(Long schId);
 }

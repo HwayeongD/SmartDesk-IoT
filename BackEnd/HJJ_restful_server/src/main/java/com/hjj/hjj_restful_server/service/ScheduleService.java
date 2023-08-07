@@ -16,6 +16,16 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    public ScheduleDTO findBySchId(Long schId){
+        Optional<ScheduleEntity> optionalScheduleEntity = scheduleRepository.findBySchId(schId);
+        if(optionalScheduleEntity.isPresent()){
+            return ScheduleDTO.toScheduleDTO(optionalScheduleEntity.get());
+        }
+        else{
+            return null;
+        }
+    }
+
     public ScheduleDTO findRecentByEmpId(Long empId){
         Optional<ScheduleEntity> optionalScheduleEntity = scheduleRepository.findRecentByEmpId(empId);
         if(optionalScheduleEntity.isPresent()){

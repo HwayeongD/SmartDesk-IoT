@@ -35,6 +35,10 @@ public class EmployeeController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, Object> requestBody) {
+        if(requestBody.get("empId") == null || requestBody.get("empId") == ""){
+            String json = "{ \"result\": \" L201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
         Long empId = Long.valueOf(requestBody.get("empId").toString());
         String password = (String) requestBody.get("password");
         EmployeeDTO loginResult = employeeService.login(empId, password);
@@ -531,10 +535,15 @@ public class EmployeeController {
             JSONObject json = new JSONObject();
 
             json.put("schId", scheduleDTO.getSchId());
+            json.put("head", scheduleDTO.getHead());
             json.put("start", scheduleDTO.getStart());
             json.put("end", scheduleDTO.getEnd());
             json.put("status", scheduleDTO.getStatus());
-            json.put("detail", scheduleDTO.getDetail());
+            if(scheduleDTO.getDetail() != null)
+                json.put("detail", scheduleDTO.getDetail());
+            else
+                json.put("detail","");
+
             jsonArray.put(json);
         }
         String jsonString = jsonArray.toString();
@@ -546,12 +555,20 @@ public class EmployeeController {
     @PostMapping("schedule/{empId}")
     public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
 
+        if(requestBody.get("head") == null || requestBody.get("head")==""){
+            String json = "{ \"resultCode\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        String head = requestBody.get("head").toString();
         java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
         java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
         Byte status = Byte.valueOf(requestBody.get("status").toString());
-        String detail = requestBody.get("detail").toString();
+        String detail ="";
+        if(requestBody.get("detail")!=null)
+             detail = requestBody.get("detail").toString();
 
         ScheduleDTO NewscheduleDTO =  new ScheduleDTO();
+        NewscheduleDTO.setHead(head);
         NewscheduleDTO.setEmpId(empId);
         NewscheduleDTO.setStart(start);
         NewscheduleDTO.setEnd(end);
@@ -559,8 +576,38 @@ public class EmployeeController {
         NewscheduleDTO.setDetail(detail);
         scheduleService.save(NewscheduleDTO);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
+    
+    // 스케쥴 수정하기
+    @PutMapping("schedule/{empId}/{schId}")
+    public ResponseEntity<String> EditSchedule(@PathVariable Long empId, @PathVariable Long schId, @RequestBody Map<String,Object> requestBody){
+        if(requestBody.get("head") == null || requestBody.get("head")==""){
+            String json = "{ \"resultCode\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        String head = requestBody.get("head").toString();
+        java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
+        java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
+        Byte status = Byte.valueOf(requestBody.get("status").toString());
+        String detail ="";
+        if(requestBody.get("detail")!=null)
+            detail = requestBody.get("detail").toString();
+
+        ScheduleDTO scheduleDTO = scheduleService.findBySchId(schId);
+        scheduleDTO.setHead(head);
+        scheduleDTO.setEmpId(empId);
+        scheduleDTO.setStart(start);
+        scheduleDTO.setEnd(end);
+        scheduleDTO.setStatus(status);
+        scheduleDTO.setDetail(detail);
+        scheduleService.save(scheduleDTO);
+
+        String json = "{ \"resultCode\": \" S101 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+
 
 }
