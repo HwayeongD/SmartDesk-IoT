@@ -1,12 +1,9 @@
 package com.example.smartdesk;
 
-<<<<<<< HEAD
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-=======
->>>>>>> dongwoo
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -131,21 +128,18 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(TAG, "성공");
                                 Log.d(TAG, data.getNickname());
 
-<<<<<<< HEAD
                                 // 자동로그인을 위한 사원ID 로컬 저장 (SharedPreferences)
                                 SharedPreferences sharedPreferences = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor autoLoginEditor = sharedPreferences.edit();
                                 autoLoginEditor.putBoolean("auto", true);
                                 autoLoginEditor.putLong("empId", Employee.getInstance().getEmpId());
                                 autoLoginEditor.apply();
-=======
                                 // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 finish();
 
->>>>>>> dongwoo
 
                                 goToMainActivity();
                             }
