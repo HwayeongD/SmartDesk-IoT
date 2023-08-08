@@ -34,50 +34,30 @@ public class CustomDialog extends Dialog {
     }
 
     //책상 높이 변경 체크 팝업
-    public void showCheckDialog() {
+//    public void showCheckDialog() {
         //참조할 다이얼로그 화면을 연결한다.
-        customDialog.setContentView(R.layout.check_dialog);
-
-        //다이얼로그의 구성요소들이 동작할 코드작성
-        ImageView warningImageView = customDialog.findViewById(R.id.check_dialog_image);
-        TextView titleTextView = customDialog.findViewById(R.id.check_dialog_title);
-        TextView contentTextView = customDialog.findViewById(R.id.check_dialog_content);
-        Button yesbtn = customDialog.findViewById(R.id.check_yesbtn);
-
-        warningImageView.setImageResource(R.drawable.ic_error_48px);
-        titleTextView.setText("책상 높이 변경");
-        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
-        contentTextView.setText("현재 높이를 즐겨찾기 책상 높이로 \n변경하시겠습니까?");
-        yesbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //reqChangeDeskHeight();
-            }
-        });
-        Button no_btn = customDialog.findViewById(R.id.check_nobtn);
-        no_btn.setOnClickListener(clickCancel);
-        customDialog.show();
-    }
-
-    // 확인 팝업 커스텀
-    public void showConfirmDialog() {
-
-        customDialog.setContentView(R.layout.confirm_dialog);
-
-
-        ImageView warningImageView = customDialog.findViewById(R.id.confirm_dialog_image);
-        TextView titleTextView = customDialog.findViewById(R.id.confirm_dialog_title);
-        TextView contentTextView = customDialog.findViewById(R.id.confirm_dialog_content);
-        Button yesbtn = customDialog.findViewById(R.id.confirm_yesbtn);
-
-        warningImageView.setImageResource(R.drawable.ic_error_48px);
-        titleTextView.setText("좌석 자동 예약");
-        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
-        contentTextView.setText("초기 앱 실행 시 \n최근 좌석 자동 예약 기능");
-
-        yesbtn.setOnClickListener(clickCancel);
-        customDialog.show();
-    }
+//        customDialog.setContentView(R.layout.check_dialog);
+//
+//        //다이얼로그의 구성요소들이 동작할 코드작성
+//        ImageView warningImageView = customDialog.findViewById(R.id.check_dialog_image);
+//        TextView titleTextView = customDialog.findViewById(R.id.check_dialog_title);
+//        TextView contentTextView = customDialog.findViewById(R.id.check_dialog_content);
+//        Button yesbtn = customDialog.findViewById(R.id.check_yesbtn);
+//
+//        warningImageView.setImageResource(R.drawable.ic_error_48px);
+//        titleTextView.setText("책상 높이 변경");
+//        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
+//        contentTextView.setText("현재 높이를 즐겨찾기 책상 높이로 \n변경하시겠습니까?");
+//        yesbtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //reqChangeDeskHeight();
+//            }
+//        });
+//        Button no_btn = customDialog.findViewById(R.id.check_nobtn);
+//        no_btn.setOnClickListener(clickCancel);
+//        customDialog.show();
+//    }
 
     // 좌석 자동 예약 팝업 커스텀
     public void setAutoSeatDialog() {

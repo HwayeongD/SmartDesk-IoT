@@ -14,21 +14,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartdesk.LoginActivity;
-import com.example.smartdesk.MainActivity;
 import com.example.smartdesk.R;
 import com.example.smartdesk.data.Model.Employee;
 import com.example.smartdesk.data.RetrofitAPI;
 import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentProfileBinding;
 import com.example.smartdesk.ui.dialog.ChangePasswordDialog;
-import com.example.smartdesk.ui.dialog.CustomDialog;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,7 +85,7 @@ public class ProfileFragment extends Fragment {
         info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CustomDialog.getInstance(requireActivity()).showConfirmDialog();
+                Toast.makeText(requireActivity(), "초기 앱 실행 시 \n최근 좌석 자동 예약 기능", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -125,6 +123,7 @@ public class ProfileFragment extends Fragment {
     private void logoutDialogShow() {
         logoutDialog = new Dialog(this.getContext());
         logoutDialog.setContentView(R.layout.check_dialog);
+        logoutDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         logoutDialog.show();
         
         // 로그아웃 확인 다이얼로그 설정
@@ -135,7 +134,7 @@ public class ProfileFragment extends Fragment {
         Button no_btn = logoutDialog.findViewById(R.id.check_nobtn);
 
         warningImageView.setImageResource(R.drawable.ic_error_48px);
-        titleTextView.setText("로그아웃 확인");
+        titleTextView.setText("로그아웃");
         titleTextView.setTextColor(Color.parseColor("#FF7F00"));
         contentTextView.setText("로그아웃하시겠습니까?");
         yesbtn.setOnClickListener(new View.OnClickListener() {
@@ -166,6 +165,7 @@ public class ProfileFragment extends Fragment {
     private void changeDeskDiaglogShow() {
         deskDialog = new Dialog(this.getContext());
         deskDialog.setContentView(R.layout.check_dialog);
+        deskDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         deskDialog.show();
 
         //다이얼로그의 구성요소들이 동작할 코드작성

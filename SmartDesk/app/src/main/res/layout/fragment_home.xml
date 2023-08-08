@@ -26,7 +26,7 @@
     <!--  개인 저장 정보  -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="380dp"
-        android:layout_height="640dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,8 @@
             android:id="@+id/home_btn_profile_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome, Hwa"
+            android:layout_marginTop="30dp"
+            android:text="Welcome, NAME"
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -83,7 +84,7 @@
             android:id="@+id/home_btn_schedule"
             android:layout_width="320dp"
             android:layout_height="140dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="90dp"
             android:background="@drawable/rounded_rectangle"
             android:elevation="20dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -175,43 +176,53 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/home_btn_schedule">
 
-            <TextView
-                android:id="@+id/chair_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="오늘의 좌석"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
 
-            <ImageView
-                android:id="@+id/ic_seat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="20dp"
-                android:src="@drawable/ic_chair_48px"
-                app:tint="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chair_title" />
+                <TextView
+                    android:id="@+id/chair_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="오늘의 좌석"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/my_seat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="24dp"
-                android:text="A5"
-                android:textColor="@color/info_orange"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                app:layout_constraintLeft_toRightOf="@id/ic_seat"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chair_title" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/ic_seat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="25dp"
+                        android:src="@drawable/ic_chair_48px"
+                        app:tint="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chair_title" />
+
+                    <TextView
+                        android:id="@+id/my_seat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="@color/info_orange"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintLeft_toRightOf="@id/ic_seat"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chair_title" />
+                </LinearLayout>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -228,43 +239,54 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/home_btn_seat">
 
-            <TextView
-                android:id="@+id/desk_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="즐겨찾는 책상 높이"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
 
-            <ImageView
-                android:id="@+id/ic_desk"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ic_desk_48px"
-                app:tint="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/desk_title" />
+                <TextView
+                    android:id="@+id/desk_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="즐겨찾는 책상 높이"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/my_desk_height"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginRight="15dp"
-                android:text="98cm"
-                android:textColor="@color/info_orange"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                app:layout_constraintLeft_toRightOf="@id/ic_desk"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/desk_title" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/ic_desk"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/ic_desk_48px"
+                        app:tint="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/desk_title" />
+
+                    <TextView
+                        android:id="@+id/my_desk_height"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="- cm"
+                        android:textColor="@color/info_orange"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintLeft_toRightOf="@id/ic_desk"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/desk_title" />
+
+                </LinearLayout>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

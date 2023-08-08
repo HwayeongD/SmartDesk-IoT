@@ -53,6 +53,5 @@ dependencies {
             replacedBy("org.jetbrains.kotlin:kotlin-stdlib", "kotlin-stdlib-jdk8 is now part of kotlin-stdlib")
         }
     }
-    // 자동 예약 도움말 tooltip
-    implementation 'com.tomergoldst.android:tooltips:1.1.1'
+
 }
