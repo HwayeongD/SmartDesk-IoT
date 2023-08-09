@@ -422,13 +422,15 @@ public class EmployeeController {
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
 
+
         deskDTO.setEmpId(empId);
         empSeatDTO.setSeatId(seatId);
         empSeatDTO.setPrevSeat(seatId);
+        empAttendanceDTO.setStatus(Byte.valueOf("1"));
 
         deskService.save(deskDTO);
         empSeatService.save(empSeatDTO);
-
+        empAttendanceService.save(empAttendanceDTO);
 
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());

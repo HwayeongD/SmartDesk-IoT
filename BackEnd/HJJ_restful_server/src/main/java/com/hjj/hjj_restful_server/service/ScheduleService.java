@@ -1,11 +1,16 @@
 package com.hjj.hjj_restful_server.service;
 
 import com.hjj.hjj_restful_server.dto.ScheduleDTO;
+import com.hjj.hjj_restful_server.entity.DailyScheduleEntity;
 import com.hjj.hjj_restful_server.entity.ScheduleEntity;
+import com.hjj.hjj_restful_server.repository.DailyScheduleRepository;
 import com.hjj.hjj_restful_server.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +20,7 @@ import java.util.Optional;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final DailyScheduleRepository dailyScheduleRepository;
 
     public ScheduleDTO findBySchId(Long schId){
         Optional<ScheduleEntity> optionalScheduleEntity = scheduleRepository.findBySchId(schId);
@@ -58,6 +64,21 @@ public class ScheduleService {
 
     public void deleteSchedule(Long schId){
         scheduleRepository.deleteBySchId(schId);
+    }
+
+    @Transactional
+    public void transferToDailySchedule(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = now.toLocalDate().atTime(23,59,59);
+        List<ScheduleEntity> scheduleEntities = scheduleRepository.findByStatusAndStartBetween(Byte.valueOf("2"),startOfDay,endOfDay);
+        for(ScheduleEntity scheduleEntity : scheduleEntities){
+            DailyScheduleEntity dailyScheduleEntity = new DailyScheduleEntity();
+            dailyScheduleEntity.setEmpId(scheduleEntity.getEmpId());
+            dailyScheduleEntity.setStartTime(scheduleEntity.getStart());
+            dailyScheduleEntity.setEndTime(scheduleEntity.getEnd());
+            dailyScheduleRepository.save(dailyScheduleEntity);
+        }
     }
 
 }
