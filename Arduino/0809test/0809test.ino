@@ -269,7 +269,7 @@ void sonicvalue(){
     //delay(10); 
   }
 
-  nowDistance = sumDistance / 100 - mcnt;
+  nowDistance = sumDistance / (100 - mcnt);
 
 }
 
