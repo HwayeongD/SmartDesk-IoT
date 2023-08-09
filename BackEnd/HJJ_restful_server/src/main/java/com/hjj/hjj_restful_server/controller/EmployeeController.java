@@ -13,6 +13,8 @@ import org.json.JSONObject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ public class EmployeeController {
     private final EMPSeatService empSeatService;
     private final DeskService deskService;
     private final DepartmentService departmentService;
+    private final DailyScheduleService dailyScheduleService;
 
     // 웹소켓 주입
     private final WebSocketChatHandler webSocketChatHandler;
@@ -422,13 +425,15 @@ public class EmployeeController {
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
 
+
         deskDTO.setEmpId(empId);
         empSeatDTO.setSeatId(seatId);
         empSeatDTO.setPrevSeat(seatId);
+        empAttendanceDTO.setStatus(Byte.valueOf("1"));
 
         deskService.save(deskDTO);
         empSeatService.save(empSeatDTO);
-
+        empAttendanceService.save(empAttendanceDTO);
 
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
@@ -576,6 +581,16 @@ public class EmployeeController {
         NewscheduleDTO.setDetail(detail);
         scheduleService.save(NewscheduleDTO);
 
+        LocalDateTime now = LocalDateTime.now();
+        if(start.toLocalDateTime().toLocalDate().equals(now.toLocalDate()) && status == 2){
+            DailyScheduleDTO dailyScheduleDTO = new DailyScheduleDTO();
+            dailyScheduleDTO.setEmpId(empId);
+            dailyScheduleDTO.setStartTime(start);
+            dailyScheduleDTO.setEndTime(end);
+            dailyScheduleService.save(dailyScheduleDTO);
+        }
+        webSocketChatHandler.CheckAFK();
+
         String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -595,7 +610,11 @@ public class EmployeeController {
         if(requestBody.get("detail")!=null)
             detail = requestBody.get("detail").toString();
 
+
         ScheduleDTO scheduleDTO = scheduleService.findBySchId(schId);
+
+        dailyScheduleService.DeleteBySchId(empId, scheduleDTO.getStart(), scheduleDTO.getEnd());
+
         scheduleDTO.setHead(head);
         scheduleDTO.setEmpId(empId);
         scheduleDTO.setStart(start);
@@ -604,16 +623,32 @@ public class EmployeeController {
         scheduleDTO.setDetail(detail);
         scheduleService.save(scheduleDTO);
 
+        LocalDateTime now = LocalDateTime.now();
+        if(start.toLocalDateTime().toLocalDate().equals(now.toLocalDate()) && status == 2){
+            DailyScheduleDTO dailyScheduleDTO = new DailyScheduleDTO();
+            dailyScheduleDTO.setEmpId(empId);
+            dailyScheduleDTO.setStartTime(start);
+            dailyScheduleDTO.setEndTime(end);
+            dailyScheduleService.save(dailyScheduleDTO);
+        }
+        webSocketChatHandler.CheckAFK();
+
         String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+    // 스케쥴 삭제하기
     @DeleteMapping("schedule/{empId}/{schId}")
     public ResponseEntity<String> DeleteSchedule(@PathVariable Long empId, @PathVariable Long schId){
         if(scheduleService.findBySchId(schId) == null){
             String json = "{ \"resultCode\": \" S201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
+        ScheduleDTO scheduleDTO = scheduleService.findBySchId(schId);
+
+        dailyScheduleService.DeleteBySchId(scheduleDTO.getEmpId(),scheduleDTO.getStart(),scheduleDTO.getEnd());
+        webSocketChatHandler.CheckAFK();
+
         scheduleService.deleteSchedule(schId);
         String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,6 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
 
     @Transactional
     Optional<ScheduleEntity> deleteBySchId(Long schId);
+
+    List<ScheduleEntity> findByStatusAndStartBetween(Byte Status, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

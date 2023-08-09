@@ -1,7 +1,9 @@
 package com.hjj.hjj_restful_server.service;
 
 import com.hjj.hjj_restful_server.dto.DailyScheduleDTO;
+import com.hjj.hjj_restful_server.dto.EMPAttendanceDTO;
 import com.hjj.hjj_restful_server.entity.DailyScheduleEntity;
+import com.hjj.hjj_restful_server.entity.EMPAttendanceEntity;
 import com.hjj.hjj_restful_server.repository.DailyScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,17 @@ import java.util.Optional;
 public class DailyScheduleService {
 
     private final DailyScheduleRepository dailyScheduleRepository;
+    private final EMPAttendanceService empAttendanceService;
+
+    public void DeleteBySchId(Long empId, java.sql.Timestamp start, java.sql.Timestamp end){
+        Optional<DailyScheduleEntity> dailyScheduleEntity = dailyScheduleRepository.findByAllThing(empId, start, end);
+        if(dailyScheduleEntity.isPresent()) {
+            dailyScheduleRepository.deleteByDailyId(dailyScheduleEntity.get().getDailyId());
+            EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+            empAttendanceDTO.setStatus(Byte.valueOf("1"));
+            empAttendanceService.save(empAttendanceDTO);
+        }
+    }
 
     public List<DailyScheduleDTO> findNowSchedule(){
         List<DailyScheduleEntity> optionalDailyScheduleEntity = dailyScheduleRepository.findNowSchedule();

@@ -1,11 +1,13 @@
 package com.hjj.hjj_restful_server.handler;
 
+import com.hjj.hjj_restful_server.dto.DailyScheduleDTO;
 import com.hjj.hjj_restful_server.dto.DeskDTO;
-import com.hjj.hjj_restful_server.repository.DeskRepository;
-import com.hjj.hjj_restful_server.repository.EMPAttendanceRepository;
-import com.hjj.hjj_restful_server.repository.EMPSeatRepository;
+import com.hjj.hjj_restful_server.dto.EMPAttendanceDTO;
+import com.hjj.hjj_restful_server.repository.*;
+import com.hjj.hjj_restful_server.service.DailyScheduleService;
 import com.hjj.hjj_restful_server.service.DeskService;
 import com.hjj.hjj_restful_server.service.EMPAttendanceService;
+import com.hjj.hjj_restful_server.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -16,10 +18,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -33,9 +32,14 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     private final static Logger LOG = Logger.getGlobal();
     private final Map<String, WebSocketSession> activeSessions = Collections.synchronizedMap(new ConcurrentHashMap<>());
     private final DeskService deskService;
+    private final ScheduleService scheduleService;
+    private final DailyScheduleService dailyScheduleService;
+    private final EMPAttendanceService empAttendanceService;
     private final EMPAttendanceRepository empAttendanceRepository;
     private final DeskRepository deskRepository;
     private final EMPSeatRepository empSeatRepository;
+    private final DailyScheduleRepository dailyScheduleRepository;
+
 
 
     @Override
@@ -63,7 +67,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     }
 //  일정한 시간이 되었을 때 전체 책상에게 보내는 신호
-    @Scheduled(cron = "0 11 13 * * ?")
+    @Scheduled(cron = "0 00 00 * * ?")
     //@Scheduled(fixedRate = 5000)
     public void sendDataToAllClients() {
 
@@ -81,6 +85,34 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         empAttendanceRepository.resetTable();
         empSeatRepository.resetTable();
         deskRepository.resetTable();
+        dailyScheduleRepository.truncateTable();
+        scheduleService.transferToDailySchedule();
+    }
+
+    // 30 분 마다 체크!
+    @Scheduled(cron = "0 0,30 6-23 * * ?")
+    public void CheckAFK(){
+        List<DailyScheduleDTO> EndList = dailyScheduleService.findNowEndTime();
+        if(EndList != null){
+            for(DailyScheduleDTO dailyScheduleDTO : EndList){
+                Long empId = dailyScheduleDTO.getEmpId();
+                EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                empAttendanceDTO.setStatus(Byte.valueOf("1"));
+                empAttendanceService.save(empAttendanceDTO);
+            }
+        }
+
+
+        List<DailyScheduleDTO> StartList = dailyScheduleService.findNowSchedule();
+        if(StartList != null){
+            for(DailyScheduleDTO dailyScheduleDTO : StartList){
+                Long empId = dailyScheduleDTO.getEmpId();
+                EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                empAttendanceDTO.setStatus(Byte.valueOf("2"));
+                empAttendanceService.save(empAttendanceDTO);
+            }
+        }
+
     }
 
     @Override
