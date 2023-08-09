@@ -90,21 +90,29 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     }
 
     // 30 분 마다 체크!
-    @Scheduled(cron = "0 0,30 6-11 * * ?")
+    @Scheduled(cron = "0 0,30 6-23 * * ?")
     public void CheckAFK(){
         List<DailyScheduleDTO> EndList = dailyScheduleService.findNowEndTime();
-        for(DailyScheduleDTO dailyScheduleDTO : EndList){
-            Long empId = dailyScheduleDTO.getEmpId();
-            EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-            empAttendanceDTO.setStatus(Byte.valueOf("1"));
+        if(EndList != null){
+            for(DailyScheduleDTO dailyScheduleDTO : EndList){
+                Long empId = dailyScheduleDTO.getEmpId();
+                EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                empAttendanceDTO.setStatus(Byte.valueOf("1"));
+                empAttendanceService.save(empAttendanceDTO);
+            }
         }
 
+
         List<DailyScheduleDTO> StartList = dailyScheduleService.findNowSchedule();
-        for(DailyScheduleDTO dailyScheduleDTO : StartList){
-            Long empId = dailyScheduleDTO.getEmpId();
-            EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-            empAttendanceDTO.setStatus(Byte.valueOf("2"));
+        if(StartList != null){
+            for(DailyScheduleDTO dailyScheduleDTO : StartList){
+                Long empId = dailyScheduleDTO.getEmpId();
+                EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                empAttendanceDTO.setStatus(Byte.valueOf("2"));
+                empAttendanceService.save(empAttendanceDTO);
+            }
         }
+
     }
 
     @Override
