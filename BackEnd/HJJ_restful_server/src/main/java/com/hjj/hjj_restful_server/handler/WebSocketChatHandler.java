@@ -1,7 +1,10 @@
 package com.hjj.hjj_restful_server.handler;
 
+import com.hjj.hjj_restful_server.dto.DailyScheduleDTO;
 import com.hjj.hjj_restful_server.dto.DeskDTO;
+import com.hjj.hjj_restful_server.dto.EMPAttendanceDTO;
 import com.hjj.hjj_restful_server.repository.*;
+import com.hjj.hjj_restful_server.service.DailyScheduleService;
 import com.hjj.hjj_restful_server.service.DeskService;
 import com.hjj.hjj_restful_server.service.EMPAttendanceService;
 import com.hjj.hjj_restful_server.service.ScheduleService;
@@ -15,10 +18,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -33,6 +33,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> activeSessions = Collections.synchronizedMap(new ConcurrentHashMap<>());
     private final DeskService deskService;
     private final ScheduleService scheduleService;
+    private final DailyScheduleService dailyScheduleService;
+    private final EMPAttendanceService empAttendanceService;
     private final EMPAttendanceRepository empAttendanceRepository;
     private final DeskRepository deskRepository;
     private final EMPSeatRepository empSeatRepository;
@@ -85,6 +87,24 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         deskRepository.resetTable();
         dailyScheduleRepository.truncateTable();
         scheduleService.transferToDailySchedule();
+    }
+
+    // 30 분 마다 체크!
+    @Scheduled(cron = "0 0,30 6-11 * * ?")
+    public void CheckAFK(){
+        List<DailyScheduleDTO> EndList = dailyScheduleService.findNowEndTime();
+        for(DailyScheduleDTO dailyScheduleDTO : EndList){
+            Long empId = dailyScheduleDTO.getEmpId();
+            EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+            empAttendanceDTO.setStatus(Byte.valueOf("1"));
+        }
+
+        List<DailyScheduleDTO> StartList = dailyScheduleService.findNowSchedule();
+        for(DailyScheduleDTO dailyScheduleDTO : StartList){
+            Long empId = dailyScheduleDTO.getEmpId();
+            EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+            empAttendanceDTO.setStatus(Byte.valueOf("2"));
+        }
     }
 
     @Override
