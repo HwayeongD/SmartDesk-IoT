@@ -18,8 +18,5 @@
         <item name="colorPrimary">@color/btn_light_blue</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
-<!--        <item name="android:windowIsTranslucent">true</item>-->
-<!--        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>-->
-<!--        <item name="android:windowFullscreen">true</item>-->
     </style>
 </resources>

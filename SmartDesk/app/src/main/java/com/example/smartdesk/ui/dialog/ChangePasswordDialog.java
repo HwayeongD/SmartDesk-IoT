@@ -26,7 +26,7 @@ public class ChangePasswordDialog extends Dialog {
     //체크 팝업 커스텀
     public void showChangePasswordDialog() {
         //참조할 다이얼로그 화면을 연결한다.
-        changePasswordDialog.setContentView(R.layout.activity_change_pw);
+        changePasswordDialog.setContentView(R.layout.change_pw_dialog);
 
         //다이얼로그의 구성요소들이 동작할 코드작성
         ImageView closeImageView = changePasswordDialog.findViewById(R.id.close_change_pw);
