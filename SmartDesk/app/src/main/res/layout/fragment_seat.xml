@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_bias="0.05">
 
 
@@ -36,7 +38,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"
-                android:background="@drawable/seat"
+                android:background="@drawable/seat_yellow"
                 android:backgroundTint="@color/comm_light_gray" />
 
             <TextView
@@ -53,7 +55,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"
-                android:background="@drawable/seat"
+                android:background="@drawable/seat_yellow"
                 android:backgroundTint="@color/main_light_yellow" />
 
 
@@ -71,19 +73,18 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/grid_recyclerview"
+    <GridView
+        android:id="@+id/gridview_seat"
         android:layout_width="400dp"
         android:layout_height="640dp"
         android:background="@drawable/rounded_rectangle2"
         android:elevation="20dp"
+        android:numColumns="5"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:verticalSpacing="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1">
-
-
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
