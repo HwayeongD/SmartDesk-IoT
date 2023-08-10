@@ -9,7 +9,7 @@
 #include "arduino_secrets.h"
 #include "Arduino_LED_Matrix.h"
 
-#define TABLE_ID 301
+#define TABLE_ID 201
 
 
 // dp paint
@@ -34,7 +34,7 @@ float duration;
 float distance;
 float sumDistance = 0;
 float nowDistance = 0; 
-int cnt = 100;
+int cnt = 120;
 // 개인 선호 높이
 int likeheight = 0;
 // 현재 높이
@@ -47,6 +47,7 @@ int flag = 0;
 int gflag = 0;
 // 취소 나 퇴근
 int cflag = 0;
+int dflag = 0;
 // 자리상태 변화
 int xflag = 0;
 // 새벽책상 제어
@@ -98,27 +99,13 @@ void setup()
   // Serial.begin(9600);
 
   while ( status != WL_CONNECTED) {
-    //Serial.print("Attempting to connect to Network named: ");
-    //Serial.println(ssid);                   // print the network name (SSID);
-
-    // Connect to WPA/WPA2 network:
+    
     status = WiFi.begin(ssid, pass);
   }
 
-  // print the SSID of the network you're attached to:
-  //Serial.print("SSID: ");
-  //Serial.println(WiFi.SSID());
-
-  // print your WiFi shield's IP address:
   IPAddress ip = WiFi.localIP();
-  //Serial.print("IP Address: ");
-  //Serial.println(ip);
-
-  //Serial.println("starting WebSocket client");
+ 
   client.begin("/ws/chat");
-  // client.beginMessage(TYPE_TEXT);
-  // client.print("Hand Shake Test");
-  // client.endMessage();
 
   matrix.loadSequence(frames);
   matrix.begin();
@@ -133,22 +120,20 @@ void loop()
   get_MSG();
   // 서버에서 출근이나 선호높이 버튼을 눌러서 신호 보내줄 때 
   if(gflag == 1){
+    dflag = 0;
     dp_init();
     likeheight = atoi(dist);
     sonicvalue();
     nowheight = nowDistance;
-    // Serial.println(likeheight);
-    // Serial.println(nowheight);
+
     if(likeheight>nowheight){
       while(1){
         sonicvalue();
-
         if (nowDistance >= likeheight) {
           digitalWrite(Dir1Pin, LOW); // 멈춤
           digitalWrite(Dir2Pin, LOW);
           break;
         }
-        // Serial.println("올라감");
         digitalWrite(Dir1Pin, HIGH); //올라가는거
         digitalWrite(Dir2Pin, LOW);
         delay(10);
@@ -161,13 +146,11 @@ void loop()
     else if(likeheight<nowheight){
       while(1){
         sonicvalue();
-
         if (nowDistance <= likeheight) {
           digitalWrite(Dir1Pin, LOW); // 멈춤
           digitalWrite(Dir2Pin, LOW);
           break;
         }
-        // Serial.println("내려감");
         digitalWrite(Dir1Pin, LOW); //내려가는거
         digitalWrite(Dir2Pin, HIGH);
         delay(10);
@@ -177,10 +160,12 @@ void loop()
       nowDistance = likeheight;
       send_MSG();
     }
+
   }
   else if(cflag == 1){
     dp_remove_init();
-    cflag=0;
+    cflag = 0;
+    dflag = 1;
   }
   else if(xflag == 1){
     dp_init();
@@ -195,9 +180,10 @@ void loop()
   else if(nflag == 1){
     sonicvalue();
     dp_init();
-    nflag=0;
+    nflag = 0;
+    dflag = 0;
   }
-  else{
+  else if(dflag == 0){
     // 수동조작
     int upbtnstate = digitalRead(UpBtn);
     int downbtnstate = digitalRead(DownBtn);
@@ -208,14 +194,14 @@ void loop()
       digitalWrite(Dir1Pin, HIGH); // 올라가는거
       digitalWrite(Dir2Pin, LOW);
       //Serial.println("up");
-      delay(100);
+      delay(50);
     }
     else if(downbtnstate == 1 && upbtnstate == 0){
       flag = 1;
       digitalWrite(Dir1Pin, LOW); // 내려가는거
       digitalWrite(Dir2Pin, HIGH);
       //Serial.println("down");
-      delay(100);
+      delay(50);
     }
     else if (flag == 1 &&upbtnstate == 1 && downbtnstate == 1) {
 
@@ -230,25 +216,36 @@ void loop()
       flag = 0;
     }   
   }
-  delay(1000);
+  delay(500);
 }
 
 void sonicvalue(){
   sumDistance = 0;
+  int mcnt = 0;
+  
   for (int i = 0; i < cnt; i++) {
+
     digitalWrite(trig, HIGH); 
-    delayMicroseconds(10);
+    delayMicroseconds(50);
     digitalWrite(trig, LOW);
+    delayMicroseconds(100);
   
     duration = pulseIn(echo, HIGH); // pulseIn함수의 단위는 ms(마이크로 세컨드)
-  
+
     distance = ((34000 * duration) / 1000000) / 2;
+
+    if(i>=0&&i<10) continue;
+    if(i>=110&&i<120)continue;
+    if(distance<= 18 || distance >=30){
+      mcnt++;
+      continue;
+    }
+    
     sumDistance += distance;
-    delay(10); 
+    //delay(10); 
   }
 
-  nowDistance = sumDistance / cnt;
-
+  nowDistance = sumDistance / (100 - mcnt);
 }
 
 void dp_init(){
@@ -275,27 +272,22 @@ void dp_init(){
 
 
     paint.SetWidth(20); // 우리가 화면 보는 기준으로 세로
-    //paint.SetWidth(100);
     paint.SetHeight(150); //가로
 
     paint.Clear(COLORED); 
     paint.DrawStringAt(0, 0, "____________________________", &Font20, UNCOLORED); // 사각형 안에서의 글씨 위치
     epd.SetFrameMemory(paint.GetImage(), 75, 10, paint.GetWidth(), paint.GetHeight());//사각형 위치
-    //epd.DisplayFrame();
 
 
     paint.SetWidth(20); // 우리가 화면 보는 기준으로 세로
-    //paint.SetWidth(100);
     paint.SetHeight(150); //가로
 
     paint.Clear(COLORED); 
     paint.DrawStringAt(0, 0, "____________________________", &Font20, UNCOLORED); // 사각형 안에서의 글씨 위치
     epd.SetFrameMemory(paint.GetImage(), 75, 150, paint.GetWidth(), paint.GetHeight());//사각형 위치
-    //epd.DisplayFrame();
 
 
     paint.SetWidth(40); // 우리가 화면 보는 기준으로 세로
-    //paint.SetWidth(100);
     paint.SetHeight(180); 
 
     paint.Clear(COLORED); 
@@ -304,23 +296,19 @@ void dp_init(){
 
 
     paint.SetWidth(40); // 우리가 화면 보는 기준으로 세로
-    //paint.SetWidth(100);
     paint.SetHeight(50); //가로
 
     paint.Clear(COLORED); 
     paint.DrawStringAt(5, 10, team_name, &Font20, UNCOLORED); // 사각형 안에서의 글씨 위치
     epd.SetFrameMemory(paint.GetImage(), 90, 250, paint.GetWidth(), paint.GetHeight());//사각형 위치
-    //epd.DisplayFrame();
 
 
     paint.SetWidth(40); // 우리가 화면 보는 기준으로 세로
-    //paint.SetWidth(100);
     paint.SetHeight(204); 
 
     paint.Clear(COLORED); 
     paint.DrawStringAt(5, 10, name, &Font24, UNCOLORED); // 사각형 안에서의 글씨 위치
     epd.SetFrameMemory(paint.GetImage(), 10, 10, paint.GetWidth(), paint.GetHeight());//사각형 위치
-    // epd.DisplayFrame();
 
 
     paint.SetWidth(40); // 우리가 화면 보는 기준으로 세로
@@ -329,7 +317,7 @@ void dp_init(){
     paint.Clear(COLORED); 
     paint.DrawStringAt(5, 10, dist, &Font20, UNCOLORED); // 사각형 안에서의 글씨 위치
     epd.SetFrameMemory(paint.GetImage(), 10, 220, paint.GetWidth(), paint.GetHeight());//사각형 위치
-    // epd.DisplayFrame();
+
 
     paint.SetWidth(40); // 우리가 화면 보는 기준으로 세로
     paint.SetHeight(50); 
@@ -339,22 +327,15 @@ void dp_init(){
     epd.SetFrameMemory(paint.GetImage(), 10, 250, paint.GetWidth(), paint.GetHeight());//사각형 위치
     epd.DisplayFrame();
 
-    delay(1000);
+    delay(500);
   }
-  else{
-    //Serial.println("No Data");
-  }
+  
 }
 
 void send_MSG(){
   int f = 0;
   while (f == 0){
     if (client.connected()) {
-      
-      //Serial.print("Send data : ");
-      //Serial.print(TABLE_ID);
-      //Serial.print(" ");
-      //Serial.println(dist);
 
       // send a hello #
       client.beginMessage(TYPE_TEXT);
@@ -364,22 +345,9 @@ void send_MSG(){
       
       client.endMessage();
       delay(50);
-      // increment count for next message
-
-      // check if a message is available to be received
-      // int messageSize = client.parseMessage();
-      // Serial.println(messageSize);
-      // if (messageSize > 0) {
-      //   Serial.println("Received a message:");
-      //   Serial.println(client.readString());
-      // }
-      // // wait 5 seconds
-      // delay(500);
+    
       break;
     }
-    // else{
-    //   Serial.println("Connecting");
-    // }
   }
 }
 
@@ -389,45 +357,32 @@ void send_MSG(){
 //c : 취소, 퇴근
 
 void get_MSG(){
-  // 출근이나 선호높이 조정하는 경우랑 퇴근/취소하는 경우랑 자리비움에 대해서 flag 나눠서 생각해야할듯
+
   int messageSize = client.parseMessage();
   if (messageSize > 0) {
-    //Serial.println("Received a message from get_MSG");
     String msg = client.readString(); // 메시지를 String 객체로 받아옴
     char buffer[1024]; // 충분히 큰 버퍼를 준비 (동적 메모리 할당 대신 정적 배열 사용)
     msg.toCharArray(buffer, sizeof(buffer)); // String 객체를 char 배열로 복사
-    //Serial.println(buffer);
     char* statechange = strtok(buffer,",");
     name = strtok(NULL, ",");
     dist = strtok(NULL, ",");
     team_name = strtok(NULL, ",");
     char* state_str = strtok(NULL, ",");
     state_dp = (strcmp(state_str, "1") == 0);
-    // Serial.println("Parsed Data:");
-    // Serial.println(statechange);
-    // Serial.println(name);
-    // Serial.println(dist);
-    // Serial.println(team_name);
-    // Serial.println(state_dp);
 
     if((strcmp(statechange,"g")==0) && (strcmp(dist,"-1") != 0)){
-      // Serial.println("ggg");
       gflag = 1;
     }
     else if(strcmp(statechange,"a")==0){
-      // Serial.println("aaa");
       aflag = 1;
     }
     else if(strcmp(statechange,"x")==0){
-      // Serial.println("xxx");
       xflag = 1;
     }
     else if(strcmp(statechange,"c")==0){
-      // Serial.println("ccc");
       cflag = 1;
     }
     else if((strcmp(statechange,"g")==0) && (strcmp(dist,"-1") == 0)){
-      // Serial.println("nnn");
       nflag = 1;
     }
     nowDistance = 0;
@@ -445,5 +400,5 @@ void dp_remove_init(){
     epd.ClearFrameMemory(0xFF);
     epd.DisplayFrame();
   
-    delay(100);
+    delay(500);
 }

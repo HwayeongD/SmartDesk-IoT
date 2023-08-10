@@ -28,9 +28,6 @@ public class EmployeeEntity {
     private Long teamId;
 
     @Column
-    private String image;
-
-    @Column
     private String empIdCard;
 
 
@@ -41,7 +38,6 @@ public class EmployeeEntity {
         employeeEntity.setNickname(employeeDTO.getNickname());
         employeeEntity.setPassword(employeeDTO.getPassword());
         employeeEntity.setTeamId(employeeDTO.getTeamId());
-        employeeEntity.setImage(employeeDTO.getImage());
         employeeEntity.setEmpIdCard(employeeDTO.getEmpIdCard());
         return employeeEntity;
     }

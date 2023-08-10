@@ -16,7 +16,6 @@ public class EmployeeDTO {
     private String nickname;
     private String password;
     private Long teamId;
-    private String image;
     private String empIdCard;
 
     public static EmployeeDTO toEmployeeDTO(EmployeeEntity employeeEntity)
@@ -27,7 +26,6 @@ public class EmployeeDTO {
         employeeDTO.setNickname(employeeEntity.getNickname());
         employeeDTO.setPassword(employeeEntity.getPassword());
         employeeDTO.setTeamId(employeeEntity.getTeamId());
-        employeeDTO.setImage(employeeEntity.getImage());
         employeeDTO.setEmpIdCard(employeeEntity.getEmpIdCard());
         return employeeDTO;
     }

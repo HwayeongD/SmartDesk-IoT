@@ -13,6 +13,8 @@ import org.json.JSONObject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ public class EmployeeController {
     private final EMPSeatService empSeatService;
     private final DeskService deskService;
     private final DepartmentService departmentService;
+    private final DailyScheduleService dailyScheduleService;
 
     // 웹소켓 주입
     private final WebSocketChatHandler webSocketChatHandler;
@@ -35,6 +38,10 @@ public class EmployeeController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, Object> requestBody) {
+        if(requestBody.get("empId") == null || requestBody.get("empId") == ""){
+            String json = "{ \"resultCode\": \" L201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
         Long empId = Long.valueOf(requestBody.get("empId").toString());
         String password = (String) requestBody.get("password");
         EmployeeDTO loginResult = employeeService.login(empId, password);
@@ -46,13 +53,13 @@ public class EmployeeController {
             jsonObject.put("nickname",loginResult.getNickname());
             jsonObject.put("password",loginResult.getPassword());
             jsonObject.put("teamId",loginResult.getTeamId());
-            jsonObject.put("result","L101");
+            jsonObject.put("resultCode","L101");
 
             String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.OK);
         } else {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("result",loginResult.getName());
+            jsonObject.put("resultCode",loginResult.getName());
 
             String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
@@ -65,12 +72,11 @@ public class EmployeeController {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
             String json = "{ \"resultCode\": \" 400 \" }";
-
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-
+        ScheduleDTO scheduleDTO = scheduleService.findRecentByEmpId(empId);
 
         JSONObject json = new JSONObject();
         json.put("nickname", employeeDTO.getNickname());
@@ -92,6 +98,14 @@ public class EmployeeController {
         else
             json.put("personalDeskHeight", "");
         json.put("autoBook",empSeatDTO.isAutoBook());
+        if (scheduleDTO != null){
+            json.put("schStart", scheduleDTO.getStart());
+            json.put("schHead", scheduleDTO.getHead());
+        }
+        else{
+            json.put("schStart", "");
+            json.put("schHead", "");
+        }
 
         String jsonString = json.toString();
 
@@ -136,22 +150,6 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-    // 프로필 사진 변경
-    @PutMapping("/home/{empId}/profile")
-    public ResponseEntity<String> ProfileChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-        if (employeeDTO == null) {
-            String json = "{ \"resultCode\": \" 400 \" }";
-            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
-        }
-        String image = (String) requestBody.get("image");
-        employeeDTO.setImage(image);
-        employeeService.save(employeeDTO);
-
-
-        String json = "{ \"resultCode\": \" 201 \" }";
-        return new ResponseEntity<>(json, HttpStatus.OK);
-    }
 
     // 비밀번호 변경
     @PutMapping("/home/{empId}/password")
@@ -162,7 +160,7 @@ public class EmployeeController {
 
         if(!employeeDTO.getPassword().equals(password)){  // 비밀번호 틀릴 경우
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("result","P201");
+            jsonObject.put("resultCode","P201");
             String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
@@ -172,7 +170,9 @@ public class EmployeeController {
         employeeDTO.setPassword(newpassword);
         employeeService.save(employeeDTO);
 
-        String json = "{ \"result\": \" P101 \" }";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("resultCode","P101");
+        String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
 
     }
@@ -189,10 +189,10 @@ public class EmployeeController {
         String json;
 
         if(autoBook) {
-            json = "{ \"result\": \" P101 \" }";
+            json = "{ \"resultCode\": \" P101 \" }";
         }
         else{
-            json = "{ \"result\": \" P102 \" }";
+            json = "{ \"resultCode\": \" P102 \" }";
         }
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -239,7 +239,7 @@ public class EmployeeController {
         // 카드로 사용자 정보 가져옴.
         EmployeeDTO employeeDTO = employeeService.findByEmpIdCard(empIdCard);
         if(employeeDTO == null){
-            String json = "{ \"result\": \" P201 \" }";
+            String json = "{ \"resultCode\": \" P201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(employeeDTO.getEmpId());
@@ -254,7 +254,7 @@ public class EmployeeController {
         empAttendanceDTO.setStatus(Byte.valueOf("1"));
         empAttendanceService.save(empAttendanceDTO);
 
-        String json = "{ \"result\": \" P101 \" }";
+        String json = "{ \"resultCode\": \" P101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -269,7 +269,7 @@ public class EmployeeController {
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){
-            String json = "{ \"result\": \" P201 \" }";
+            String json = "{ \"resultCode\": \" P201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -291,7 +291,7 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByEmpId(empId);
         if(deskDTO == null){
-            String json = "{ \"result\": \" D201 \" }";
+            String json = "{ \"resultCode\": \" D201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -302,7 +302,7 @@ public class EmployeeController {
         empSeatService.save(empSeatDTO);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("result","D101");
+        jsonObject.put("resultCode","D101");
         jsonObject.put("personalDeskHeight",personalDeskHeight);
         String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
@@ -323,7 +323,7 @@ public class EmployeeController {
         Byte status = empAttendanceDTO.getStatus();
 
         if(empSeatDTO.getSeatId() == null){
-            String json = "{ \"result\": \" D201 \" }";
+            String json = "{ \"resultCode\": \" D201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -333,7 +333,7 @@ public class EmployeeController {
 
         String socketMsg;
         if (personalDeskHeight == null) {
-            String json = "{ \"result\": \" D202 \" }";
+            String json = "{ \"resultCode\": \" D202 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         else {
@@ -342,7 +342,7 @@ public class EmployeeController {
         // 모션데스킹 활동 요청 소켓 메세지
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"result\": \" D101 \" }";
+        String json = "{ \"resultCode\": \" D101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -398,25 +398,27 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"result\": \" S201 \" }";
+            String json = "{ \"resultCode\": \" S201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
-            String json = "{ \"result\": \" S202 \" }";
+            String json = "{ \"resultCode\": \" S202 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
 
+
         deskDTO.setEmpId(empId);
         empSeatDTO.setSeatId(seatId);
         empSeatDTO.setPrevSeat(seatId);
+        empAttendanceDTO.setStatus(Byte.valueOf("1"));
 
         deskService.save(deskDTO);
         empSeatService.save(empSeatDTO);
-
+        empAttendanceService.save(empAttendanceDTO);
 
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
@@ -440,7 +442,7 @@ public class EmployeeController {
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
 
-        String json = "{ \"result\": \" S101 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -452,7 +454,7 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"result\": \" S201 \" }";
+            String json = "{ \"resultCode\": \" S201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -472,7 +474,7 @@ public class EmployeeController {
         newDesk.setEmpId(empId);
         deskService.save(newDesk);
 
-        String json = "{ \"result\": \" S101 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -508,7 +510,7 @@ public class EmployeeController {
         String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"result\": \" S101 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -523,10 +525,15 @@ public class EmployeeController {
             JSONObject json = new JSONObject();
 
             json.put("schId", scheduleDTO.getSchId());
+            json.put("head", scheduleDTO.getHead());
             json.put("start", scheduleDTO.getStart());
             json.put("end", scheduleDTO.getEnd());
             json.put("status", scheduleDTO.getStatus());
-            json.put("detail", scheduleDTO.getDetail());
+            if(scheduleDTO.getDetail() != null)
+                json.put("detail", scheduleDTO.getDetail());
+            else
+                json.put("detail","");
+
             jsonArray.put(json);
         }
         String jsonString = jsonArray.toString();
@@ -538,12 +545,20 @@ public class EmployeeController {
     @PostMapping("schedule/{empId}")
     public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
 
+        if(requestBody.get("head") == null || requestBody.get("head")==""){
+            String json = "{ \"resultCode\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        String head = requestBody.get("head").toString();
         java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
         java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
         Byte status = Byte.valueOf(requestBody.get("status").toString());
-        String detail = requestBody.get("detail").toString();
+        String detail ="";
+        if(requestBody.get("detail")!=null)
+             detail = requestBody.get("detail").toString();
 
         ScheduleDTO NewscheduleDTO =  new ScheduleDTO();
+        NewscheduleDTO.setHead(head);
         NewscheduleDTO.setEmpId(empId);
         NewscheduleDTO.setStart(start);
         NewscheduleDTO.setEnd(end);
@@ -551,7 +566,76 @@ public class EmployeeController {
         NewscheduleDTO.setDetail(detail);
         scheduleService.save(NewscheduleDTO);
 
-        String json = "{ \"resultCode\": \" 201 \" }";
+        LocalDateTime now = LocalDateTime.now();
+        if(start.toLocalDateTime().toLocalDate().equals(now.toLocalDate()) && status == 2){
+            DailyScheduleDTO dailyScheduleDTO = new DailyScheduleDTO();
+            dailyScheduleDTO.setEmpId(empId);
+            dailyScheduleDTO.setStartTime(start);
+            dailyScheduleDTO.setEndTime(end);
+            dailyScheduleService.save(dailyScheduleDTO);
+        }
+        webSocketChatHandler.CheckAFK();
+
+        String json = "{ \"resultCode\": \" S101 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+    
+    // 스케쥴 수정하기
+    @PutMapping("schedule/{empId}/{schId}")
+    public ResponseEntity<String> EditSchedule(@PathVariable Long empId, @PathVariable Long schId, @RequestBody Map<String,Object> requestBody){
+        if(requestBody.get("head") == null || requestBody.get("head")==""){
+            String json = "{ \"resultCode\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        String head = requestBody.get("head").toString();
+        java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
+        java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
+        Byte status = Byte.valueOf(requestBody.get("status").toString());
+        String detail ="";
+        if(requestBody.get("detail")!=null)
+            detail = requestBody.get("detail").toString();
+
+
+        ScheduleDTO scheduleDTO = scheduleService.findBySchId(schId);
+
+        dailyScheduleService.DeleteBySchId(empId, scheduleDTO.getStart(), scheduleDTO.getEnd());
+
+        scheduleDTO.setHead(head);
+        scheduleDTO.setEmpId(empId);
+        scheduleDTO.setStart(start);
+        scheduleDTO.setEnd(end);
+        scheduleDTO.setStatus(status);
+        scheduleDTO.setDetail(detail);
+        scheduleService.save(scheduleDTO);
+
+        LocalDateTime now = LocalDateTime.now();
+        if(start.toLocalDateTime().toLocalDate().equals(now.toLocalDate()) && status == 2){
+            DailyScheduleDTO dailyScheduleDTO = new DailyScheduleDTO();
+            dailyScheduleDTO.setEmpId(empId);
+            dailyScheduleDTO.setStartTime(start);
+            dailyScheduleDTO.setEndTime(end);
+            dailyScheduleService.save(dailyScheduleDTO);
+        }
+        webSocketChatHandler.CheckAFK();
+
+        String json = "{ \"resultCode\": \" S101 \" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    // 스케쥴 삭제하기
+    @DeleteMapping("schedule/{empId}/{schId}")
+    public ResponseEntity<String> DeleteSchedule(@PathVariable Long empId, @PathVariable Long schId){
+        if(scheduleService.findBySchId(schId) == null){
+            String json = "{ \"resultCode\": \" S201 \" }";
+            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+        }
+        ScheduleDTO scheduleDTO = scheduleService.findBySchId(schId);
+
+        dailyScheduleService.DeleteBySchId(scheduleDTO.getEmpId(),scheduleDTO.getStart(),scheduleDTO.getEnd());
+        webSocketChatHandler.CheckAFK();
+
+        scheduleService.deleteSchedule(schId);
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 

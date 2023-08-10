@@ -34,7 +34,7 @@ float duration;
 float distance;
 float sumDistance = 0;
 float nowDistance = 0; 
-int cnt = 100;
+int cnt = 120;
 // 개인 선호 높이
 int likeheight = 0;
 // 현재 높이
@@ -131,18 +131,22 @@ void setup()
 void loop() 
 {
   get_MSG();
+  // Serial.println("Waiting...");
   // 서버에서 출근이나 선호높이 버튼을 눌러서 신호 보내줄 때 
   if(gflag == 1){
     dp_init();
     likeheight = atoi(dist);
     sonicvalue();
     nowheight = nowDistance;
+    // Serial.print("likeheight : ");
     // Serial.println(likeheight);
+    // Serial.print("nowheight : ");
     // Serial.println(nowheight);
     if(likeheight>nowheight){
       while(1){
         sonicvalue();
-
+        // Serial.print("nowDistance : ");
+        // Serial.println(nowDistance);
         if (nowDistance >= likeheight) {
           digitalWrite(Dir1Pin, LOW); // 멈춤
           digitalWrite(Dir2Pin, LOW);
@@ -161,7 +165,8 @@ void loop()
     else if(likeheight<nowheight){
       while(1){
         sonicvalue();
-
+        // Serial.print("nowDistance : ");
+        // Serial.println(nowDistance);
         if (nowDistance <= likeheight) {
           digitalWrite(Dir1Pin, LOW); // 멈춤
           digitalWrite(Dir2Pin, LOW);
@@ -176,7 +181,10 @@ void loop()
       nowheight = nowDistance;
       nowDistance = likeheight;
       send_MSG();
+
+
     }
+
   }
   else if(cflag == 1){
     dp_remove_init();
@@ -208,14 +216,14 @@ void loop()
       digitalWrite(Dir1Pin, HIGH); // 올라가는거
       digitalWrite(Dir2Pin, LOW);
       //Serial.println("up");
-      delay(100);
+      delay(50);
     }
     else if(downbtnstate == 1 && upbtnstate == 0){
       flag = 1;
       digitalWrite(Dir1Pin, LOW); // 내려가는거
       digitalWrite(Dir2Pin, HIGH);
       //Serial.println("down");
-      delay(100);
+      delay(50);
     }
     else if (flag == 1 &&upbtnstate == 1 && downbtnstate == 1) {
 
@@ -230,24 +238,38 @@ void loop()
       flag = 0;
     }   
   }
-  delay(1000);
+  delay(500);
 }
 
 void sonicvalue(){
   sumDistance = 0;
+  int mcnt = 0;
+  
   for (int i = 0; i < cnt; i++) {
+
     digitalWrite(trig, HIGH); 
-    delayMicroseconds(10);
+    delayMicroseconds(50);
     digitalWrite(trig, LOW);
+    delayMicroseconds(100);
   
     duration = pulseIn(echo, HIGH); // pulseIn함수의 단위는 ms(마이크로 세컨드)
-  
+
     distance = ((34000 * duration) / 1000000) / 2;
+
+    if(i>=0&&i<10) continue;
+    if(i>=110&&i<120)continue;
+    if(distance<= 18 || distance >=30){
+      mcnt++;
+      continue;
+    }
+    
+
     sumDistance += distance;
-    delay(10); 
+    
+    //delay(10); 
   }
 
-  nowDistance = sumDistance / cnt;
+  nowDistance = sumDistance / (100 - mcnt);
 
 }
 
@@ -339,7 +361,7 @@ void dp_init(){
     epd.SetFrameMemory(paint.GetImage(), 10, 250, paint.GetWidth(), paint.GetHeight());//사각형 위치
     epd.DisplayFrame();
 
-    delay(1000);
+    delay(500);
   }
   else{
     //Serial.println("No Data");
@@ -445,5 +467,5 @@ void dp_remove_init(){
     epd.ClearFrameMemory(0xFF);
     epd.DisplayFrame();
   
-    delay(100);
+    delay(500);
 }

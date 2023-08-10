@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -133,6 +134,7 @@ public class ProfileFragment extends Fragment {
     private void logoutDialogShow() {
         logoutDialog = new Dialog(this.getContext());
         logoutDialog.setContentView(R.layout.check_dialog);
+        logoutDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         logoutDialog.show();
         
         // 로그아웃 확인 다이얼로그 설정
@@ -143,7 +145,7 @@ public class ProfileFragment extends Fragment {
         Button no_btn = logoutDialog.findViewById(R.id.check_nobtn);
 
         warningImageView.setImageResource(R.drawable.ic_error_48px);
-        titleTextView.setText("로그아웃 확인");
+        titleTextView.setText("로그아웃");
         titleTextView.setTextColor(Color.parseColor("#FF7F00"));
         contentTextView.setText("로그아웃하시겠습니까?");
         yesbtn.setOnClickListener(new View.OnClickListener() {

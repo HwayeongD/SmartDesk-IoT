@@ -22,4 +22,5 @@
     <!--  seat color  -->
     <color name="status_online">#18E62D</color>
     <color name="status_offline">#FFD056</color>
+    <color name="comm_black">#3F3F40</color>
 </resources>
