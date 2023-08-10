@@ -149,8 +149,6 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "실패");
 
                             t.printStackTrace();
-
-                            goToMainActivity();
                         }
                     });
                 }
