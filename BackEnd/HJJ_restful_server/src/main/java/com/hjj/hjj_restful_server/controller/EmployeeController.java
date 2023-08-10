@@ -279,7 +279,9 @@ public class EmployeeController {
 
 
         // 예약 취소
-        SeatCancel(empId);
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        if(empSeatDTO.getSeatId() != null)
+            SeatCancel(empId);
 
 
         JSONObject jsonObject = new JSONObject();
