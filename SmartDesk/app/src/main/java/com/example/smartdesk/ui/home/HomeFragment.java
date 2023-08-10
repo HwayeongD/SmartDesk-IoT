@@ -46,6 +46,7 @@ public class HomeFragment extends Fragment {
     private TextView empScheduleContent;
     private TextView empSeatId;
     private TextView empDeskHeight;
+    Dialog  timerDialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -232,6 +233,11 @@ public class HomeFragment extends Fragment {
 
     private void showTimerDialog() {
         ConfirmDialog autoReserveDialog = new ConfirmDialog(this.getContext(), R.drawable.ic_error_48px, "예약 안내", "최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
+        timerDialog = new Dialog(this.getContext());
+        timerDialog.setContentView(R.layout.confirm_dialog);
+        // 뒷 배경 투명하게 만들어주기
+        timerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        timerDialog.show();
 
         autoReserveDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
             @Override

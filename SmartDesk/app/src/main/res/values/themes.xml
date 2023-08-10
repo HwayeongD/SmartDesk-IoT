@@ -8,15 +8,26 @@
 
     <style name="Theme.Login" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/btn_light_blue</item>
+        <item name="colorAccent">@color/btn_light_blue</item>
         <!--    액션바 숨기기    -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <!--   dialog 전체화면으로 보기   -->
-    <style name="FullScreenDialog" parent="Theme.AppCompat.Dialog">
-        <item name="colorPrimary">@color/btn_light_blue</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
+<!--    <style name="FullScreenDialog" parent="Theme.AppCompat.Dialog">-->
+<!--        <item name="colorPrimary">@color/btn_light_blue</item>-->
+<!--        <item name="android:windowIsFloating">false</item>-->
+<!--        <item name="android:windowBackground">@android:color/transparent</item>-->
+
+<!--    </style>-->
+
+<!--    <style name="AddSchedule" parent="Theme.AppCompat.Light.Dialog">-->
+<!--        <item name="colorAccent">@color/btn_light_blue</item>-->
+<!--        <item name="android:windowIsFloating">false</item>-->
+<!--        <item name="android:windowBackground">@android:color/transparent</item>-->
+<!--    </style>-->
+
+
+
 </resources>
