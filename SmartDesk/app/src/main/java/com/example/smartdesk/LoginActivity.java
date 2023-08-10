@@ -120,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
                             if(response.isSuccessful()) {
                                 Employee data = response.body();
                                 Log.d(TAG, "성공");
-                                Log.d(TAG, data.getNickname());
 
                                 // 자동로그인을 위한 사원ID 로컬 저장 (SharedPreferences)
                                 SharedPreferences sharedPreferences = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);

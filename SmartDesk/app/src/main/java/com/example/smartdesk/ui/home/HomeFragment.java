@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +24,7 @@ import com.example.smartdesk.data.Model.Employee;
 import com.example.smartdesk.data.RetrofitAPI;
 import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentHomeBinding;
+import com.example.smartdesk.ui.dialog.ConfirmDialog;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,10 +39,13 @@ public class HomeFragment extends Fragment {
     Retrofit retrofit = RetrofitClient.getClient();
     RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
 
-    Dialog timerDialog; // 좌석 배정 타이머 팝업
-
     public boolean isAllowed = false;
-    private String nSeatNum;
+
+    private TextView empNickname;
+    private TextView empScheduleTime;
+    private TextView empScheduleContent;
+    private TextView empSeatId;
+    private TextView empDeskHeight;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,6 +62,12 @@ public class HomeFragment extends Fragment {
         homeViewModel.getNickname().observe(getViewLifecycleOwner(), nickname::setText);
         homeViewModel.getMySeat().observe(getViewLifecycleOwner(), mySeat::setText);
         homeViewModel.getMyDeskHeight().observe(getViewLifecycleOwner(), myDeskHeight::setText);
+
+        empNickname = (TextView) root.findViewById(R.id.home_btn_profile_name);
+        empScheduleTime = (TextView) root.findViewById(R.id.today_schedule_time);
+        empScheduleContent = (TextView) root.findViewById(R.id.today_schedule_content);
+        empSeatId = (TextView) root.findViewById(R.id.my_seat);
+        empDeskHeight = (TextView) root.findViewById(R.id.my_desk_height);
 
         // 좌석 정보 버튼 - 좌석페이지로 이동
         root.findViewById(R.id.home_btn_seat).setOnClickListener(new View.OnClickListener() {
@@ -93,14 +101,34 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, data.toString());
 
                 Employee.getInstance().setNickname(data.getNickname());
+                if(data.getNickname() != null && !data.getNickname().equals("")) {
+                    empNickname.setText("Welome, " + data.getNickname());
+                }
+
                 Employee.getInstance().setWorkAttTime(data.getWorkAttTime());
-                Employee.getInstance().setCalTime(data.getCalTime());
-                Employee.getInstance().setCalDetail(data.getCalDetail());
+
+                Employee.getInstance().setSchStart(data.getSchStart());
+                if(data.getSchStart() != null && !data.getSchStart().equals("")) {
+                    empScheduleTime.setText(data.getSchStart().split(" ")[1].substring(0, 5));
+                }
+
+                Employee.getInstance().setSchHead(data.getSchHead());
+                if(data.getSchHead() != null && !data.getSchHead().equals("")) {
+                    empScheduleContent.setText(data.getSchHead());
+                }
+
                 Employee.getInstance().setSeatId(data.getSeatId());
+                if(data.getSeatId() != null && !data.getSeatId().equals("")) {
+                    empSeatId.setText(data.getSeatId());
+                }
+
                 Employee.getInstance().setPersonalDeskHeight(data.getPersonalDeskHeight());
+                if(data.getPersonalDeskHeight() != null && !data.getPersonalDeskHeight().equals("")) {
+                    empDeskHeight.setText(data.getPersonalDeskHeight() + "cm");
+                }
+
                 Employee.getInstance().setAutoBook(data.getAutoBook());
 
-                nSeatNum = data.getSeatId();
                 Log.d(TAG, Employee.getInstance().printEmpData());
                 reserveSeat();
             }
@@ -182,10 +210,12 @@ public class HomeFragment extends Fragment {
         retrofitAPI.reqAutoReserveSeat(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
             @Override
             public void onResponse(Call<Employee> call, Response<Employee> response) {
-                Log.d(TAG, "reserved success : " + response.body().getReserveSuccess());
-                Log.d(TAG, "reserved seatId : " + response.body().getSeatId());
-                if(response.body().getReserveSuccess()) {
-                    Employee.getInstance().setSeatId(response.body().getSeatId());
+                Employee data = response.body();
+                Log.d(TAG, "reserved success : " + data.getReserveSuccess().toString());
+                Log.d(TAG, "reserved seatId : " + data.getSeatId());
+                if(data.getReserveSuccess()) {
+                    Employee.getInstance().setSeatId(data.getSeatId());
+                    empSeatId.setText(data.getSeatId());
                     Log.d(TAG, "reserved seatId : " + Employee.getInstance().getSeatId());
                 }
                 else {
@@ -201,34 +231,22 @@ public class HomeFragment extends Fragment {
     }
 
     private void showTimerDialog() {
-        timerDialog = new Dialog(this.getContext());
-        timerDialog.setContentView(R.layout.confirm_dialog);
-        timerDialog.show();
+        ConfirmDialog autoReserveDialog = new ConfirmDialog(this.getContext(), R.drawable.ic_error_48px, "예약 안내", "최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
 
-        ImageView warningImageView = timerDialog.findViewById(R.id.confirm_dialog_image);
-        TextView titleTextView = timerDialog.findViewById(R.id.confirm_dialog_title);
-        TextView contentTextView = timerDialog.findViewById(R.id.confirm_dialog_content);
-
-        warningImageView.setImageResource(R.drawable.ic_error_48px);
-        titleTextView.setText("예약 안내");
-        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
-        contentTextView.setText("최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
-
-        Button noBtn = timerDialog.findViewById(R.id.confirm_yesbtn);
-        noBtn.setText("아니오");
-        noBtn.setOnClickListener(new View.OnClickListener() {
+        autoReserveDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
             @Override
-            public void onClick(View view) {
-                timerDialog.dismiss();
+            public void okBtnClicked(String btnName) {
                 goToSeatFragment();
             }
         });
 
+        autoReserveDialog.show();
+
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(timerDialog.isShowing()) {
-                    timerDialog.dismiss();
+                if(autoReserveDialog.isShowing()) {
+                    autoReserveDialog.dismiss();
                     reqAutoReserve();
                     isAllowed = true;
                 }

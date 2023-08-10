@@ -16,19 +16,18 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartdesk.LoginActivity;
-import com.example.smartdesk.MainActivity;
 import com.example.smartdesk.R;
 import com.example.smartdesk.data.Model.Employee;
 import com.example.smartdesk.data.RetrofitAPI;
 import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentProfileBinding;
 import com.example.smartdesk.ui.dialog.ChangePasswordDialog;
-import com.example.smartdesk.ui.dialog.CustomDialog;
+import com.example.smartdesk.ui.dialog.CheckDialog;
+import com.example.smartdesk.ui.dialog.ConfirmDialog;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,7 +86,16 @@ public class ProfileFragment extends Fragment {
         info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CustomDialog.getInstance(requireActivity()).showConfirmDialog();
+                ConfirmDialog infoDialog =
+                        new ConfirmDialog(getContext(), R.drawable.ic_error_48px, "좌석 자동 예약", "초기 앱 실행 시 \n최근 좌석 자동 예약 기능");
+                infoDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                    @Override
+                    public void okBtnClicked(String btnName) {
+
+                    }
+                });
+
+                infoDialog.show();
             }
         });
 
@@ -163,35 +171,25 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    // 선호 책상 높이 변경 여부 확인 팝업 발생
     private void changeDeskDiaglogShow() {
-        deskDialog = new Dialog(this.getContext());
-        deskDialog.setContentView(R.layout.check_dialog);
-        deskDialog.show();
+        CheckDialog chDeskDialog =
+                new CheckDialog(this.getContext(), R.drawable.ic_error_48px, "책상 높이 변경", "현재 높이를 즐겨찾기 책상 높이로 \n변경하시겠습니까?");
 
-        //다이얼로그의 구성요소들이 동작할 코드작성
-        ImageView warningImageView = deskDialog.findViewById(R.id.check_dialog_image);
-        TextView titleTextView = deskDialog.findViewById(R.id.check_dialog_title);
-        TextView contentTextView = deskDialog.findViewById(R.id.check_dialog_content);
-        Button yesbtn = deskDialog.findViewById(R.id.check_yesbtn);
-        Button no_btn = deskDialog.findViewById(R.id.check_nobtn);
-
-        warningImageView.setImageResource(R.drawable.ic_error_48px);
-        titleTextView.setText("책상 높이 변경");
-        titleTextView.setTextColor(Color.parseColor("#FF7F00"));
-        contentTextView.setText("현재 높이를 즐겨찾기 책상 높이로 \n변경하시겠습니까?");
-        yesbtn.setOnClickListener(new View.OnClickListener() {
+        chDeskDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
             @Override
-            public void onClick(View v) {
+            public void okBtnClicked(String btnName) {
+                Log.d(TAG, "changeDeskDiaglogShow(): Clicked OK");
                 reqChangeDeskHeight();
-                deskDialog.dismiss();
             }
-        });
-        no_btn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                deskDialog.dismiss();
+            public void noBtnClicked(String btnName) {
+                Log.d(TAG, "changeDeskDiaglogShow(): Clicked NO");
             }
         });
+
+        chDeskDialog.show();
     }
 
     private void reqChangeDeskHeight() {
