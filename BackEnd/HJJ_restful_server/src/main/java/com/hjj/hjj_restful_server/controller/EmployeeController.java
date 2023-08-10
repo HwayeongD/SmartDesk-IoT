@@ -72,7 +72,6 @@ public class EmployeeController {
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         if (employeeDTO == null) {
             String json = "{ \"resultCode\": \" 400 \" }";
-
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);

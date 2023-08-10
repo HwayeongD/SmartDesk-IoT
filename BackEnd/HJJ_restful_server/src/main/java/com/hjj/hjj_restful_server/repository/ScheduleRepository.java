@@ -12,7 +12,15 @@ import java.util.Optional;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> {
-    @Query(value = "SELECT * FROM SERVER.Schedule WHERE empId = :empId AND start > NOW() ORDER BY start ASC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM (\n" +
+            "    SELECT * FROM SERVER.Schedule \n" +
+            "    WHERE empId = :empId AND start <= NOW() AND end > NOW()\n" +
+            "    UNION\n" +
+            "    SELECT * FROM SERVER.Schedule \n" +
+            "    WHERE empId = :empId AND start > NOW()\n" +
+            "    ORDER BY start ASC\n" +
+            ") AS combined\n" +
+            "LIMIT 1", nativeQuery = true)
     Optional<ScheduleEntity> findRecentByEmpId(Long empId);
 
     @Query(value = "SELECT * FROM SERVER.Schedule WHERE MONTH(start) = :month ORDER BY start ASC", nativeQuery = true )
