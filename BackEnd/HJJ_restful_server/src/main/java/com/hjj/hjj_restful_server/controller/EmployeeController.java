@@ -39,7 +39,7 @@ public class EmployeeController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, Object> requestBody) {
         if(requestBody.get("empId") == null || requestBody.get("empId") == ""){
-            String json = "{ \"result\": \" L201 \" }";
+            String json = "{ \"resultCode\": \" L201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         Long empId = Long.valueOf(requestBody.get("empId").toString());
@@ -53,13 +53,13 @@ public class EmployeeController {
             jsonObject.put("nickname",loginResult.getNickname());
             jsonObject.put("password",loginResult.getPassword());
             jsonObject.put("teamId",loginResult.getTeamId());
-            jsonObject.put("result","L101");
+            jsonObject.put("resultCode","L101");
 
             String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.OK);
         } else {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("result",loginResult.getName());
+            jsonObject.put("resultCode",loginResult.getName());
 
             String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
@@ -160,7 +160,7 @@ public class EmployeeController {
 
         if(!employeeDTO.getPassword().equals(password)){  // 비밀번호 틀릴 경우
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("result","P201");
+            jsonObject.put("resultCode","P201");
             String json = jsonObject.toString();
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
@@ -170,7 +170,9 @@ public class EmployeeController {
         employeeDTO.setPassword(newpassword);
         employeeService.save(employeeDTO);
 
-        String json = "{ \"result\": \" P101 \" }";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("resultCode","P101");
+        String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
 
     }
@@ -187,10 +189,10 @@ public class EmployeeController {
         String json;
 
         if(autoBook) {
-            json = "{ \"result\": \" P101 \" }";
+            json = "{ \"resultCode\": \" P101 \" }";
         }
         else{
-            json = "{ \"result\": \" P102 \" }";
+            json = "{ \"resultCode\": \" P102 \" }";
         }
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -237,7 +239,7 @@ public class EmployeeController {
         // 카드로 사용자 정보 가져옴.
         EmployeeDTO employeeDTO = employeeService.findByEmpIdCard(empIdCard);
         if(employeeDTO == null){
-            String json = "{ \"result\": \" P201 \" }";
+            String json = "{ \"resultCode\": \" P201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(employeeDTO.getEmpId());
@@ -252,7 +254,7 @@ public class EmployeeController {
         empAttendanceDTO.setStatus(Byte.valueOf("1"));
         empAttendanceService.save(empAttendanceDTO);
 
-        String json = "{ \"result\": \" P101 \" }";
+        String json = "{ \"resultCode\": \" P101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -267,7 +269,7 @@ public class EmployeeController {
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){
-            String json = "{ \"result\": \" P201 \" }";
+            String json = "{ \"resultCode\": \" P201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -289,7 +291,7 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByEmpId(empId);
         if(deskDTO == null){
-            String json = "{ \"result\": \" D201 \" }";
+            String json = "{ \"resultCode\": \" D201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -300,7 +302,7 @@ public class EmployeeController {
         empSeatService.save(empSeatDTO);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("result","D101");
+        jsonObject.put("resultCode","D101");
         jsonObject.put("personalDeskHeight",personalDeskHeight);
         String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
@@ -321,7 +323,7 @@ public class EmployeeController {
         Byte status = empAttendanceDTO.getStatus();
 
         if(empSeatDTO.getSeatId() == null){
-            String json = "{ \"result\": \" D201 \" }";
+            String json = "{ \"resultCode\": \" D201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -331,7 +333,7 @@ public class EmployeeController {
 
         String socketMsg;
         if (personalDeskHeight == null) {
-            String json = "{ \"result\": \" D202 \" }";
+            String json = "{ \"resultCode\": \" D202 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
         else {
@@ -340,7 +342,7 @@ public class EmployeeController {
         // 모션데스킹 활동 요청 소켓 메세지
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"result\": \" D101 \" }";
+        String json = "{ \"resultCode\": \" D101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -396,13 +398,13 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"result\": \" S201 \" }";
+            String json = "{ \"resultCode\": \" S201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
-            String json = "{ \"result\": \" S202 \" }";
+            String json = "{ \"resultCode\": \" S202 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -440,7 +442,7 @@ public class EmployeeController {
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
 
-        String json = "{ \"result\": \" S101 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -452,7 +454,7 @@ public class EmployeeController {
 
         DeskDTO deskDTO = deskService.findByseatId(seatId);
         if(deskDTO.getEmpId() != null){ // 이미 쓰고있는 좌석이면
-            String json = "{ \"result\": \" S201 \" }";
+            String json = "{ \"resultCode\": \" S201 \" }";
             return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
         }
 
@@ -472,7 +474,7 @@ public class EmployeeController {
         newDesk.setEmpId(empId);
         deskService.save(newDesk);
 
-        String json = "{ \"result\": \" S101 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -508,7 +510,7 @@ public class EmployeeController {
         String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"result\": \" S101 \" }";
+        String json = "{ \"resultCode\": \" S101 \" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
