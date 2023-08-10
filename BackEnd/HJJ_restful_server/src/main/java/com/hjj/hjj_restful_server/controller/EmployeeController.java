@@ -151,22 +151,6 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-    // 프로필 사진 변경
-    @PutMapping("/home/{empId}/profile")
-    public ResponseEntity<String> ProfileChange(@PathVariable Long empId, @RequestBody Map<String, Object> requestBody) {
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-        if (employeeDTO == null) {
-            String json = "{ \"resultCode\": \" 400 \" }";
-            return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
-        }
-        String image = (String) requestBody.get("image");
-        employeeDTO.setImage(image);
-        employeeService.save(employeeDTO);
-
-
-        String json = "{ \"resultCode\": \" 201 \" }";
-        return new ResponseEntity<>(json, HttpStatus.OK);
-    }
 
     // 비밀번호 변경
     @PutMapping("/home/{empId}/password")
