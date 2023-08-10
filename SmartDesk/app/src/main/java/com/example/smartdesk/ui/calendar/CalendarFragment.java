@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,7 +19,6 @@ import com.example.smartdesk.databinding.FragmentCalendarBinding;
 public class CalendarFragment extends Fragment {
 
     Dialog scheduleDialog;
-    CalendarView calendarView;
     private FragmentCalendarBinding binding;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -31,9 +28,6 @@ public class CalendarFragment extends Fragment {
 
         binding = FragmentCalendarBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-//        calendarView = root.findViewById(R.id.calendarView);
-//        calendarView.setBackground(R.style.Theme_Login);
 
 
 
@@ -57,33 +51,21 @@ public class CalendarFragment extends Fragment {
     }
 
     private void addSchedule() {
-        scheduleDialog = new Dialog(this.getContext());
+        scheduleDialog = new Dialog(this.getContext(), R.style.Theme_Login);
         scheduleDialog.setContentView(R.layout.add_schedule_dialog);
-        // 기존 dialog 배경 투명하게 만들어줌
-        scheduleDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        // dialog 화면을 fullscreen으로 띄워줌
-        scheduleDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         scheduleDialog.show();
-
-        TextView schedule_title = scheduleDialog.findViewById(R.id.schedule_title);
-        TextView schedule_memo = scheduleDialog.findViewById(R.id.schedule_memo);
+        EditText schedule_title = scheduleDialog.findViewById(R.id.schedule_title);
+        EditText schedule_memo = scheduleDialog.findViewById(R.id.schedule_memo);
         TextView cancle_add_schedule = scheduleDialog.findViewById(R.id.cancle_add_schedule);
         TextView confirm_add_schedule = scheduleDialog.findViewById(R.id.confirm_add_schedule);
 
 
-        schedule_title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditText editText = new EditText(requireContext());
-                editText.setText(schedule_title.getText());
-
-            }
-        });
 
         cancle_add_schedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { scheduleDialog.dismiss();}
         });
-
     }
+
+
 }

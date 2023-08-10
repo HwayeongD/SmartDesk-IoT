@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -117,30 +118,38 @@ public class LoginActivity extends AppCompatActivity {
                     retrofitAPI.getLoginAccess(Employee.getInstance()).enqueue(new Callback<Employee>() {
                         @Override
                         public void onResponse(Call<Employee> call, Response<Employee> response) {
-                            if(response.isSuccessful()) {
-                                Employee data = response.body();
-                                Log.d(TAG, "성공");
-                                Log.d(TAG, data.getNickname());
+                            try {
+                                if(response.isSuccessful()) {
+                                    Employee data = response.body();
+                                    Log.d(TAG, "성공");
+                                    Log.d(TAG, data.getNickname());
 
-                                // 자동로그인을 위한 사원ID 로컬 저장 (SharedPreferences)
-                                SharedPreferences sharedPreferences = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
-                                SharedPreferences.Editor autoLoginEditor = sharedPreferences.edit();
-                                autoLoginEditor.putBoolean("auto", true);
-                                autoLoginEditor.putLong("empId", Employee.getInstance().getEmpId());
-                                autoLoginEditor.apply();
-                                // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
+                                    // 자동로그인을 위한 사원ID 로컬 저장 (SharedPreferences)
+                                    SharedPreferences sharedPreferences = getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
+                                    SharedPreferences.Editor autoLoginEditor = sharedPreferences.edit();
+                                    autoLoginEditor.putBoolean("auto", true);
+                                    autoLoginEditor.putLong("empId", Employee.getInstance().getEmpId());
+                                    autoLoginEditor.apply();
+                                    // 서버에서의 응답이 정상인 경우, 로그인이 성공한 경우 로그인 창 끝나고 다음 페이지로 넘어가기
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
 
-                                finish();
+                                    finish();
 
 
-                                goToMainActivity();
-                            }
-                            else {
-                                Employee data = response.body();
-                                Log.d(TAG, "실패인가,,");
-                                Log.d(TAG, data.getResultCode());
+                                    goToMainActivity();
+                                }
+                                else {
+                                    Employee data = response.body();
+                                    Log.d(TAG, "실패인가,,");
+                                    Log.d(TAG, data.getResultCode());
+
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "왜 실패인가,,: " + e.getMessage());
+                                textInputLayout1.setError("유효한 아이디를 입력해주세요.");
+                                textInputLayout2.setError("유효한 비밀번호를 입력해주세요.");
+//                                Toast.makeText(LoginActivity.this,"로그인 중에 문제가 발생했습니다. 나중에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -149,6 +158,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "실패");
 
                             t.printStackTrace();
+
+                            Toast.makeText(LoginActivity.this,"네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

@@ -203,6 +203,8 @@ public class HomeFragment extends Fragment {
     private void showTimerDialog() {
         timerDialog = new Dialog(this.getContext());
         timerDialog.setContentView(R.layout.confirm_dialog);
+        // 뒷 배경 투명하게 만들어주기
+        timerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         timerDialog.show();
 
         ImageView warningImageView = timerDialog.findViewById(R.id.confirm_dialog_image);
