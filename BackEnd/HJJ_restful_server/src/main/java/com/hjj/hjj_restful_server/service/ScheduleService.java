@@ -42,8 +42,8 @@ public class ScheduleService {
         }
     }
 
-    public List<ScheduleDTO> findByMonth(Long month){
-        List<ScheduleEntity> opthScheduleEntityList = scheduleRepository.findByMonth(month);
+    public List<ScheduleDTO> findByMonth(Long month, Long empId){
+        List<ScheduleEntity> opthScheduleEntityList = scheduleRepository.findByMonth(month, empId);
         if(opthScheduleEntityList.size()==0){
             return null;
         }

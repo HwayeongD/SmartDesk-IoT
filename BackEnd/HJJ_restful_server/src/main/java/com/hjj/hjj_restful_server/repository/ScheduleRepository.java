@@ -23,8 +23,8 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
             "LIMIT 1", nativeQuery = true)
     Optional<ScheduleEntity> findRecentByEmpId(Long empId);
 
-    @Query(value = "SELECT * FROM SERVER.Schedule WHERE MONTH(start) = :month ORDER BY start ASC", nativeQuery = true )
-    List<ScheduleEntity> findByMonth(Long month);
+    @Query(value = "SELECT * FROM SERVER.Schedule WHERE empId = :empId AND MONTH(start) = :month ORDER BY start ASC", nativeQuery = true )
+    List<ScheduleEntity> findByMonth(Long month, Long empId);
 
     Optional<ScheduleEntity> findBySchId(Long schId);
 

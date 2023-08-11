@@ -567,11 +567,18 @@ public class EmployeeController {
     }
 
 
+//    // 개인 스케쥴 확인 (일별로)
+//    @GetMapping("schedule/{empId}/{month}/{day}")
+//    public ResponseEntity<String> GetScheduleDay(@PathVariable Long empId, @PathVariable Long month, @PathVariable Long day){
+//
+//    }
+
+
 
     // 개인 스케쥴 확인하기 (월별로)
     @GetMapping("schedule/{empId}/{month}")
-    public ResponseEntity<String> GetScheduleMonth(@PathVariable Long month){
-        List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(month);
+    public ResponseEntity<String> GetScheduleMonth(@PathVariable Long empId, @PathVariable Long month){
+        List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(month, empId);
 
         JSONArray jsonArray = new JSONArray();
         for(ScheduleDTO scheduleDTO : scheduleDTOList){
