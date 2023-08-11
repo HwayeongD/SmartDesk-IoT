@@ -22,7 +22,7 @@ public interface DailyScheduleRepository extends JpaRepository<DailyScheduleEnti
     List<DailyScheduleEntity> findNowEndTime();
 
     @Query(value = "SELECT * FROM SERVER.Daily_Schedule WHERE empId = :empId AND startTime = :start AND endTime = :end", nativeQuery = true)
-    Optional<DailyScheduleEntity> findByAllThing(Long empId,java.sql.Timestamp start, java.sql.Timestamp end);
+    List<DailyScheduleEntity> findByAllThing(Long empId,java.sql.Timestamp start, java.sql.Timestamp end);
 
     @Transactional
     Optional<DailyScheduleEntity> deleteByDailyId(Long dailyId);

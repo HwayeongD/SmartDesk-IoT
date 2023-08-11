@@ -24,7 +24,9 @@ import com.example.smartdesk.data.Model.Employee;
 import com.example.smartdesk.data.RetrofitAPI;
 import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentHomeBinding;
+import com.example.smartdesk.ui.dialog.CheckDialog;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
+import com.example.smartdesk.ui.seat.SeatFragment;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +48,7 @@ public class HomeFragment extends Fragment {
     private TextView empScheduleContent;
     private TextView empSeatId;
     private TextView empDeskHeight;
-    Dialog  timerDialog;
+//    Dialog  timerDialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,11 +88,11 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // 퇴근 버튼 - click 리스터
+        // 퇴근 버튼 - click 리스너
         root.findViewById(R.id.home_btn_exit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 퇴근 확인 팝업 발생 후 처리
+                Log.d(TAG, "home_btn_exit 리스너 진입");
                 empLeave();
             }
         });
@@ -107,6 +109,8 @@ public class HomeFragment extends Fragment {
                 }
 
                 Employee.getInstance().setWorkAttTime(data.getWorkAttTime());
+                Employee.getInstance().setWorkEndTime(data.getWorkEndTime());
+                displayAttendExitTime();
 
                 Employee.getInstance().setSchStart(data.getSchStart());
                 if(data.getSchStart() != null && !data.getSchStart().equals("")) {
@@ -145,41 +149,123 @@ public class HomeFragment extends Fragment {
 
     // 선호하는 책상 높이로 조절
     private void reqMoveDesk() {
-        retrofitAPI.reqMoveDeskHeight(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
+        CheckDialog moveDeskDialog = new CheckDialog(this.getContext(), R.drawable.ic_error_48px, "책상 높이 변경", "선호하는 책상 높이로 조정하시겠습니까?");
+        moveDeskDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
             @Override
-            public void onResponse(Call<Employee> call, Response<Employee> response) {
-                Log.d(TAG, "My desk is moved");
+            public void okBtnClicked(String btnName) {
+                retrofitAPI.reqMoveDeskHeight(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
+                    @Override
+                    public void onResponse(Call<Employee> call, Response<Employee> response) {
+                        ConfirmDialog changeDeskDialog = new ConfirmDialog(getContext());
+                        Employee data = response.body();
+                        if(data.getResultCode() == null || data.getResultCode().equals("")) {
+                            Log.d(TAG, "reqMoveDesk() 응답코드 없음");
+                            return;
+                        }
+                        else if(data.getResultCode().equals("D101")){
+                            changeDeskDialog = new ConfirmDialog(getContext(), R.drawable.ic_check_circle_48px, "책상 높이 변경", "선호하는 책상 높이로 조정합니다");
+                        }
+                        else if(data.getResultCode().equals("D201")) {
+                            changeDeskDialog = new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "좌석 없음", "금일 예약한 좌석이 없습니다");
+                        }
+                        else if(data.getResultCode().equals("D202")) {
+                            changeDeskDialog = new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "선호 높이 없음", "설정한 선호 높이가 없습니다");
+                        }
+                        changeDeskDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                            @Override
+                            public void btnClicked(String btnName) {
+
+                            }
+                        });
+                        changeDeskDialog.show();
+                        Log.d(TAG, "My desk is moved");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Employee> call, Throwable t) {
+                        Log.d(TAG, "My desk is NOT moved");
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<Employee> call, Throwable t) {
-                Log.d(TAG, "My desk is NOT moved");
+            public void noBtnClicked(String btnName) {
+
             }
         });
+
+        moveDeskDialog.show();
     }
 
     private void empLeave() {
+        CheckDialog bAttendDialog = new CheckDialog(this.getContext(), R.drawable.ic_error_48px, "퇴근 안내", "지금 퇴근하시겠습니까?");
+        bAttendDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
+            @Override
+            public void okBtnClicked(String btnName) {
+                reqEmpLeave();
+            }
+
+            @Override
+            public void noBtnClicked(String btnName) {
+
+            }
+        });
+        bAttendDialog.show();
+    }
+
+    public void reqEmpLeave() {
         retrofitAPI.reqLeave(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
             @Override
             public void onResponse(Call<Employee> call, Response<Employee> response) {
                 Employee data = response.body();
-                Log.d(TAG, "Leave at " + data.getWorkEndTime());
-                Employee.getInstance().setWorkEndTime(data.getWorkEndTime());
+                if(data.getResultCode() == null || data.getResultCode().equals("")) {
+                    Log.d(TAG, "empLeave() resultCode 없음");
+                } else if(data.getResultCode().equals("P201")) {
+                    Log.d(TAG, "empLeave() 출근 전");
+                    ConfirmDialog cannotLeaveDialog =
+                            new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "퇴근 불가", "금일 출근을 하지 않아 퇴근 처리가 불가합니다.");
+                    cannotLeaveDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                        @Override
+                        public void btnClicked(String btnName) {
+                            Log.d(TAG, "cannotLeaveDialog OK is clicked");
+                        }
+                    });
+                    cannotLeaveDialog.show();
+                } else {
+                    // 정상 퇴근 처리
+                    Employee.getInstance().setWorkEndTime(data.getWorkEndTime());
 
-                TextView exitTime = binding.getRoot().findViewById(R.id.exit_time);
-                exitTime.setText(data.getWorkEndTime());
-                exitTime.setVisibility(View.VISIBLE);
+                    displayAttendExitTime();
 
-                ConstraintLayout exitLayout = binding.getRoot().findViewById(R.id.home_btn_exit);
-                exitLayout.setBackgroundColor(Color.parseColor("#BFBFBF"));
-                exitLayout.setClickable(false);
+                    Log.d(TAG, "empLeave() 퇴근 시간: " + data.getWorkEndTime());
+                }
             }
 
             @Override
             public void onFailure(Call<Employee> call, Throwable t) {
-
+                Log.d(TAG, "empLeave() 통신 failure");
             }
         });
+    }
+
+    // 출퇴근 시간 표기
+    private void displayAttendExitTime() {
+        TextView time = binding.getRoot().findViewById(R.id.attend_exit_time);
+        String startTime = Employee.getInstance().getWorkAttTime();
+        String endTime = Employee.getInstance().getWorkEndTime();
+
+        // 퇴근 시간 표기
+        if(endTime != null && !endTime.equals("")) {
+            time.setText(endTime);
+            time.setVisibility(View.VISIBLE);
+            ConstraintLayout exitLayout = binding.getRoot().findViewById(R.id.home_btn_exit);
+            exitLayout.setBackgroundColor(Color.parseColor("#BFBFBF"));
+            exitLayout.setClickable(false);
+        }
+//        else if(startTime != null && !startTime.equals("")) { // 출근 시간 표기
+//            time.setText(startTime);
+//            time.setVisibility(View.VISIBLE);
+//        }
     }
 
     public void reserveSeat() {
@@ -233,15 +319,15 @@ public class HomeFragment extends Fragment {
 
     private void showTimerDialog() {
         ConfirmDialog autoReserveDialog = new ConfirmDialog(this.getContext(), R.drawable.ic_error_48px, "예약 안내", "최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
-        timerDialog = new Dialog(this.getContext());
-        timerDialog.setContentView(R.layout.confirm_dialog);
-        // 뒷 배경 투명하게 만들어주기
-        timerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        timerDialog.show();
+//        timerDialog = new Dialog(this.getContext());
+//        timerDialog.setContentView(R.layout.confirm_dialog);
+//        // 뒷 배경 투명하게 만들어주기
+//        timerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//        timerDialog.show();
 
         autoReserveDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
             @Override
-            public void okBtnClicked(String btnName) {
+            public void btnClicked(String btnName) {
                 goToSeatFragment();
             }
         });

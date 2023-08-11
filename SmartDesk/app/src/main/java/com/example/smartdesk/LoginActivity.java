@@ -150,7 +150,6 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.e(TAG, "왜 실패인가,,: " + e.getMessage());
                                 textInputLayout1.setError("유효한 아이디를 입력해주세요.");
                                 textInputLayout2.setError("유효한 비밀번호를 입력해주세요.");
-//                                Toast.makeText(LoginActivity.this,"로그인 중에 문제가 발생했습니다. 나중에 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                             }
                         }
 
