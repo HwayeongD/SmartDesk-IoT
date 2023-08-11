@@ -27,6 +27,7 @@
 
     import java.text.SimpleDateFormat;
     import java.util.Calendar;
+    import java.util.List;
     import java.util.Locale;
 
     import retrofit2.Call;
@@ -53,33 +54,42 @@
             View root = binding.getRoot();
 
 
-
-            // 처음 Fragment에 들어왔을 때 모든 schedule 데이터 받아오기
+            // 날짜 설정
             calendarView = root.findViewById(R.id.calendarView);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String today = dateFormat.format(calendar.getTime());
 
-            Log.d("CalendarFragment", "Current Date: " + today);
-
             int currentMonth = calendar.get(Calendar.MONTH) + 1; // Month starts from 0
             String empId = Employee.getInstance().getEmpId().toString();
 
-            retrofitAPI.getSchedule(empId, currentMonth).enqueue(new Callback<Employee>() {
+            Log.d("CalendarFragment", "Today: " + today);
+            Log.d("CalendarFragment", "Current Month: " + currentMonth);
+            Log.d("CalendarFragment", "Employee ID: " + empId);
+
+            // 처음 Fragment에 들어왔을 때 모든 schedule 데이터 받아오기
+            retrofitAPI.getSchedule(empId, currentMonth).enqueue(new Callback<List<Schedule>>() {
                 @Override
-                public void onResponse(Call<Employee> call, Response<Employee> response) {
-                    Employee data = response.body();
-                    if (data != null) {
-                        Log.d("CalendarFragment", data.getSchHead());
+                public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
+                    if(response.isSuccessful()) {
+                        Log.d(TAG, "yes");
+
+                        List<Schedule> data = response.body();
+//                        String abc = response.body().toString();
+//                        Log.d(TAG, abc);
+                        for (Schedule schedule : data) {
+                            Log.d(TAG, "Id: " + schedule.getSchId() + ", Head: " + schedule.getSchHead() + ", Start: " + schedule.getSchStart()
+                                    + ", End: " + schedule.getSchEnd() + ", Status: " + schedule.getStatus() + ", Detail: " + schedule.getSchDetail());
+                        }
                     }
                     else {
-                        Log.d(TAG, "NOOOOOOOOOOOOOOOOOOO");
+                        Log.d(TAG, "No");
                     }
                 }
 
                 @Override
-                public void onFailure(Call<Employee> call, Throwable t) {
-                    Log.e(TAG, "네크워크가 끊겼습니다. 다시 연결해주세요.");
+                public void onFailure(Call<List<Schedule>> call, Throwable t) {
+                    Log.d(TAG, "네트워크 오류");
                 }
             });
 
@@ -92,7 +102,7 @@
                 public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                     // 날짜가 선택되었을 때 실행되는 부분
                     String selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth;
-    //                loadDataForDate(selectedDate);
+                    // loadDataForDate(selectedDate);
                     Log.d("CalendarFragment", "Selected Date: " + selectedDate);
                 }
             });
@@ -175,8 +185,5 @@
                 }
             });
         }
-
-
-
 
     }

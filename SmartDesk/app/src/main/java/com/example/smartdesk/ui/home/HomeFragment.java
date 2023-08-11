@@ -1,6 +1,5 @@
 package com.example.smartdesk.ui.home;
 
-import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,7 +25,6 @@ import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentHomeBinding;
 import com.example.smartdesk.ui.dialog.CheckDialog;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
-import com.example.smartdesk.ui.seat.SeatFragment;
 
 import retrofit2.Call;
 import retrofit2.Callback;

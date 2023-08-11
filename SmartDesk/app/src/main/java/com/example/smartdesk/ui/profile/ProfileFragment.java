@@ -46,7 +46,6 @@ public class ProfileFragment extends Fragment {
     Retrofit retrofit = RetrofitClient.getClient();
     RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
 
-    Dialog deskDialog;
     Dialog logoutDialog;
     TextView desk_height;
     Dialog ChangePasswordDialog;
@@ -187,11 +186,6 @@ public class ProfileFragment extends Fragment {
     private void changeDeskDiaglogShow() {
         CheckDialog chDeskDialog =
                 new CheckDialog(this.getContext(), R.drawable.ic_error_48px, "책상 높이 변경", "현재 높이를 즐겨찾기 책상 높이로 \n변경하시겠습니까?");
-        deskDialog = new Dialog(this.getContext());
-        deskDialog.setContentView(R.layout.check_dialog);
-        // 뒷 배경 투명하게 만들어주기
-        deskDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        deskDialog.show();
 
         chDeskDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
             @Override

@@ -44,4 +44,14 @@ public class Schedule {
 
     public void setSchDetail(String schDetail) { this.schDetail = schDetail; }
 
+    @Override
+    public String toString() {
+        return "Id: " + getSchId() +
+                ", Head: " + getSchHead() +
+                ", Start: " + getSchStart() +
+                ", End: " + getSchEnd() +
+                ", Status: " + getStatus() +
+                ", Detail: " + getSchDetail();
+    }
+
 }
