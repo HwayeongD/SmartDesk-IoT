@@ -17,7 +17,7 @@ import com.example.smartdesk.R;
 
 public class ConfirmDialog extends Dialog implements View.OnClickListener {
     public interface CustomDialogInterface {
-        void okBtnClicked(String btnName);
+        void btnClicked(String btnName);
     }
 
     // confirm_dialog 확인용 버튼 1개
@@ -33,7 +33,7 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
 
     public CustomDialogInterface customDialogInterface;
 
-    private ConfirmDialog(@NonNull Context context) {
+    public ConfirmDialog(@NonNull Context context) {
         super(context);
     }
 
@@ -75,10 +75,11 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.confirm_yesbtn) {
-            if(title.equals("예약 안내"))
-                customDialogInterface.okBtnClicked("아니오");
-            else
-                customDialogInterface.okBtnClicked("확인");
+            customDialogInterface.btnClicked("확인");
+//            if(title.equals("예약 안내"))
+//                customDialogInterface.btnClicked("아니오");
+//            else
+//                customDialogInterface.btnClicked("확인");
             dismiss();
         }
     }

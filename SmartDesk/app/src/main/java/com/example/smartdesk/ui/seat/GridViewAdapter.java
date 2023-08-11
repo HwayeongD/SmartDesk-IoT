@@ -38,6 +38,10 @@ public class GridViewAdapter extends BaseAdapter {
         Log.d("GridViewAdapter", "Add A Seat: " + seat.getSeatId());
     }
 
+    public void clearItems() {
+        seats.clear();
+    }
+
     @Override
     public Object getItem(int i) {
         return seats.get(i);
@@ -53,39 +57,39 @@ public class GridViewAdapter extends BaseAdapter {
         Context context = viewGroup.getContext();
         SeatItem seatItem = seats.get(position);
 
-        if(convertView == null) {
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.seat_each, viewGroup, false);
         }
 
-            ConstraintLayout layoutSeat = (ConstraintLayout) convertView.findViewById(R.id.layout_seat);
-            ImageView isOnline = (ImageView) convertView.findViewById(R.id.emp_status);
-            TextView teamName = (TextView) convertView.findViewById(R.id.team_name);
-            TextView empName = (TextView) convertView.findViewById(R.id.emp_name);
-            TextView seatId = (TextView) convertView.findViewById(R.id.seat_id);
-            
-            if(seatItem.getNickname() == null || seatItem.getNickname().equals("")) { // 예약 가능 좌석
-                layoutSeat.setBackgroundResource(R.drawable.seat_yellow);
-                seatId.setText(seatItem.getSeatId());
-                seatId.setVisibility(View.VISIBLE);
-            } else { // 예약된 좌석
-                layoutSeat.setBackgroundResource(R.drawable.seat_gray);
-                if(seatItem.getStatus())
-                    isOnline.setBackgroundResource(R.drawable.circle_online);
-                else
-                    isOnline.setBackgroundResource(R.drawable.circle_offline);
-                teamName.setText(seatItem.getTeamName());
-                empName.setText(seatItem.getNickname());
+        ConstraintLayout layoutSeat = (ConstraintLayout) convertView.findViewById(R.id.layout_seat);
+        ImageView isOnline = (ImageView) convertView.findViewById(R.id.emp_status);
+        TextView teamName = (TextView) convertView.findViewById(R.id.team_name);
+        TextView empName = (TextView) convertView.findViewById(R.id.emp_name);
+        TextView seatId = (TextView) convertView.findViewById(R.id.seat_id);
 
-                isOnline.setVisibility(View.VISIBLE);
-                teamName.setVisibility(View.VISIBLE);
-                empName.setVisibility(View.VISIBLE);
-            }
+        if (seatItem.getNickname() == null || seatItem.getNickname().equals("")) { // 예약 가능 좌석
+            layoutSeat.setBackgroundResource(R.drawable.seat_yellow);
+            seatId.setText(seatItem.getSeatId().toString());
+            seatId.setVisibility(View.VISIBLE);
+        } else { // 예약된 좌석
+            layoutSeat.setBackgroundResource(R.drawable.seat_gray);
+            if (seatItem.getStatus() == 1)
+                isOnline.setBackgroundResource(R.drawable.circle_online);
+            else
+                isOnline.setBackgroundResource(R.drawable.circle_offline);
+            teamName.setText(seatItem.getTeamName());
+            empName.setText(seatItem.getNickname());
+
+            isOnline.setVisibility(View.VISIBLE);
+            teamName.setVisibility(View.VISIBLE);
+            empName.setVisibility(View.VISIBLE);
+        }
 //        } else {
 //            View view = new View(context);
 //            view = (View) convertView;
 //        }
-        
+
         // 각 좌석 아이템 선택 event
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

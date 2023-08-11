@@ -48,6 +48,7 @@ public class ProfileFragment extends Fragment {
 
     Dialog deskDialog;
     Dialog logoutDialog;
+    TextView desk_height;
     Dialog ChangePasswordDialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,12 +59,16 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        TextView nickname = root.findViewById(R.id.name);
         TextView change_desk = root.findViewById(R.id.change_desk);
-        TextView desk_height = root.findViewById(R.id.desk_height);
+        desk_height = root.findViewById(R.id.desk_height);
         ImageView info = root.findViewById(R.id.info);
         TextView change_pw = root.findViewById(R.id.change_pw);
         Switch isAutoReserve = root.findViewById(R.id.option_switch);
         TextView logoutBtn = root.findViewById(R.id.logout);
+
+        nickname.setText(Employee.getInstance().getNickname());
+        desk_height.setText(Employee.getInstance().getPersonalDeskHeight() + " cm");
 
         // 비밀번호 변경 클릭 시, 페이지 이동
         change_pw.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +100,7 @@ public class ProfileFragment extends Fragment {
                         new ConfirmDialog(getContext(), R.drawable.ic_error_48px, "좌석 자동 예약", "초기 앱 실행 시 \n최근 좌석 자동 예약 기능");
                 infoDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
                     @Override
-                    public void okBtnClicked(String btnName) {
+                    public void btnClicked(String btnName) {
 
                     }
                 });
@@ -209,9 +214,23 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onResponse(Call<Employee> call, Response<Employee> response) {
                 Employee data = response.body();
-                Employee.getInstance().setPersonalDeskHeight(data.getPersonalDeskHeight());
+                if(data.getResultCode().equals("D101")) {
+                    Employee.getInstance().setPersonalDeskHeight(data.getPersonalDeskHeight());
 
-                Log.d(TAG, "Personal Desk Height is changed: " + Employee.getInstance().getPersonalDeskHeight());
+                    desk_height.setText(Employee.getInstance().getPersonalDeskHeight() + " cm");
+
+                    Log.d(TAG, "Personal Desk Height is changed: " + Employee.getInstance().getPersonalDeskHeight());
+                }
+                else if(data.getResultCode().equals("D201")) {
+                    ConfirmDialog noDeskDialog = new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "변경 불가", "예약된 좌석이 있는 경우에만\n선호 높이 변경이 가능합니다");
+                    noDeskDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                        @Override
+                        public void btnClicked(String btnName) {
+
+                        }
+                    });
+                    noDeskDialog.show();
+                }
             }
 
             @Override
@@ -227,7 +246,6 @@ public class ProfileFragment extends Fragment {
         ChangePasswordDialog.setContentView(R.layout.change_pw_dialog);
         ChangePasswordDialog.show();
 
-
         //다이얼로그의 구성요소들이 동작할 코드작성
         TextInputLayout inputPresentPassword = ChangePasswordDialog.findViewById(R.id.pw_present);
         TextInputLayout inputNewPassword = ChangePasswordDialog.findViewById(R.id.pw_new);
@@ -238,10 +256,24 @@ public class ProfileFragment extends Fragment {
         Button changePasswordBtn = ChangePasswordDialog.findViewById(R.id.btn_change_pw);
         ImageView closePasswordView = ChangePasswordDialog.findViewById(R.id.close_change_pw);
 
-        // local에서 비밀번호 동일한지 체크
+
+        retrofitAPI.getPassword(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
+
+            @Override
+            public void onResponse(Call<Employee> call, Response<Employee> response) {
+
+                Log.d(TAG, "****************Actual Password:" + Employee.getInstance().getPassword());
+            }
+
+            @Override
+            public void onFailure(Call<Employee> call, Throwable t) {
+                Log.d(TAG, "Fail to Get Actual Password");
+            }
+        });
         editPresentPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
 
             @Override
@@ -250,13 +282,14 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-//                String presentPassword = Employee.getInstance().get
-//                if (!editPresentPassword.equals(presentPassword)) {
-//                    inputPresentPassword.setError("기존 비밀번호와 동일하지 않습니다.");
-//                }
-//                else {
-//                    inputPresentPassword.setError(null);
-//                }
+                String enteredPresentPassword = editPresentPassword.getText().toString(); // 입력한 기존 비밀번호
+                String actualPassword = Employee.getInstance().getPassword();
+
+                if (!enteredPresentPassword.equals(actualPassword)) {
+                    inputPresentPassword.setError("기존 비밀번호와 일치하지 않습니다.");
+                } else {
+                    inputPresentPassword.setError(null);
+                }
             }
         });
         editNewPassword.addTextChangedListener(new TextWatcher() {
@@ -336,6 +369,9 @@ public class ProfileFragment extends Fragment {
                 ChangePasswordDialog.dismiss();
             }
         });
+
+
+        // local에서 비밀번호 동일한지 체크
     }
 
 

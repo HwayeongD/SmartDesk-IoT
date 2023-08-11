@@ -1,7 +1,11 @@
 package com.example.smartdesk.data;
 
 import com.example.smartdesk.data.Model.Employee;
+<<<<<<< HEAD
 import com.example.smartdesk.data.Model.Schedule;
+=======
+import com.example.smartdesk.data.Model.ReqEmployee;
+>>>>>>> master
 import com.example.smartdesk.data.Model.Seat;
 
 import java.util.List;
@@ -49,6 +53,10 @@ public interface RetrofitAPI {
     @GET("seats/{floor}")
     Call<List<Seat>> reqFloorSeat(@Path("floor") int floor);
 
+    // 좌석 예약 요청
+    @PUT("seats")
+    Call<ReqEmployee> reqReserveSeat(@Body ReqEmployee employee);
+
     // 좌석 변경 요청
     @PUT("seats/change")
     Call<Employee> reqChangeSeat(@Body Employee employee);
@@ -57,6 +65,7 @@ public interface RetrofitAPI {
     @DELETE("seats/{empId}")
     Call<Employee> reqCancelSeat(@Path("empId") String empId);
 
+<<<<<<< HEAD
     // 스케쥴 조회
     @GET("schedule/{empId}/{month}")
     Call<Employee> getSchedule(@Path("empId") String empId, @Path("month") int month);
@@ -73,4 +82,13 @@ public interface RetrofitAPI {
     // 스케쥴 삭제
     @DELETE("schedule/{empId}/{schId}")
     Call<Employee> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
+=======
+    // 비밀번호 변경 페이지 - 비밀번호 데이터 요청
+    @GET("profile/{password}")
+    Call<Employee> getPassword(@Path("password") String password);
+
+    // 비밀번호 변경 요청
+    @PUT("profile/{password}/change")
+    Call<Employee> reqChangePassword(@Body Employee employee);
+>>>>>>> master
 }

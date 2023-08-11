@@ -8,7 +8,7 @@ public class SeatItem {
     String seatId;
     String nickname;
     String teamName;
-    Boolean status;
+    int status; // 0:Blank, 1:Present(Online), 2:Absence(Offline)
 
     public String getSeatId() {
         return seatId;
@@ -34,11 +34,11 @@ public class SeatItem {
         this.teamName = teamName;
     }
 
-    public Boolean getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 }
