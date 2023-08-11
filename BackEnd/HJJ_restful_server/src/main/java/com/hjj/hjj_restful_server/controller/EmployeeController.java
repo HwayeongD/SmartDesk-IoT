@@ -287,6 +287,7 @@ public class EmployeeController {
         jsonObject.put("workEndTime",time);
         jsonObject.put("resultCode","P101");
         String json = jsonObject.toString();
+        System.out.println("퇴근성공");
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -448,7 +449,11 @@ public class EmployeeController {
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
 
-        String json = "{ \"resultCode\": \"S101\" }";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("resultCode","S101");
+        jsonObject.put("empId",empId);
+        jsonObject.put("seatId",seatId);
+        String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
@@ -493,7 +498,8 @@ public class EmployeeController {
 
         // 자리 취소
         EMPSeatDTO empSeat = empSeatService.findByempId(empId);
-        DeskDTO cancelDesk = deskService.findByseatId(empSeat.getSeatId());
+        Long CancelSeatId = empSeat.getSeatId();
+        DeskDTO cancelDesk = deskService.findByseatId(CancelSeatId);
         cancelDesk.setEmpId(null);
         deskService.save(cancelDesk);
 
@@ -519,7 +525,12 @@ public class EmployeeController {
         String socketMsg = "c,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
         webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
 
-        String json = "{ \"resultCode\": \"S101\" }";
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("resultCode","S101");
+        jsonObject.put("empId",empId);
+        jsonObject.put("seatId",CancelSeatId);
+        String json = jsonObject.toString();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
