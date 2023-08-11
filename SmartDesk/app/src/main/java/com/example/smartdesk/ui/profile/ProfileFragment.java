@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +32,8 @@ import com.example.smartdesk.databinding.FragmentProfileBinding;
 import com.example.smartdesk.ui.dialog.ChangePasswordDialog;
 import com.example.smartdesk.ui.dialog.CheckDialog;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,6 +51,7 @@ public class ProfileFragment extends Fragment {
     Dialog deskDialog;
     Dialog logoutDialog;
     TextView desk_height;
+    Dialog ChangePasswordDialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -70,7 +76,7 @@ public class ProfileFragment extends Fragment {
         change_pw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ChangePasswordDialog.getInstance(requireActivity()).showChangePasswordDialog();
+                ChangePasswordDialogShow();
             }
         });
 
@@ -139,6 +145,7 @@ public class ProfileFragment extends Fragment {
     private void logoutDialogShow() {
         logoutDialog = new Dialog(this.getContext());
         logoutDialog.setContentView(R.layout.check_dialog);
+        // 뒷 배경 투명하게 만들어주기
         logoutDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         logoutDialog.show();
         
@@ -182,6 +189,11 @@ public class ProfileFragment extends Fragment {
     private void changeDeskDiaglogShow() {
         CheckDialog chDeskDialog =
                 new CheckDialog(this.getContext(), R.drawable.ic_error_48px, "책상 높이 변경", "현재 높이를 즐겨찾기 책상 높이로 \n변경하시겠습니까?");
+        deskDialog = new Dialog(this.getContext());
+        deskDialog.setContentView(R.layout.check_dialog);
+        // 뒷 배경 투명하게 만들어주기
+        deskDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        deskDialog.show();
 
         chDeskDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
             @Override
@@ -228,7 +240,142 @@ public class ProfileFragment extends Fragment {
                 Log.d(TAG, "Personal Desk Height is NOT changed");
             }
         });
+
     }
+
+    private void ChangePasswordDialogShow() {
+        ChangePasswordDialog = new Dialog(this.getContext(), R.style.Theme_Login);
+        ChangePasswordDialog.setContentView(R.layout.change_pw_dialog);
+        ChangePasswordDialog.show();
+
+        //다이얼로그의 구성요소들이 동작할 코드작성
+        TextInputLayout inputPresentPassword = ChangePasswordDialog.findViewById(R.id.pw_present);
+        TextInputLayout inputNewPassword = ChangePasswordDialog.findViewById(R.id.pw_new);
+        TextInputLayout inputConfirmPassword = ChangePasswordDialog.findViewById(R.id.pw_confirm);
+        TextInputEditText editPresentPassword = ChangePasswordDialog.findViewById(R.id.edit_pw_present);
+        TextInputEditText editNewPassword = ChangePasswordDialog.findViewById(R.id.edit_pw_new);
+        TextInputEditText editCofirmPassword = ChangePasswordDialog.findViewById(R.id.edit_pw_confirm);
+        Button changePasswordBtn = ChangePasswordDialog.findViewById(R.id.btn_change_pw);
+        ImageView closePasswordView = ChangePasswordDialog.findViewById(R.id.close_change_pw);
+
+
+        retrofitAPI.getPassword(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
+
+            @Override
+            public void onResponse(Call<Employee> call, Response<Employee> response) {
+
+                Log.d(TAG, "****************Actual Password:" + Employee.getInstance().getPassword());
+            }
+
+            @Override
+            public void onFailure(Call<Employee> call, Throwable t) {
+                Log.d(TAG, "Fail to Get Actual Password");
+            }
+        });
+        editPresentPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String enteredPresentPassword = editPresentPassword.getText().toString(); // 입력한 기존 비밀번호
+                String actualPassword = Employee.getInstance().getPassword();
+
+                if (!enteredPresentPassword.equals(actualPassword)) {
+                    inputPresentPassword.setError("기존 비밀번호와 일치하지 않습니다.");
+                } else {
+                    inputPresentPassword.setError(null);
+                }
+            }
+        });
+        editNewPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String presentPw = editPresentPassword.getText().toString();
+                String newPw = editNewPassword.getText().toString();
+
+                if (newPw.equals(presentPw)) {
+                    inputNewPassword.setError("기존 비밀번호와 같습니다.");
+                }
+                else {
+                    inputNewPassword.setError(null);
+                }
+            }
+        });
+        editCofirmPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String newPw = editNewPassword.getText().toString();
+                String confirmPw = editCofirmPassword.getText().toString();
+                if (!confirmPw.equals(newPw)) {
+                    inputConfirmPassword.setError("비밀번호가 일치하지 않습니다.");
+                }
+                else {
+                    inputConfirmPassword.setError(null);
+                }
+
+            }
+        });
+
+
+        changePasswordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String presentPw = editPresentPassword.getText().toString();
+                String newPw = editNewPassword.getText().toString();
+                String confirmPw = editCofirmPassword.getText().toString();
+
+                // 입력이 되어 있지 않으면 Error
+                if (TextUtils.isEmpty(presentPw)) {
+                    inputPresentPassword.setError("현재 비밀번호를 입력해주세요.");
+                }
+                if (TextUtils.isEmpty(newPw)) {
+                    inputNewPassword.setError("새 비밀번호를 입력해주세요.");
+                }
+                if (TextUtils.isEmpty(confirmPw)) {
+                    inputConfirmPassword.setError("비밀번호를 확인해주세요.");
+                }
+                else {
+                    Employee.getInstance().getPassword();
+
+                }
+            }
+        });
+        closePasswordView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChangePasswordDialog.dismiss();
+            }
+        });
+
+
+        // local에서 비밀번호 동일한지 체크
+    }
+
 
     @Override
     public void onDestroyView() {

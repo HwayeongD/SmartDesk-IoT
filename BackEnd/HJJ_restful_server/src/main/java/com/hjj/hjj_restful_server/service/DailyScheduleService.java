@@ -20,9 +20,10 @@ public class DailyScheduleService {
     private final EMPAttendanceService empAttendanceService;
 
     public void DeleteBySchId(Long empId, java.sql.Timestamp start, java.sql.Timestamp end){
-        Optional<DailyScheduleEntity> dailyScheduleEntity = dailyScheduleRepository.findByAllThing(empId, start, end);
-        if(dailyScheduleEntity.isPresent()) {
-            dailyScheduleRepository.deleteByDailyId(dailyScheduleEntity.get().getDailyId());
+        List<DailyScheduleEntity> dailyScheduleEntity = dailyScheduleRepository.findByAllThing(empId, start, end);
+        if(!dailyScheduleEntity.isEmpty()) {
+            DailyScheduleEntity entityToDelete = dailyScheduleEntity.get(0);
+            dailyScheduleRepository.deleteByDailyId(entityToDelete.getDailyId());
             EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
             empAttendanceDTO.setStatus(Byte.valueOf("1"));
             empAttendanceService.save(empAttendanceDTO);

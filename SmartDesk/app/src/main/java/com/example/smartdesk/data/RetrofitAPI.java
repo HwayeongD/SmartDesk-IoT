@@ -62,4 +62,11 @@ public interface RetrofitAPI {
     @DELETE("seats/{empId}")
     Call<Employee> reqCancelSeat(@Path("empId") String empId);
 
+    // 비밀번호 변경 페이지 - 비밀번호 데이터 요청
+    @GET("profile/{password}")
+    Call<Employee> getPassword(@Path("password") String password);
+
+    // 비밀번호 변경 요청
+    @PUT("profile/{password}/change")
+    Call<Employee> reqChangePassword(@Body Employee employee);
 }
