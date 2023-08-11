@@ -630,6 +630,8 @@ public class EmployeeController {
             dailyScheduleService.save(dailyScheduleDTO);
         }
         webSocketChatHandler.CheckAFK();
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        SendChangeStatus(empId, empAttendanceDTO.getStatus());
         
         System.out.println("[스케쥴 등록] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
@@ -674,6 +676,9 @@ public class EmployeeController {
             dailyScheduleService.save(dailyScheduleDTO);
         }
         webSocketChatHandler.CheckAFK();
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+
+        SendChangeStatus(empId, empAttendanceDTO.getStatus());
 
         System.out.println("[스케쥴 수정] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
@@ -692,12 +697,30 @@ public class EmployeeController {
 
         dailyScheduleService.DeleteBySchId(scheduleDTO.getEmpId(),scheduleDTO.getStart(),scheduleDTO.getEnd());
         webSocketChatHandler.CheckAFK();
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+
+        SendChangeStatus(empId, empAttendanceDTO.getStatus());
 
         scheduleService.deleteSchedule(schId);
         System.out.println("[스케쥴 삭제] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
+    
+    // status 변경시 아두이노에 전송
+    public void SendChangeStatus(Long empId, Byte status){
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+        DeskDTO deskDTO = deskService.findByEmpId(empId);
 
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        String seatIp = deskDTO.getSeatIp();
+
+       String socketMsg = "x,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+       webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
+    }
 
 }
