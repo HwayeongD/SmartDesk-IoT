@@ -1,6 +1,7 @@
 package com.example.smartdesk.data;
 
 import com.example.smartdesk.data.Model.Employee;
+import com.example.smartdesk.data.Model.Schedule;
 import com.example.smartdesk.data.Model.Seat;
 
 import java.util.List;
@@ -13,7 +14,6 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface RetrofitAPI {
     // 로그인 요청
@@ -57,4 +57,20 @@ public interface RetrofitAPI {
     @DELETE("seats/{empId}")
     Call<Employee> reqCancelSeat(@Path("empId") String empId);
 
+    // 스케쥴 조회
+    @GET("schedule/{empId}/{month}")
+    Call<Employee> getSchedule(@Path("empId") String empId, @Path("month") int month);
+
+    // 새로운 스케쥴 추가
+    @POST("schedule/{empId}")
+    Call<Schedule> reqCreateSchedule(@Path("empId") String empId, @Body Schedule newSchedule);
+
+
+    // 스케쥴 수정
+    @PUT("schedule/{empId}/{schId}")
+    Call<Employee> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId);
+
+    // 스케쥴 삭제
+    @DELETE("schedule/{empId}/{schId}")
+    Call<Employee> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
 }

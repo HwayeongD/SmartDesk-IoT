@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    android:background="@color/white"
+    >
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -28,25 +29,25 @@
                 android:layout_height="2px"
                 android:background="@color/comm_light_gray" />
 
-            <TextView
-                android:id="@+id/selectedDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:text="오늘 일정"/>
+            <ListView
+                android:id="@+id/calendarRecyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp"/>
 
         </LinearLayout>
 
-        <ImageView
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_schedule"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginTop="640dp"
             android:layout_marginRight="20dp"
-            app:srcCompat="@drawable/ic_add_circle_48px"
-            android:elevation="20dp" />
-
+            android:backgroundTint="@color/btn_light_blue"
+            app:tint="@color/white"
+            android:src="@drawable/ic_add_48px" />
     </RelativeLayout>
 
 

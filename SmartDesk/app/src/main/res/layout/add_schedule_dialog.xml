@@ -61,14 +61,16 @@
                     android:text="오늘 날짜"
                     android:textColor="@color/black"/>
 
-                <TextView
+                <EditText
                     android:id="@+id/start_schedule_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:text="현재 : 시간"
-                    android:textSize="20dp"/>
+                    android:hint="현재 : 시간"
+                    android:textSize="20dp"
+                    android:backgroundTint="@color/white"
+                    android:inputType="number"/>
 
             </LinearLayout>
 
@@ -95,14 +97,16 @@
                     android:text="나중 날짜"
                     android:textColor="@color/black"/>
 
-                <TextView
+                <EditText
                     android:id="@+id/finish_schedule_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:text="나중 : 시간"
-                    android:textSize="20dp"/>
+                    android:hint="나중 : 시간"
+                    android:textSize="20dp"
+                    android:backgroundTint="@color/white"
+                    android:inputType="number"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -225,7 +229,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/cancle_add_schedule"
+            android:id="@+id/cancel_add_schedule"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:gravity="center"
