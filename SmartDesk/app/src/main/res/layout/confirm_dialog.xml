@@ -4,15 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
+    android:background="@drawable/dialog"
     android:gravity="center"
     android:minWidth="300dp"
     android:orientation="vertical"
     android:padding="30dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/dialog">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -77,7 +73,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

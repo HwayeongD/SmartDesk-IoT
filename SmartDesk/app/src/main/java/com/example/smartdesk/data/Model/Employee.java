@@ -34,11 +34,11 @@ public class Employee {
     @SerializedName("workEndTime")
     private String workEndTime;
 
-    @SerializedName("calTime")
-    private String calTime;
+    @SerializedName("schStart")
+    private String schStart;
 
-    @SerializedName("calDetail")
-    private String calDetail;
+    @SerializedName("schHead")
+    private String schHead;
 
     @SerializedName("seatId")
     private String seatId;
@@ -108,20 +108,21 @@ public class Employee {
         this.workEndTime = workEndTime;
     }
 
-    public String getCalTime() {
-        return calTime;
+
+    public String getSchStart() {
+        return schStart;
     }
 
-    public void setCalTime(String calTime) {
-        this.calTime = calTime;
+    public void setSchStart(String schStart) {
+        this.schStart = schStart;
     }
 
-    public String getCalDetail() {
-        return calDetail;
+    public String getSchHead() {
+        return schHead;
     }
 
-    public void setCalDetail(String calDetail) {
-        this.calDetail = calDetail;
+    public void setSchHead(String schHead) {
+        this.schHead = schHead;
     }
 
     public String getSeatId() {
@@ -160,8 +161,8 @@ public class Employee {
         return "empId: " + getEmpId()
                 + ", nickname: " + getNickname()
                 + ", workAttTime: " + getWorkAttTime()
-                + ", calTime: " + getCalTime()
-                + ", calDetail: " + getCalDetail()
+                + ", schStart: " + getSchStart()
+                + ", schHead: " + getSchHead()
                 + ", seatId: " + getSeatId()
                 + ", personalDeskHeight: " + getPersonalDeskHeight()
                 + ", autoBook: " + getAutoBook();

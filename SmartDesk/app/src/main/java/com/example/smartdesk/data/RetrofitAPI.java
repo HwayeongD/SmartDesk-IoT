@@ -1,11 +1,13 @@
 package com.example.smartdesk.data;
 
 import com.example.smartdesk.data.Model.Employee;
+import com.example.smartdesk.data.Model.Seat;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -43,4 +45,23 @@ public interface RetrofitAPI {
     @PUT("home/{empId}/leave")
     Call<Employee> reqLeave(@Path("empId") String empId);
 
+    // 전체 좌석 현황 요청
+    @GET("seats/{floor}")
+    Call<List<Seat>> reqFloorSeat(@Path("floor") int floor);
+
+    // 좌석 변경 요청
+    @PUT("seats/change")
+    Call<Employee> reqChangeSeat(@Body Employee employee);
+
+    // 좌석 취소 요청
+    @DELETE("seats/{empId}")
+    Call<Employee> reqCancelSeat(@Path("empId") String empId);
+
+    // 비밀번호 변경 페이지 - 비밀번호 데이터 요청
+    @GET("profile/{password}")
+    Call<Employee> getPassword(@Path("password") String password);
+
+    // 비밀번호 변경 요청
+    @PUT("profile/{password}/change")
+    Call<Employee> reqChangePassword(@Body Employee employee);
 }

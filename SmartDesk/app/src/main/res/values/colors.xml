@@ -19,5 +19,8 @@
     <!--  common color  -->
     <color name="comm_light_gray">#DADADA</color>
     <color name="comm_orange">#FF7F00</color>
+    <!--  seat color  -->
+    <color name="status_online">#18E62D</color>
+    <color name="status_offline">#FFD056</color>
     <color name="comm_black">#3F3F40</color>
 </resources>

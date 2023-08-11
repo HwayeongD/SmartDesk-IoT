@@ -43,4 +43,5 @@ public class ChangePasswordDialog extends Dialog {
             changePasswordDialog.dismiss();
         }
     };
+
 }
