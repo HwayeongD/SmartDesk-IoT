@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -29,7 +28,6 @@ import com.example.smartdesk.data.Model.Employee;
 import com.example.smartdesk.data.RetrofitAPI;
 import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentProfileBinding;
-import com.example.smartdesk.ui.dialog.ChangePasswordDialog;
 import com.example.smartdesk.ui.dialog.CheckDialog;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
 import com.google.android.material.textfield.TextInputEditText;
