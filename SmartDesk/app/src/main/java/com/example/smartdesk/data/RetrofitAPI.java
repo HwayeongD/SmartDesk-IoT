@@ -1,6 +1,7 @@
 package com.example.smartdesk.data;
 
 import com.example.smartdesk.data.Model.Employee;
+import com.example.smartdesk.data.Model.ReqEmployee;
 import com.example.smartdesk.data.Model.Seat;
 
 import java.util.List;
@@ -48,6 +49,10 @@ public interface RetrofitAPI {
     // 전체 좌석 현황 요청
     @GET("seats/{floor}")
     Call<List<Seat>> reqFloorSeat(@Path("floor") int floor);
+
+    // 좌석 예약 요청
+    @PUT("seats")
+    Call<ReqEmployee> reqReserveSeat(@Body ReqEmployee employee);
 
     // 좌석 변경 요청
     @PUT("seats/change")

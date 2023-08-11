@@ -36,9 +36,9 @@ public class CheckDialog extends Dialog implements View.OnClickListener {
 
     private String[] titleColors = {"#2FC600", "#FF7F00", "#FF0000"};
 
-    public CustomDialogInterface customDialogInterface;
+    private CustomDialogInterface customDialogInterface;
 
-    private CheckDialog(@NonNull Context context) {
+    public CheckDialog(@NonNull Context context) {
         super(context);
         this.context = context;
     }
