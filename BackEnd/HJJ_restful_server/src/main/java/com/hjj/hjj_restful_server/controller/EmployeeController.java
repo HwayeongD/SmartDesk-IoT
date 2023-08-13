@@ -410,7 +410,7 @@ public class EmployeeController {
                 json.put("seatId", deskDTO.getSeatId());
                 json.put("nickname", "");
                 json.put("teamName", "");
-                json.put("status", "");
+                json.put("status", 0);
                 jsonArray.put(json);
             }
         }
