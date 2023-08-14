@@ -150,7 +150,7 @@
                                 Log.d(TAG, "yes");
                                 List<Schedule> data = response.body();
                                 if (data != null && !data.isEmpty()) {
-//                                    Log.d(TAG, data.toString());
+
                                     List<String> titleList = new ArrayList<>();
                                     for (Schedule schedule : data) {
                                         titleList.add(schedule.getHead());
@@ -161,16 +161,11 @@
                                     listView.setAdapter(adapter);
 
                                 } else {
-                                    List<String> titleList = new ArrayList<>();
-                                    titleList.add("일정 없음");
-                                    adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, titleList);
-                                    // ListView에 어댑터 설정
-                                    ListView listView = root.findViewById(R.id.calendarListview);
-                                    listView.setAdapter(adapter);
                                     Log.d(TAG, "No data received");
                                 }
 
-                            } else {
+                            }
+                            else {
                                 Log.d(TAG, "Request failed");
                             }
                         }
@@ -185,7 +180,6 @@
 
             // 새로운 일정 추가하기
             ImageView plus_schedule = root.findViewById(R.id.add_schedule);
-
             plus_schedule.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -315,6 +309,8 @@
             });
         }
 
+
+        // 일정 수정 및 삭제
         private void updateSchedule(Schedule schedule) {
             Dialog updateDialog = new Dialog(requireContext(), R.style.Theme_Login);
             updateDialog.setContentView(R.layout.schedule_dialog_update);
@@ -328,6 +324,7 @@
             schedule_title_update.setText(schedule.getHead());
             schedule_memo_update.setText(schedule.getDetail());
 
+            //
             confirm_update_schedule.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -340,6 +337,7 @@
                 }
             });
 
+            // 삭제 시
             delete_schedule.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

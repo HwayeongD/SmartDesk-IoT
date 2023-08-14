@@ -80,6 +80,7 @@ public class Schedule {
     public void setDetail(String detail) {
         this.detail = detail;
     }
+
     @Override
     public String toString() {
         return "Id: " + getSchId() +
@@ -87,7 +88,8 @@ public class Schedule {
                 ", Start: " + getStart() +
                 ", End: " + getEnd() +
                 ", Status: " + getStatus() +
-                ", Detail: " + getDetail();
+                ", Detail: " + getDetail() +
+                ", ResultCode: " + getResultCode();
     }
 
 }
