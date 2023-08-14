@@ -89,8 +89,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         scheduleService.transferToDailySchedule();
     }
 
-    // 30 분 마다 체크!
-    @Scheduled(cron = "0 0,30 6-23 * * ?")
+    // 1분 마다 체크!
+    @Scheduled(cron = "0 0,1 6-23 * * ?")
     public void CheckAFK(){
         List<DailyScheduleDTO> EndList = dailyScheduleService.findNowEndTime();
         if(EndList != null){
