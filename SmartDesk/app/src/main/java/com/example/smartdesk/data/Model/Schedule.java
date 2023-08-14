@@ -4,54 +4,79 @@ import com.google.gson.annotations.SerializedName;
 
 public class Schedule {
     @SerializedName("schId")
-    private String schId;
+    private int schId;
 
-    @SerializedName("schHead")
-    private String schHead;
+    @SerializedName("head")
+    private String head;
 
-    @SerializedName("schStart")
-    private String schStart;
+    @SerializedName("start")
+    private String start;
 
-    @SerializedName("schEnd")
-    private String schEnd;
+    @SerializedName("end")
+    private String end;
 
     @SerializedName("status")
-    private String status;
+    private int status;
 
-    @SerializedName("schDetail")
-    private String schDetail;
+    @SerializedName("detail")
+    private String detail;
 
+    public int getSchId() {
+        return schId;
+    }
 
-    public String getSchId() { return schId; }
+    public void setSchId(int schId) {
+        this.schId = schId;
+    }
 
-    public String getSchHead() { return schHead; }
+    public String getHead() {
+        return head;
+    }
 
-    public void setSchHead(String schHead) { this.schHead = schHead; }
+    public void setHead(String head) {
+        this.head = head;
+    }
 
-    public String getSchStart() { return schStart; }
+    public String getStart() {
+        return start;
+    }
 
-    public void setSchStart(String schStart) { this.schStart = schStart; }
+    public void setStart(String start) {
+        this.start = start;
+    }
 
-    public String getSchEnd() { return schEnd; }
+    public String getEnd() {
+        return end;
+    }
 
-    public void setSchEnd(String schEnd) { this.schEnd = schEnd; }
+    public void setEnd(String end) {
+        this.end = end;
+    }
 
-    public String getStatus() { return status; }
+    public int getStatus() {
+        return status;
+    }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
-    public String getSchDetail() { return schDetail; }
+    public String getDetail() {
+        return detail;
+    }
 
-    public void setSchDetail(String schDetail) { this.schDetail = schDetail; }
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 
     @Override
     public String toString() {
         return "Id: " + getSchId() +
-                ", Head: " + getSchHead() +
-                ", Start: " + getSchStart() +
-                ", End: " + getSchEnd() +
+                ", Head: " + getHead() +
+                ", Start: " + getStart() +
+                ", End: " + getEnd() +
                 ", Status: " + getStatus() +
-                ", Detail: " + getSchDetail();
+                ", Detail: " + getDetail();
     }
 
 }
