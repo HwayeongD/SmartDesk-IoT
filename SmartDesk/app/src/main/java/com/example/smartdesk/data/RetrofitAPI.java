@@ -75,7 +75,7 @@ public interface RetrofitAPI {
 
     // 스케쥴 수정
     @PUT("schedule/{empId}/{schId}")
-    Call<Schedule> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId, @Body Schedule renewSchedule);
+    Call<Schedule> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId, @Body Schedule updatedSchedule);
 
     // 스케쥴 삭제
     @DELETE("schedule/{empId}/{schId}")
