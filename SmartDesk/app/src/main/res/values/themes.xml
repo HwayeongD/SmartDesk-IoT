@@ -3,6 +3,7 @@
     <style name="Theme.SmartDesk" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!--    액션바 숨기기    -->
         <item name="windowActionBar">false</item>
+        <item name="colorAccent">@color/btn_light_blue</item>
         <item name="windowNoTitle">true</item>
     </style>
 

@@ -14,7 +14,7 @@ public class ChangePasswordDialog extends Dialog {
     private static ChangePasswordDialog changePasswordDialog;
 
     private ChangePasswordDialog(@NonNull Context context) {
-        super(context,  R.style.FullScreenDialog);
+        super(context,  R.style.Theme_Login);
     }
 
     public static ChangePasswordDialog getInstance(Context context) {
