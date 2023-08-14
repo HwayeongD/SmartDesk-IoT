@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -25,6 +26,7 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
     TextView conDialogTitle, conDialogContent;
     Button conOkBtn;
 
+    private boolean isAutoReserve;
     private int img;
     private String title;
     private String content;
@@ -43,6 +45,16 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
         img = dImgResource;
         title = dTitle;
         content = dContent;
+        isAutoReserve = false;
+    }
+
+    public ConfirmDialog(Context context, int dImgResource, String dTitle, String dContent, boolean isAutoReserve) {
+        super(context);
+
+        img = dImgResource;
+        title = dTitle;
+        content = dContent;
+        this.isAutoReserve = isAutoReserve;
     }
 
     @Override
@@ -67,6 +79,7 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
         conDialogTitle.setText(title);
         conDialogTitle.setTextColor(Color.parseColor(getTitleColor(img)));
         conDialogContent.setText(content);
+        if(isAutoReserve) conOkBtn.setText("아니오");
 
         conOkBtn.setOnClickListener(this);
 
@@ -76,10 +89,12 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
     public void onClick(View view) {
         if(view.getId() == R.id.confirm_yesbtn) {
             customDialogInterface.btnClicked("확인");
-//            if(title.equals("예약 안내"))
+//            if(isAutoReserve){
 //                customDialogInterface.btnClicked("아니오");
-//            else
+//            }
+//            else {
 //                customDialogInterface.btnClicked("확인");
+//            }
             dismiss();
         }
     }

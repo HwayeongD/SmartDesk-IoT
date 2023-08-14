@@ -124,6 +124,9 @@ public class HomeFragment extends Fragment {
                 if(data.getSeatId() != null && !data.getSeatId().equals("")) {
                     empSeatId.setText(data.getSeatId());
                 }
+                else {
+                    empSeatId.setText("-");
+                }
 
                 Employee.getInstance().setPersonalDeskHeight(data.getPersonalDeskHeight());
                 if(data.getPersonalDeskHeight() != null && !data.getPersonalDeskHeight().equals("")) {
@@ -234,6 +237,7 @@ public class HomeFragment extends Fragment {
                     Employee.getInstance().setWorkEndTime(data.getWorkEndTime());
 
                     displayAttendExitTime();
+                    empSeatId.setText("-");
 
                     Log.d(TAG, "empLeave() 퇴근 시간: " + data.getWorkEndTime());
                 }
@@ -269,7 +273,8 @@ public class HomeFragment extends Fragment {
     public void reserveSeat() {
         Log.d(TAG, "reserveSeat() Start");
         // 출근시간이 있어야 좌석 정보를 판단 가능
-        if(Employee.getInstance().getWorkAttTime() != null && !Employee.getInstance().getWorkAttTime().isEmpty()) {
+        if(Employee.getInstance().getWorkAttTime() != null && !Employee.getInstance().getWorkAttTime().isEmpty()
+            && (Employee.getInstance().getWorkEndTime() == null || Employee.getInstance().getWorkEndTime().equals(""))) {
             // 좌석정보 없어야 예약 여부를 판단 가능
             if(Employee.getInstance().getSeatId() == null || Employee.getInstance().getSeatId().isEmpty()) {
                 Log.d(TAG, "Personal Auto Reserve: " + Employee.getInstance().getAutoBook());
@@ -304,6 +309,16 @@ public class HomeFragment extends Fragment {
                     Log.d(TAG, "reserved seatId : " + Employee.getInstance().getSeatId());
                 }
                 else {
+                    ConfirmDialog autoReserveFailDialog =
+                            new ConfirmDialog(getContext(), R.drawable.ic_error_48px, "자동 예약 불가", "최근 좌석이 이미 차있습니다\n예약페이지로 이동합니다");
+                    autoReserveFailDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                        @Override
+                        public void btnClicked(String btnName) {
+
+                        }
+                    });
+                    autoReserveFailDialog.show();
+
                     goToSeatFragment();
                 }
             }
@@ -316,7 +331,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void showTimerDialog() {
-        ConfirmDialog autoReserveDialog = new ConfirmDialog(this.getContext(), R.drawable.ic_error_48px, "예약 안내", "최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)");
+        ConfirmDialog autoReserveDialog = new ConfirmDialog(this.getContext(), R.drawable.ic_error_48px, "예약 안내", "최근 좌석으로 예약하시겠습니까?\n(3초 후 자동 예약됩니다)", true);
 //        timerDialog = new Dialog(this.getContext());
 //        timerDialog.setContentView(R.layout.confirm_dialog);
 //        // 뒷 배경 투명하게 만들어주기
