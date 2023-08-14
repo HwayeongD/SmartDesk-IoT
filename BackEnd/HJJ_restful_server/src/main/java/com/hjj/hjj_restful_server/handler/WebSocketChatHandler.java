@@ -92,7 +92,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     }
 
     // 1분 마다 체크!
-    @Scheduled(cron = "0 0,1 6-23 * * ?")
+    @Scheduled(cron = "0 * 6-23 * * ?")
     public void CheckAFK(){
         List<DailyScheduleDTO> EndList = dailyScheduleService.findNowEndTime();
         if(EndList != null){
