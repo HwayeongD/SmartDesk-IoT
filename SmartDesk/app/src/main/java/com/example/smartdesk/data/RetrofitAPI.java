@@ -63,8 +63,11 @@ public interface RetrofitAPI {
     Call<Employee> reqCancelSeat(@Path("empId") String empId);
 
     // 스케쥴 조회
-    @GET("schedule/{empId}/{month}")
-    Call<List<Schedule>> getSchedule(@Path("empId") String empId, @Path("month") int month);
+    @GET("schedule/{empId}/{year}/{month}")
+    Call<List<Schedule>> getSchedule(@Path("empId") String empId, @Path("year") int year, @Path("month") int month);
+
+    @GET("schedule/{empId}/{year}/{month}/{day}")
+    Call<List<Schedule>> getScheduleByDate(@Path("empId") String empId, @Path("year") int year, @Path("month") int month, @Path("day") int day);
 
     // 새로운 스케쥴 추가
     @POST("schedule/{empId}")
@@ -72,11 +75,11 @@ public interface RetrofitAPI {
 
     // 스케쥴 수정
     @PUT("schedule/{empId}/{schId}")
-    Call<Employee> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId);
+    Call<Schedule> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId, @Body Schedule renewSchedule);
 
     // 스케쥴 삭제
     @DELETE("schedule/{empId}/{schId}")
-    Call<Employee> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
+    Call<Schedule> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
 
     // 비밀번호 변경 페이지 - 비밀번호 데이터 요청
     @GET("profile/{password}")

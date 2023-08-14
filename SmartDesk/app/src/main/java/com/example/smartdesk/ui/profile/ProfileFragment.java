@@ -139,6 +139,7 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
+    // TODO: 다이얼로그 변경
     private void logoutDialogShow() {
         logoutDialog = new Dialog(this.getContext());
         logoutDialog.setContentView(R.layout.check_dialog);
@@ -162,7 +163,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 logoutDialog.dismiss();
                 
-                // 로그아웃 시 사원ID 로컬 데이엍 삭제 (SharedPreferences)
+                // 로그아웃 시 사원ID 로컬 데이터 삭제 (SharedPreferences)
                 SharedPreferences sharedPreferences = getActivity().getSharedPreferences("autoLogin", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor logoutEditor = sharedPreferences.edit();
                 logoutEditor.clear();

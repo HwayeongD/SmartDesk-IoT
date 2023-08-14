@@ -3,55 +3,93 @@ package com.example.smartdesk.data.Model;
 import com.google.gson.annotations.SerializedName;
 
 public class Schedule {
+
+    @SerializedName("resultCode")
+    private String resultCode;
+
     @SerializedName("schId")
-    private String schId;
+    private Long schId;
 
-    @SerializedName("schHead")
-    private String schHead;
+    @SerializedName("head")
+    private String head;
 
-    @SerializedName("schStart")
-    private String schStart;
+    @SerializedName("start")
+    private String start;
 
-    @SerializedName("schEnd")
-    private String schEnd;
+    @SerializedName("end")
+    private String end;
 
     @SerializedName("status")
-    private String status;
+    private int status; // 0:Blank, 1:Present(Online), 2:Absence(Offline)
 
-    @SerializedName("schDetail")
-    private String schDetail;
+    @SerializedName("detail")
+    private String detail;
 
+    public String getResultCode() {
+        return resultCode;
+    }
 
-    public String getSchId() { return schId; }
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
+    }
 
-    public String getSchHead() { return schHead; }
+    public Long getSchId() {
+        return schId;
+    }
 
-    public void setSchHead(String schHead) { this.schHead = schHead; }
+    public void setSchId(Long schId) {
+        this.schId = schId;
+    }
 
-    public String getSchStart() { return schStart; }
+    public String getHead() {
+        return head;
+    }
 
-    public void setSchStart(String schStart) { this.schStart = schStart; }
+    public void setHead(String head) {
+        this.head = head;
+    }
 
-    public String getSchEnd() { return schEnd; }
+    public String getStart() {
+        return start;
+    }
 
-    public void setSchEnd(String schEnd) { this.schEnd = schEnd; }
+    public void setStart(String start) {
+        this.start = start;
+    }
 
-    public String getStatus() { return status; }
+    public String getEnd() {
+        return end;
+    }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setEnd(String end) {
+        this.end = end;
+    }
 
-    public String getSchDetail() { return schDetail; }
+    public int getStatus() {
+        return status;
+    }
 
-    public void setSchDetail(String schDetail) { this.schDetail = schDetail; }
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 
     @Override
     public String toString() {
         return "Id: " + getSchId() +
-                ", Head: " + getSchHead() +
-                ", Start: " + getSchStart() +
-                ", End: " + getSchEnd() +
+                ", Head: " + getHead() +
+                ", Start: " + getStart() +
+                ", End: " + getEnd() +
                 ", Status: " + getStatus() +
-                ", Detail: " + getSchDetail();
+                ", Detail: " + getDetail() +
+                ", ResultCode: " + getResultCode();
     }
 
 }

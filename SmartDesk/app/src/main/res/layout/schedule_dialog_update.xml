@@ -8,7 +8,7 @@
 
 
     <EditText
-        android:id="@+id/schedule_title"
+        android:id="@+id/schedule_title_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
@@ -195,7 +195,7 @@
             app:srcCompat="@drawable/ic_article_48px" />
 
         <EditText
-            android:id="@+id/schedule_memo"
+            android:id="@+id/schedule_memo_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="37dp"
@@ -217,24 +217,24 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/confirm_add_schedule"
+            android:id="@+id/confirm_update_schedule"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:layout_marginRight="50dp"
             android:padding="30dp"
-            android:text="확인"
+            android:text="수정"
             android:textColor="@color/comm_black"
             android:textSize="20dp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/cancel_add_schedule"
+            android:id="@+id/delete_schedule"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:padding="30dp"
-            android:text="취소"
+            android:text="삭제"
             android:textColor="@color/comm_black"
             android:textSize="20dp"
             android:textStyle="bold" />
