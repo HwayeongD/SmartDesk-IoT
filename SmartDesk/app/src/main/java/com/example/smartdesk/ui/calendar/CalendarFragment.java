@@ -27,6 +27,7 @@
     import com.example.smartdesk.data.RetrofitAPI;
     import com.example.smartdesk.data.RetrofitClient;
     import com.example.smartdesk.databinding.FragmentCalendarBinding;
+    import com.example.smartdesk.ui.dialog.CheckDialog;
     import com.example.smartdesk.ui.dialog.ConfirmDialog;
 
     import java.text.DateFormat;
@@ -48,6 +49,9 @@
         CalendarView calendarView;
         ArrayAdapter<String> adapter;
 
+        private ListView listView;
+        private List<String> titleList;
+
         private Calendar selected;
 
         private String[] scheduleField = {"", "제목", "시작시간", "종료시간", "자리비움", "내용"};
@@ -65,6 +69,10 @@
             binding = FragmentCalendarBinding.inflate(inflater, container, false);
             View root = binding.getRoot();
 
+            titleList = new ArrayList<>();
+            listView = root.findViewById(R.id.calendarListview);
+            adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, titleList);
+            listView.setAdapter(adapter);
 
             // 날짜 설정
             calendarView = root.findViewById(R.id.calendarView);
@@ -85,49 +93,7 @@
             Log.d("CalendarFragment", "Employee ID: " + empId);
 
             // 처음 Fragment에 들어왔을 때 모든 schedule 데이터 받아오기
-            retrofitAPI.getScheduleByDate(empId, currentYear, currentMonth, currentDay).enqueue(new Callback<List<Schedule>>() {
-                @Override
-                public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
-                    if(response.isSuccessful()) {
-                        Log.d(TAG, "yes");
-
-                        List<Schedule> data = response.body();
-                        if (data != null) {
-                            List<String> titleList = new ArrayList<>();
-                            for (Schedule schedule : data) {
-                                titleList.add(schedule.getHead());
-                                Log.d(TAG, schedule.toString());
-                            }
-                            // 어댑터 초기화
-                            adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, titleList);
-                            // ListView에 어댑터 설정
-                            ListView listView = root.findViewById(R.id.calendarListview);
-                            listView.setAdapter(adapter);
-
-
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    // 해당 아이템을 클릭했을 때의 처리
-                                    Schedule selectedSchedule = data.get(position); // 클릭된 아이템의 Schedule 객체 가져오기
-
-                                    // 다이얼로그를 띄우고 선택된 스케줄 정보를 전달하여 보여줌
-                                    updateSchedule(selectedSchedule);
-                                }
-                            });
-
-
-                        }
-                        else {
-                            Log.d(TAG, "No data received");
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Schedule>> call, Throwable t) {
-                    Log.d(TAG, "Network error: " + t.getMessage());
-                }
-            });
+            reqScheduleDate(currentYear, currentMonth, currentDay);
 
             // 날짜를 선택 했을 때, 해당하는 날짜의 일정 불러오기
             calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -139,42 +105,9 @@
                     // 날짜가 선택되었을 때 실행되는 부분
                     selectedDate = year + "-" + (month + 1) + "-" + day;
                     Log.d("CalendarFragment", "Selected Date: " + selectedDate);
-                    Log.d("CalendarFragment", "Selected Date: " + year);
-                    Log.d("CalendarFragment", "Selected Date: " + day);
 
                     // 선택된 날짜에 해당하는 일정을 가져와서 리스트에 표시
-                    retrofitAPI.getScheduleByDate(empId, year, month + 1, day).enqueue(new Callback<List<Schedule>>() {
-                        public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
-                            if (response.isSuccessful()) {
-
-                                Log.d(TAG, "yes");
-                                List<Schedule> data = response.body();
-                                if (data != null && !data.isEmpty()) {
-
-                                    List<String> titleList = new ArrayList<>();
-                                    for (Schedule schedule : data) {
-                                        titleList.add(schedule.getHead());
-                                        Log.d(TAG, schedule.toString());
-                                    }
-                                    adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, titleList);
-                                    ListView listView = root.findViewById(R.id.calendarListview);
-                                    listView.setAdapter(adapter);
-
-                                } else {
-                                    Log.d(TAG, "No data received");
-                                }
-
-                            }
-                            else {
-                                Log.d(TAG, "Request failed");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Schedule>> call, Throwable t) {
-                            Log.d(TAG, "Network error: " + t.getMessage());
-                        }
-                    });
+                    reqScheduleDate(year, month + 1, day);
                 }
             });
 
@@ -196,9 +129,56 @@
             binding = null;
         }
 
-        // 현재 지정한 달의 일정을 갱신
-        public void refresh() {
+        public void reqScheduleDate() {
+            reqScheduleDate(selected.get(Calendar.YEAR), selected.get(Calendar.MONTH) + 1, selected.get(Calendar.DATE));
+            Log.d(TAG, "Selected DAY: " + (selected.get(Calendar.YEAR) + 1) + "-" + selected.get(Calendar.MONTH) + "-" + selected.get(Calendar.DATE));
+        }
 
+        // 현재 지정한 달의 일정을 갱신
+        public void reqScheduleDate(int year, int month, int day) {
+            Log.d(TAG, "reqScheduleData(): " + year + "-" + month + "-" + day);
+            retrofitAPI.getScheduleByDate(Employee.getInstance().getEmpId().toString(), year, month, day).enqueue(new Callback<List<Schedule>>() {
+                public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
+                    if (response.isSuccessful()) {
+                        List<Schedule> data = response.body();
+                        if(data.get(0).getResultCode() == null || data.get(0).getResultCode().equals("")) {
+                            if (!data.isEmpty() && data.size() > 0) {
+                                titleList.clear();
+
+                                for (Schedule schedule : data) {
+                                    titleList.add(schedule.getHead());
+                                    Log.d(TAG, schedule.toString());
+                                }
+
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        // 해당 아이템을 클릭했을 때의 처리
+                                        Schedule selectedSchedule = data.get(position); // 클릭된 아이템의 Schedule 객체 가져오기
+                                        // 다이얼로그를 띄우고 선택된 스케줄 정보를 전달하여 보여줌
+                                        updateSchedule(selectedSchedule);
+                                    }
+                                });
+
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                Log.d(TAG, "No data received");
+                            }
+                        }
+                        else if(data.get(0).getResultCode().equals("S201")) {
+                            titleList.clear();
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                    else {
+                        Log.d(TAG, "Request failed");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Schedule>> call, Throwable t) {
+                    Log.d(TAG, "Network error: " + t.getMessage());
+                }
+            });
         }
 
         public String getEachDay() {
@@ -280,7 +260,7 @@
                                 Schedule data = response.body();
                                 if(data.getResultCode().equals("S101")) {
                                     Log.d(TAG, newSchedule.getHead() + " 일정 추가 완료");
-                                    refresh();
+                                    reqScheduleDate();
                                 } else if(data.getResultCode().equals("S201")) {
                                     Log.d(TAG, "일정 제목이 없습니다");
                                 } else if(data.getResultCode().equals("S202")) {
@@ -308,7 +288,6 @@
                 }
             });
         }
-
 
         // 일정 수정 및 삭제
         private void updateSchedule(Schedule schedule) {
@@ -341,6 +320,21 @@
             delete_schedule.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    CheckDialog deleteScheduleDialog = new CheckDialog(getContext(), R.drawable.ic_error_48px, "일정 삭제", "일정을 삭제하시겠습니까?");
+                    deleteScheduleDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
+                        @Override
+                        public void okBtnClicked(String btnName) {
+                            reqDeleteSchedule(schedule);
+                            reqScheduleDate();
+                        }
+
+                        @Override
+                        public void noBtnClicked(String btnName) {
+
+                        }
+                    });
+                    deleteScheduleDialog.show();
+
                     updateDialog.dismiss();
                 }
             });
@@ -348,9 +342,44 @@
             updateDialog.show();
         }
 
+        public void reqDeleteSchedule(Schedule schedule) {
+            retrofitAPI.reqDeleteSchedule(Employee.getInstance().getEmpId().toString(), schedule.getSchId().toString()).enqueue(new Callback<Schedule>() {
+                @Override
+                public void onResponse(Call<Schedule> call, Response<Schedule> response) {
+                    String resultCode = response.body().getResultCode();
+                    if(resultCode.equals("S101")) {
+                        ConfirmDialog deleteConfirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_check_circle_48px, "삭제 완료", "일정 삭제가 완료되었습니다");
+                        deleteConfirmDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                            @Override
+                            public void btnClicked(String btnName) {
+                                reqScheduleDate();
+                            }
+                        });
+
+                        deleteConfirmDialog.show();
+                    } else if(resultCode.equals("S201")) {
+                        Log.d(TAG, "Schedule ID is NOT Found");
+                    } else if(resultCode.equals("S202")) {
+                        Log.d(TAG, "Delete Schedule is ERROR");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Schedule> call, Throwable t) {
+
+                }
+            });
+        }
+
         // 1: 제목 2: 시작시간 3: 종료시간 4: 자리비움 여부 5:내용
         public void showAddTitle(int flag) {
             ConfirmDialog addTitleDialog = new ConfirmDialog(this.getContext(), R.drawable.ic_error_48px, "일정 " + scheduleField[flag], "일정의 " + scheduleField[flag] + "이 없습니다\n추가해주세요");
+            addTitleDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
+                @Override
+                public void btnClicked(String btnName) {
+
+                }
+            });
             addTitleDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
                 @Override
                 public void btnClicked(String btnName) {
