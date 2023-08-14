@@ -87,6 +87,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         deskRepository.resetTable();
         dailyScheduleRepository.truncateTable();
         scheduleService.transferToDailySchedule();
+
+        System.out.println("[자정 전체 초기화]");
     }
 
     // 1분 마다 체크!
@@ -112,7 +114,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 empAttendanceService.save(empAttendanceDTO);
             }
         }
-
+        System.out.println("[자리비움 체크]");
     }
 
     @Override
