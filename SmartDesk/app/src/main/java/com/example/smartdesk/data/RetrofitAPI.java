@@ -56,7 +56,7 @@ public interface RetrofitAPI {
 
     // 좌석 변경 요청
     @PUT("seats/change")
-    Call<Employee> reqChangeSeat(@Body Employee employee);
+    Call<Employee> reqChangeSeat(@Body ReqEmployee employee);
 
     // 좌석 취소 요청
     @DELETE("seats/{empId}")

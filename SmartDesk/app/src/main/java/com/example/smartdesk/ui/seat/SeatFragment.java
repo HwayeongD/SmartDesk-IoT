@@ -165,7 +165,7 @@ public class SeatFragment extends Fragment implements CheckDialog.CustomDialogIn
             } else { // 2-2) 본인 좌석 이외를 선택한 경우
                 if(item.getNickname() == null || item.getNickname().isEmpty()) { // 3-1) 공석인 경우
                     // 변경 할래?
-                    showChangeDialog();
+                    showChangeDialog(item);
                 } else { // 3-2) 점유된 좌석인 경우
                     // 예약된 좌석이라고 안내!
                     showOccupiedDialog();
@@ -209,13 +209,13 @@ public class SeatFragment extends Fragment implements CheckDialog.CustomDialogIn
                                 confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_check_circle_48px, "예약 확인", "예약이 확정되었습니다.");
                             }
                             else if(data.getResultCode().equals("S201")) {
-                                confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_check_circle_48px, "예약 불가", "예약한 좌석이 이미 있습니다");
+                                confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "예약 불가", "예약한 좌석이 이미 있습니다");
                             }
                             else if(data.getResultCode().equals("S202")) {
-                                confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_check_circle_48px, "예약 불가", "좌석은 출근 후 예약 가능합니다");
+                                confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "예약 불가", "좌석은 출근 후 예약 가능합니다");
                             }
                             else if(data.getResultCode().equals("S203")) {
-                                confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_check_circle_48px, "예약 불가", "퇴근 후에는 예약이 불가합니다\n익일 좌석은 출근 후 예약 가능합니다");
+                                confirmDialog = new ConfirmDialog(getContext(), R.drawable.ic_do_not_disturb_on_total_silence_48px, "예약 불가", "퇴근 후에는 예약이 불가합니다\n익일 좌석은 출근 후 예약 가능합니다");
                             }
 
                             confirmDialog.setDialogListener(new ConfirmDialog.CustomDialogInterface() {
@@ -250,13 +250,16 @@ public class SeatFragment extends Fragment implements CheckDialog.CustomDialogIn
     }
 
     //좌석 변경 체크 팝업
-    public void showChangeDialog() {
+    public void showChangeDialog(SeatItem item) {
         CheckDialog changeDialog = new CheckDialog(this.getContext(), R.drawable.ic_error_48px, "예약 변경", "이미 예약된 좌석이 있습니다\n좌석을 변경하시겠습니까?");
 
         changeDialog.setDialogListener(new CheckDialog.CustomDialogInterface() {
             @Override
             public void okBtnClicked(String btnName) {
-                retrofitAPI.reqChangeSeat(Employee.getInstance()).enqueue(new Callback<Employee>() {
+                ReqEmployee reqEmployee = new ReqEmployee();
+                reqEmployee.setEmpId(Employee.getInstance().getEmpId());
+                reqEmployee.setSeatId(item.getSeatId());
+                retrofitAPI.reqChangeSeat(reqEmployee).enqueue(new Callback<Employee>() {
                     @Override
                     public void onResponse(Call<Employee> call, Response<Employee> response) {
                         Employee data = response.body();
