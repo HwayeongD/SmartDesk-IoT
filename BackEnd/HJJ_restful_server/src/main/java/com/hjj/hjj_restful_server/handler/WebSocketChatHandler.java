@@ -99,6 +99,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             for(DailyScheduleDTO dailyScheduleDTO : EndList){
                 Long empId = dailyScheduleDTO.getEmpId();
                 EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                if(empAttendanceDTO.getWorkAttTime() == null) continue;
                 empAttendanceDTO.setStatus(Byte.valueOf("1"));
                 empAttendanceService.save(empAttendanceDTO);
             }
@@ -110,6 +111,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             for(DailyScheduleDTO dailyScheduleDTO : StartList){
                 Long empId = dailyScheduleDTO.getEmpId();
                 EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+                if(empAttendanceDTO.getWorkAttTime() == null) continue;
                 empAttendanceDTO.setStatus(Byte.valueOf("2"));
                 empAttendanceService.save(empAttendanceDTO);
             }

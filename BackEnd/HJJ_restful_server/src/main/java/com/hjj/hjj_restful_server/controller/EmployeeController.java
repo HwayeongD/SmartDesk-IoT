@@ -758,8 +758,18 @@ public class EmployeeController {
     
     // status 변경시 아두이노에 전송
     public void SendChangeStatus(Long empId, Byte status){
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        if(empAttendanceDTO.getWorkAttTime()==null){
+            System.out.println("[status 변경 아두이노 전송] 출근 안함");
+            return;
+        }
+
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        if(empSeatDTO.getSeatId() == null){
+            System.out.println("[status 변경 아두이노 전송] 자리 없음");
+            return;
+        }
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
         DeskDTO deskDTO = deskService.findByEmpId(empId);
 
