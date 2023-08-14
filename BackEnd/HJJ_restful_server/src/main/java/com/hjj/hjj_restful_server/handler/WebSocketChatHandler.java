@@ -56,6 +56,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             DeskDTO deskDTO = deskService.findByseatId(si);
             deskDTO.setDeskHeightNow(dh);
             deskService.save(deskDTO);
+            String height = dh.toString();
+            System.out.println(String.format("[높이 변경] %s cm", height));
         }
 //         수신을 완료하면 클라이언트에게 답장 보내기
 //         TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
@@ -126,7 +128,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String clientIP = session.getRemoteAddress().getHostName();
         activeSessions.put(clientIP, session);
         System.out.println("[ " + clientIP + " ]가 웹소켓으로 접속했습니다!");
-        Long si = Long.valueOf("301");
+        Long si = Long.valueOf("201");
         DeskDTO deskDTO = deskService.findByseatId(si);
         deskDTO.setSeatIp(clientIP);
         deskService.save(deskDTO);
