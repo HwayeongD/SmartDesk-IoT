@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="7dp"
-                    android:text="오늘 날짜"
+                    android:text="시작날짜"
                     android:textColor="@color/black"/>
 
                 <EditText
@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:hint="현재 : 시간"
+                    android:hint="00:00"
                     android:textSize="20dp"
                     android:backgroundTint="@color/white"
                     android:inputType="number"/>
@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="7dp"
-                    android:text="나중 날짜"
+                    android:text="종료날짜"
                     android:textColor="@color/black"/>
 
                 <EditText
@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:hint="나중 : 시간"
+                    android:hint="00:00"
                     android:textSize="20dp"
                     android:backgroundTint="@color/white"
                     android:inputType="number"/>
@@ -240,6 +240,5 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

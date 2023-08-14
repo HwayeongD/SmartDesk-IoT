@@ -3,8 +3,12 @@ package com.example.smartdesk.data.Model;
 import com.google.gson.annotations.SerializedName;
 
 public class Schedule {
+
+    @SerializedName("resultCode")
+    private String resultCode;
+
     @SerializedName("schId")
-    private int schId;
+    private Long schId;
 
     @SerializedName("head")
     private String head;
@@ -16,16 +20,24 @@ public class Schedule {
     private String end;
 
     @SerializedName("status")
-    private int status;
+    private int status; // 0:Blank, 1:Present(Online), 2:Absence(Offline)
 
     @SerializedName("detail")
     private String detail;
 
-    public int getSchId() {
+    public String getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
+    }
+
+    public Long getSchId() {
         return schId;
     }
 
-    public void setSchId(int schId) {
+    public void setSchId(Long schId) {
         this.schId = schId;
     }
 
@@ -68,7 +80,6 @@ public class Schedule {
     public void setDetail(String detail) {
         this.detail = detail;
     }
-
     @Override
     public String toString() {
         return "Id: " + getSchId() +

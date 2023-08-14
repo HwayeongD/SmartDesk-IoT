@@ -75,11 +75,11 @@ public interface RetrofitAPI {
 
     // 스케쥴 수정
     @PUT("schedule/{empId}/{schId}")
-    Call<Employee> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId);
+    Call<Schedule> reqUpdateSchedule(@Path("empId") String empId, @Path("schId") String schId, @Body Schedule renewSchedule);
 
     // 스케쥴 삭제
     @DELETE("schedule/{empId}/{schId}")
-    Call<Employee> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
+    Call<Schedule> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
 
     // 비밀번호 변경 페이지 - 비밀번호 데이터 요청
     @GET("profile/{password}")
