@@ -571,20 +571,19 @@ public class EmployeeController {
     public ResponseEntity<String> GetScheduleDay(@PathVariable Long empId, @PathVariable Long year, @PathVariable Long month, @PathVariable Long day){
 
         LocalDate localDate = LocalDate.of(year.intValue(), month.intValue(), day.intValue());
-        Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Date date = Date.from(instant);
-
-        List<ScheduleDTO> scheduleDTOList = scheduleService.findByDate(date, empId);
+        List<ScheduleDTO> scheduleDTOList = scheduleService.findByDate(localDate, empId);
+        JSONArray jsonArray = new JSONArray();
 
         if(scheduleDTOList == null){
             JSONObject json = new JSONObject();
             json.put("resultCode","S201");
-            String jsonstring = json.toString();
+            jsonArray.put(json);
+            String jsonstring = jsonArray.toString();
             System.out.println("[스케쥴 일 조회] 스케쥴 없음");
             return new ResponseEntity<>(jsonstring,HttpStatus.OK);
         }
         
-        JSONArray jsonArray = new JSONArray();
+
         for(ScheduleDTO scheduleDTO : scheduleDTOList){
 
             JSONObject json = new JSONObject();
@@ -679,8 +678,7 @@ public class EmployeeController {
             dailyScheduleService.save(dailyScheduleDTO);
         }
         webSocketChatHandler.CheckAFK();
-        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-        SendChangeStatus(empId, empAttendanceDTO.getStatus());
+        webSocketChatHandler.SendChangeStatus(empId);
         
         System.out.println("[스케쥴 등록] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
@@ -725,9 +723,8 @@ public class EmployeeController {
             dailyScheduleService.save(dailyScheduleDTO);
         }
         webSocketChatHandler.CheckAFK();
-        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
 
-        SendChangeStatus(empId, empAttendanceDTO.getStatus());
+        webSocketChatHandler.SendChangeStatus(empId);
 
         System.out.println("[스케쥴 수정] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
@@ -746,9 +743,8 @@ public class EmployeeController {
 
         dailyScheduleService.DeleteBySchId(scheduleDTO.getEmpId(),scheduleDTO.getStart(),scheduleDTO.getEnd());
         webSocketChatHandler.CheckAFK();
-        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
 
-        SendChangeStatus(empId, empAttendanceDTO.getStatus());
+        webSocketChatHandler.SendChangeStatus(empId);
 
         scheduleService.deleteSchedule(schId);
         System.out.println("[스케쥴 삭제] 성공");
@@ -756,30 +752,6 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     
-    // status 변경시 아두이노에 전송
-    public void SendChangeStatus(Long empId, Byte status){
-        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
-        if(empAttendanceDTO.getWorkAttTime()==null){
-            System.out.println("[status 변경 아두이노 전송] 출근 안함");
-            return;
-        }
 
-        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
-        if(empSeatDTO.getSeatId() == null){
-            System.out.println("[status 변경 아두이노 전송] 자리 없음");
-            return;
-        }
-        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
-        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
-        DeskDTO deskDTO = deskService.findByEmpId(empId);
-
-        String nickname = employeeDTO.getNickname();
-        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
-        String teamName = departmentDTO.getTeamName();
-        String seatIp = deskDTO.getSeatIp();
-
-       String socketMsg = "x,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
-       webSocketChatHandler.sendMessageToSpecificIP(seatIp, socketMsg);
-    }
 
 }

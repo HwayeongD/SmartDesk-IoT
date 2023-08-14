@@ -59,7 +59,7 @@ public class ScheduleService {
         }
     }
 
-    public List<ScheduleDTO> findByDate(Date date, Long empId){
+    public List<ScheduleDTO> findByDate(LocalDate date, Long empId){
         List<ScheduleEntity> scheduleEntityList = scheduleRepository.findByDate(date, empId);
         if(scheduleEntityList.size() == 0){
             return null;
