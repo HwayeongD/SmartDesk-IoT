@@ -63,8 +63,11 @@ public interface RetrofitAPI {
     Call<Employee> reqCancelSeat(@Path("empId") String empId);
 
     // 스케쥴 조회
-    @GET("schedule/{empId}/{month}")
-    Call<List<Schedule>> getSchedule(@Path("empId") String empId, @Path("month") int month);
+    @GET("schedule/{empId}/{year}/{month}")
+    Call<List<Schedule>> getSchedule(@Path("empId") String empId, @Path("year") int year, @Path("month") int month);
+
+    @GET("schedule/{empId}/{year}/{month}/{day}")
+    Call<List<Schedule>> getScheduleByDate(@Path("empId") String empId, @Path("year") int year, @Path("month") int month, @Path("day") int day);
 
     // 새로운 스케쥴 추가
     @POST("schedule/{empId}")

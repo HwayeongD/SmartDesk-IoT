@@ -30,7 +30,7 @@
                 android:background="@color/comm_light_gray" />
 
             <ListView
-                android:id="@+id/calendarRecyclerview"
+                android:id="@+id/calendarListview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="20dp"/>
