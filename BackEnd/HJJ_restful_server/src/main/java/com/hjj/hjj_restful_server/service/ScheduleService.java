@@ -10,8 +10,10 @@ import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,14 +44,29 @@ public class ScheduleService {
         }
     }
 
-    public List<ScheduleDTO> findByMonth(Long month, Long empId){
-        List<ScheduleEntity> opthScheduleEntityList = scheduleRepository.findByMonth(month, empId);
+    public List<ScheduleDTO> findByMonth(Long year, Long month, Long empId){
+        List<ScheduleEntity> opthScheduleEntityList = scheduleRepository.findByMonth(year, month, empId);
         if(opthScheduleEntityList.size()==0){
             return null;
         }
         else{
             List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
             for(ScheduleEntity entity : opthScheduleEntityList){
+                ScheduleDTO dto = ScheduleDTO.toScheduleDTO(entity);
+                scheduleDTOList.add(dto);
+            }
+            return scheduleDTOList;
+        }
+    }
+
+    public List<ScheduleDTO> findByDate(Date date, Long empId){
+        List<ScheduleEntity> scheduleEntityList = scheduleRepository.findByDate(date, empId);
+        if(scheduleEntityList.size() == 0){
+            return null;
+        }
+        else{
+            List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+            for(ScheduleEntity entity : scheduleEntityList){
                 ScheduleDTO dto = ScheduleDTO.toScheduleDTO(entity);
                 scheduleDTOList.add(dto);
             }
