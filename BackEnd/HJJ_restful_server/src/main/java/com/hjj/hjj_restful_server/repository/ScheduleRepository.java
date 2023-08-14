@@ -29,7 +29,7 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     List<ScheduleEntity> findByMonth(Long year, Long month, Long empId);
 
     @Query(value = "SELECT * FROM SERVER.Schedule WHERE empId = :empId AND DATE(start) = :date ORDER BY start ASC", nativeQuery = true)
-    List<ScheduleEntity> findByDate(Date date, Long empId);
+    List<ScheduleEntity> findByDate(LocalDate date, Long empId);
 
     Optional<ScheduleEntity> findBySchId(Long schId);
 

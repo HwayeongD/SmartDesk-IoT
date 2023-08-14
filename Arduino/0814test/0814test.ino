@@ -86,7 +86,7 @@ void dp_init();
 void send_MSG();
 void get_MSG();
 void dp_remove_init();
-void dp_number_init();
+void dp_move_init();
 
 void setup() 
 {
@@ -112,7 +112,8 @@ void setup()
   matrix.begin();
   matrix.play(true);
   dp_remove_init();
-  delay(100);
+  //setup delay 필요없을듯
+  //delay(100);
 
 }
 
@@ -128,7 +129,7 @@ void loop()
     nowheight = nowDistance;
 
     if(likeheight>nowheight){
-      dp_number_init();
+      dp_move_init();
       while(1){
         sonicvalue();
         if (nowDistance >= likeheight) {
@@ -138,7 +139,7 @@ void loop()
         }
         digitalWrite(Dir1Pin, HIGH); //올라가는거
         digitalWrite(Dir2Pin, LOW);
-        delay(10);
+        delay(5);
       }
       //gflag = 0;
       nowheight = nowDistance;
@@ -146,7 +147,7 @@ void loop()
       send_MSG();
     }
     else if(likeheight<nowheight){
-      x();
+      dp_move_init();
       while(1){
         sonicvalue();
         if (nowDistance <= likeheight) {
@@ -156,7 +157,7 @@ void loop()
         }
         digitalWrite(Dir1Pin, LOW); //내려가는거
         digitalWrite(Dir2Pin, HIGH);
-        delay(10);
+        delay(5);
       }
       //gflag = 0;
       nowheight = nowDistance;
@@ -179,7 +180,7 @@ void loop()
   else if(aflag == 1){
     digitalWrite(Dir1Pin, LOW); //내려가는거
     digitalWrite(Dir2Pin, HIGH);
-    delay(20000);
+    delay(30000);
     aflag = 0;
   }
   else if(nflag == 1){
@@ -332,12 +333,12 @@ void dp_init(){
     epd.SetFrameMemory(paint.GetImage(), 10, 250, paint.GetWidth(), paint.GetHeight());//사각형 위치
     epd.DisplayFrame();
 
-    delay(500);
+    delay(50);
   }
   
 }
 
-void dp_number_init(){
+void dp_move_init(){
   if (epd.Init() != 0) {
     //Serial.print("e-Paper init failed");
     return;
@@ -405,7 +406,7 @@ void dp_number_init(){
     epd.SetFrameMemory(paint.GetImage(), 10, 200, paint.GetWidth(), paint.GetHeight());//사각형 위치
     epd.DisplayFrame();
    
-    delay(500);
+    delay(50);
   }
   
 }
@@ -479,5 +480,5 @@ void dp_remove_init(){
     epd.ClearFrameMemory(0xFF);
     epd.DisplayFrame();
   
-    delay(500);
+    delay(50);
 }

@@ -1,13 +1,8 @@
 package com.hjj.hjj_restful_server.handler;
 
-import com.hjj.hjj_restful_server.dto.DailyScheduleDTO;
-import com.hjj.hjj_restful_server.dto.DeskDTO;
-import com.hjj.hjj_restful_server.dto.EMPAttendanceDTO;
+import com.hjj.hjj_restful_server.dto.*;
 import com.hjj.hjj_restful_server.repository.*;
-import com.hjj.hjj_restful_server.service.DailyScheduleService;
-import com.hjj.hjj_restful_server.service.DeskService;
-import com.hjj.hjj_restful_server.service.EMPAttendanceService;
-import com.hjj.hjj_restful_server.service.ScheduleService;
+import com.hjj.hjj_restful_server.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,6 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+//import com.hjj.hjj_restful_server.controller.EmployeeController;
 
 @Component
 @Scope("singleton")
@@ -35,12 +31,13 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ScheduleService scheduleService;
     private final DailyScheduleService dailyScheduleService;
     private final EMPAttendanceService empAttendanceService;
+    private final EmployeeService employeeService;
+    private final EMPSeatService empSeatService;
+    private final DepartmentService departmentService;
     private final EMPAttendanceRepository empAttendanceRepository;
     private final DeskRepository deskRepository;
     private final EMPSeatRepository empSeatRepository;
     private final DailyScheduleRepository dailyScheduleRepository;
-
-
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -56,6 +53,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             DeskDTO deskDTO = deskService.findByseatId(si);
             deskDTO.setDeskHeightNow(dh);
             deskService.save(deskDTO);
+            String height = dh.toString();
+            System.out.println(String.format("[높이 변경] %s cm", height));
         }
 //         수신을 완료하면 클라이언트에게 답장 보내기
 //         TextMessage textMessage = new TextMessage("서버에서 수신했습니다! [13:26분 수정용]");
@@ -94,10 +93,13 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     // 1분 마다 체크!
     @Scheduled(cron = "0 * 6-23 * * ?")
     public void CheckAFK(){
+        Set<Long> set = new HashSet<>();
+
         List<DailyScheduleDTO> EndList = dailyScheduleService.findNowEndTime();
         if(EndList != null){
             for(DailyScheduleDTO dailyScheduleDTO : EndList){
                 Long empId = dailyScheduleDTO.getEmpId();
+                set.add(empId);
                 EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
                 if(empAttendanceDTO.getWorkAttTime() == null) continue;
                 empAttendanceDTO.setStatus(Byte.valueOf("1"));
@@ -105,16 +107,21 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             }
         }
 
-
         List<DailyScheduleDTO> StartList = dailyScheduleService.findNowSchedule();
         if(StartList != null){
             for(DailyScheduleDTO dailyScheduleDTO : StartList){
                 Long empId = dailyScheduleDTO.getEmpId();
+                set.add(empId);
                 EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
                 if(empAttendanceDTO.getWorkAttTime() == null) continue;
                 empAttendanceDTO.setStatus(Byte.valueOf("2"));
                 empAttendanceService.save(empAttendanceDTO);
             }
+        }
+
+        for(Long SendEmpId : set){
+            SendChangeStatus(SendEmpId);
+            System.out.println("[상태 전송]");
         }
         System.out.println("[자리비움 체크]");
     }
@@ -126,7 +133,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String clientIP = session.getRemoteAddress().getHostName();
         activeSessions.put(clientIP, session);
         System.out.println("[ " + clientIP + " ]가 웹소켓으로 접속했습니다!");
-        Long si = Long.valueOf("301");
+        Long si = Long.valueOf("201");
         DeskDTO deskDTO = deskService.findByseatId(si);
         deskDTO.setSeatIp(clientIP);
         deskService.save(deskDTO);
@@ -146,5 +153,33 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             }
         }
 
+    }
+
+    // status 변경시 아두이노에 전송
+    public void SendChangeStatus(Long empId){
+        EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
+        if(empAttendanceDTO.getWorkAttTime()==null){
+            System.out.println("[status 변경 아두이노 전송] 출근 안함");
+            return;
+        }
+
+        EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
+        if(empSeatDTO.getSeatId() == null){
+            System.out.println("[status 변경 아두이노 전송] 자리 없음");
+            return;
+        }
+        EmployeeDTO employeeDTO = employeeService.findByempId(empId);
+        DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
+        DeskDTO deskDTO = deskService.findByEmpId(empId);
+
+
+        String nickname = employeeDTO.getNickname();
+        Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
+        String teamName = departmentDTO.getTeamName();
+        String seatIp = deskDTO.getSeatIp();
+        Byte status = empAttendanceDTO.getStatus();
+
+        String socketMsg = "x,"+ nickname +","+ personalDeskHeight +","+ teamName +","+ status;
+        sendMessageToSpecificIP(seatIp, socketMsg);
     }
 }

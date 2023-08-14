@@ -1,6 +1,6 @@
 #include <stdint.h>
-#define SECRET_SSID "ASU"
-#define SECRET_PASS "123123123"
+#define SECRET_SSID "HJC"
+#define SECRET_PASS "76038169"
 
 const unsigned long frames[][4] = {
   {
