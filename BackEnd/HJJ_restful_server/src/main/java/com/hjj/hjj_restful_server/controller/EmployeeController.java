@@ -11,11 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
 
+//import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -410,7 +410,7 @@ public class EmployeeController {
                 json.put("seatId", deskDTO.getSeatId());
                 json.put("nickname", "");
                 json.put("teamName", "");
-                json.put("status", "");
+                json.put("status", 0);
                 jsonArray.put(json);
             }
         }
@@ -503,7 +503,6 @@ public class EmployeeController {
         NewdeskDTO.setEmpId(empId);
         deskService.save(NewdeskDTO);
 
-
         // 기존 자리 취소
         EMPSeatDTO empSeat = empSeatService.findByempId(empId);
         DeskDTO cancelDesk = deskService.findByseatId(empSeat.getSeatId());
@@ -567,13 +566,63 @@ public class EmployeeController {
     }
 
 
+    // 개인 스케쥴 확인 (일별로)
+    @GetMapping("schedule/{empId}/{year}/{month}/{day}")
+    public ResponseEntity<String> GetScheduleDay(@PathVariable Long empId, @PathVariable Long year, @PathVariable Long month, @PathVariable Long day){
+
+        LocalDate localDate = LocalDate.of(year.intValue(), month.intValue(), day.intValue());
+        Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Date date = Date.from(instant);
+
+        List<ScheduleDTO> scheduleDTOList = scheduleService.findByDate(date, empId);
+
+        if(scheduleDTOList == null){
+            JSONObject json = new JSONObject();
+            json.put("resultCode","S201");
+            String jsonstring = json.toString();
+            System.out.println("[스케쥴 일 조회] 스케쥴 없음");
+            return new ResponseEntity<>(jsonstring,HttpStatus.OK);
+        }
+        
+        JSONArray jsonArray = new JSONArray();
+        for(ScheduleDTO scheduleDTO : scheduleDTOList){
+
+            JSONObject json = new JSONObject();
+
+            json.put("schId", scheduleDTO.getSchId());
+            json.put("head", scheduleDTO.getHead());
+            json.put("start", scheduleDTO.getStart());
+            json.put("end", scheduleDTO.getEnd());
+            json.put("status", scheduleDTO.getStatus());
+            if(scheduleDTO.getDetail() != null)
+                json.put("detail", scheduleDTO.getDetail());
+            else
+                json.put("detail","");
+
+            jsonArray.put(json);
+        }
+        String jsonString = jsonArray.toString();
+        System.out.println("[스케쥴 일 조회] 성공");
+        return new ResponseEntity<>(jsonString,HttpStatus.OK);
+
+    }
+
 
     // 개인 스케쥴 확인하기 (월별로)
-    @GetMapping("schedule/{empId}/{month}")
-    public ResponseEntity<String> GetScheduleMonth(@PathVariable Long month){
-        List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(month);
+    @GetMapping("schedule/{empId}/{year}/{month}")
+    public ResponseEntity<String> GetScheduleMonth(@PathVariable Long empId,@PathVariable Long year, @PathVariable Long month){
+        List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(year, month, empId);
+
 
         JSONArray jsonArray = new JSONArray();
+
+        if(scheduleDTOList == null){
+            JSONObject json = new JSONObject();
+            json.put("resultCode","S201");
+            String jsonstring = json.toString();
+            System.out.println("[스케쥴 월 조회] 스케쥴 없음");
+            return new ResponseEntity<>(jsonstring,HttpStatus.OK);
+        }
         for(ScheduleDTO scheduleDTO : scheduleDTOList){
 
             JSONObject json = new JSONObject();
