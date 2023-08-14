@@ -21,6 +21,9 @@ public class Schedule {
     @SerializedName("detail")
     private String detail;
 
+    @SerializedName("resultCode")
+    private String resultCode;
+
     public int getSchId() {
         return schId;
     }
@@ -69,6 +72,10 @@ public class Schedule {
         this.detail = detail;
     }
 
+    public String getResultCode() {
+        return resultCode;
+    }
+
     @Override
     public String toString() {
         return "Id: " + getSchId() +
@@ -76,7 +83,8 @@ public class Schedule {
                 ", Start: " + getStart() +
                 ", End: " + getEnd() +
                 ", Status: " + getStatus() +
-                ", Detail: " + getDetail();
+                ", Detail: " + getDetail() +
+                ", ResultCode: " + getResultCode();
     }
 
 }
