@@ -1,6 +1,7 @@
 package com.example.smartdesk.ui.calendar;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -28,6 +30,7 @@ import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentCalendarBinding;
 import com.example.smartdesk.ui.dialog.CheckDialog;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
+import com.google.android.material.datepicker.DayViewDecorator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,9 +91,28 @@ public class CalendarFragment extends Fragment {
 
         Log.d("CalendarFragment", "Today: " + today);
 
+        // 처음 Fragment 들어 왔을 때 모든 schedule 데이터 가져와서 표시해주기
+        retrofitAPI.getSchedule(empId, currentYear, currentMonth).enqueue(new Callback<List<Schedule>>() {
+          @Override
+          public void onResponse(Call<List<Schedule>> call, Response<List<Schedule>> response) {
+              if (response.isSuccessful()) {
+                  List<Schedule> data = response.body();
+                  Log.d(TAG, "getSchedule SUCCESS" + data);
+//                  markEventDates(data);
+              }
+              else {
+                  Log.d(TAG, "Request failed");
+              }
+          }
+
+          @Override
+          public void onFailure(Call<List<Schedule>> call, Throwable t) {
+              Log.d(TAG, "Network error: " + t.getMessage());
+          }
+        });
 
 
-        // 처음 Fragment에 들어왔을 때 오늘 schedule 데이터 받아오기
+        // 처음 Fragment에 들어 왔을 때 오늘 schedule 데이터 받아오기
         reqScheduleDate(currentYear, currentMonth, currentDay);
 
         // 날짜를 선택 했을 때, 해당하는 날짜의 일정 불러오기

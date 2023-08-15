@@ -251,13 +251,16 @@ public class ProfileFragment extends Fragment {
         Button changePasswordBtn = ChangePasswordDialog.findViewById(R.id.btn_change_pw);
         ImageView closePasswordView = ChangePasswordDialog.findViewById(R.id.close_change_pw);
 
-
-        retrofitAPI.getPassword(Employee.getInstance().getEmpId().toString()).enqueue(new Callback<Employee>() {
-
+        Log.d(TAG, Employee.getInstance().getPassword());
+        retrofitAPI.getCurrentPassword(Employee.getInstance().getPassword()).enqueue(new Callback<Employee>() {
             @Override
             public void onResponse(Call<Employee> call, Response<Employee> response) {
-
-                Log.d(TAG, "****************Actual Password:" + Employee.getInstance().getPassword());
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Actual Password:" + Employee.getInstance().getPassword());
+                }
+                else {
+                    Log.d(TAG, "NOOOOOOOOOOO");
+                }
             }
 
             @Override
@@ -277,14 +280,14 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String enteredPresentPassword = editPresentPassword.getText().toString(); // 입력한 기존 비밀번호
-                String actualPassword = Employee.getInstance().getPassword();
+//                String enteredPresentPassword = editPresentPassword.getText().toString(); // 입력한 기존 비밀번호
+//                String actualPassword = Employee.getInstance().getPassword();
 
-                if (!enteredPresentPassword.equals(actualPassword)) {
-                    inputPresentPassword.setError("기존 비밀번호와 일치하지 않습니다.");
-                } else {
-                    inputPresentPassword.setError(null);
-                }
+//                if (!enteredPresentPassword.equals(actualPassword)) {
+//                    inputPresentPassword.setError("기존 비밀번호와 일치하지 않습니다.");
+//                } else {
+//                    inputPresentPassword.setError(null);
+//                }
             }
         });
         editNewPassword.addTextChangedListener(new TextWatcher() {

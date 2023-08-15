@@ -159,6 +159,7 @@ public class Employee {
 
     public String printEmpData() {
         return "empId: " + getEmpId()
+                + ", password" + getPassword()
                 + ", nickname: " + getNickname()
                 + ", workAttTime: " + getWorkAttTime()
                 + ", schStart: " + getSchStart()
