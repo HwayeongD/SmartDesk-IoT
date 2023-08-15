@@ -43,7 +43,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="33dp"
             android:gravity="center">
 
             <LinearLayout
@@ -56,7 +56,6 @@
                     android:id="@+id/start_schedule_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:padding="7dp"
                     android:text="시작날짜"
                     android:textColor="@color/black"/>
@@ -65,7 +64,6 @@
                     android:id="@+id/start_schedule_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:padding="10dp"
                     android:hint="00:00"
                     android:textSize="20dp"
@@ -77,8 +75,8 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
                 android:tint="@color/black"
                 app:srcCompat="@drawable/ic_arrow_forward_48px" />
 
@@ -92,7 +90,6 @@
                     android:id="@+id/finish_schedule_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:padding="7dp"
                     android:text="종료날짜"
                     android:textColor="@color/black"/>
@@ -101,7 +98,6 @@
                     android:id="@+id/finish_schedule_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:padding="10dp"
                     android:hint="00:00"
                     android:textSize="20dp"

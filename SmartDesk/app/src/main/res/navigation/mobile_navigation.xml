@@ -17,6 +17,13 @@
             app:destination="@id/navigation_seat"
             app:popUpTo="@id/navigation_home"
             app:popUpToInclusive="true"/>
+
+        <!--    HomeFragment에서 CalendarFragment로 이동하는 액션 정의    -->
+        <action
+            android:id="@+id/action_home_to_calendar"
+            app:destination="@id/navigation_calendar"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true"/>
     </fragment>
 
     <fragment

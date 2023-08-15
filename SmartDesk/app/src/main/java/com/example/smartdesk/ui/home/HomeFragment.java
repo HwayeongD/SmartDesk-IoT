@@ -70,12 +70,18 @@ public class HomeFragment extends Fragment {
         empSeatId = (TextView) root.findViewById(R.id.my_seat);
         empDeskHeight = (TextView) root.findViewById(R.id.my_desk_height);
 
+        // 일정 정보 버튼 - 일정페이지로 이동
+        root.findViewById(R.id.home_btn_schedule).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToCalendarFragment();
+            }
+        });
+
         // 좌석 정보 버튼 - 좌석페이지로 이동
         root.findViewById(R.id.home_btn_seat).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                goToSeatFragment();
-            }
+            public void onClick(View view) { goToSeatFragment(); }
         });
         
         // 책상 높이 정보 버튼 - 선호 높이로 책상 조절 요청
@@ -363,6 +369,12 @@ public class HomeFragment extends Fragment {
         ((MainActivity) getActivity()).isFirst = false;
         NavController navController = Navigation.findNavController(requireView());
         navController.navigate(R.id.action_home_to_seat);
+    }
+
+    private void goToCalendarFragment() {
+        ((MainActivity) getActivity()).isFirst = false;
+        NavController navController = Navigation.findNavController(requireView());
+        navController.navigate(R.id.action_home_to_calendar);
     }
 
     @Override

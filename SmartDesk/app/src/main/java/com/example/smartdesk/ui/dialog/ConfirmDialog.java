@@ -62,7 +62,7 @@ public class ConfirmDialog extends Dialog implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 
         titleColors = new String[3];
-        titleColors[0] = "#2FC600"; titleColors[1] = "#FF7F00"; titleColors[2] = "#FF0000";
+        titleColors[0] = "#18E62D"; titleColors[1] = "#FF7F00"; titleColors[2] = "#FF0000";
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         requestWindowFeature(Window.FEATURE_NO_TITLE);
