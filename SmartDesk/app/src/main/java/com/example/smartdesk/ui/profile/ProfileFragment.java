@@ -251,23 +251,6 @@ public class ProfileFragment extends Fragment {
         Button changePasswordBtn = ChangePasswordDialog.findViewById(R.id.btn_change_pw);
         ImageView closePasswordView = ChangePasswordDialog.findViewById(R.id.close_change_pw);
 
-        Log.d(TAG, Employee.getInstance().getPassword());
-        retrofitAPI.getCurrentPassword(Employee.getInstance().getPassword()).enqueue(new Callback<Employee>() {
-            @Override
-            public void onResponse(Call<Employee> call, Response<Employee> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "Actual Password:" + Employee.getInstance().getPassword());
-                }
-                else {
-                    Log.d(TAG, "NOOOOOOOOOOO");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Employee> call, Throwable t) {
-                Log.d(TAG, "Fail to Get Actual Password");
-            }
-        });
         editPresentPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -280,14 +263,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-//                String enteredPresentPassword = editPresentPassword.getText().toString(); // 입력한 기존 비밀번호
-//                String actualPassword = Employee.getInstance().getPassword();
-
-//                if (!enteredPresentPassword.equals(actualPassword)) {
-//                    inputPresentPassword.setError("기존 비밀번호와 일치하지 않습니다.");
-//                } else {
-//                    inputPresentPassword.setError(null);
-//                }
+                inputPresentPassword.setError(null);
             }
         });
         editNewPassword.addTextChangedListener(new TextWatcher() {
@@ -303,15 +279,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String presentPw = editPresentPassword.getText().toString();
-                String newPw = editNewPassword.getText().toString();
-
-                if (newPw.equals(presentPw)) {
-                    inputNewPassword.setError("기존 비밀번호와 같습니다.");
-                }
-                else {
                     inputNewPassword.setError(null);
-                }
             }
         });
         editCofirmPassword.addTextChangedListener(new TextWatcher() {
@@ -325,15 +293,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String newPw = editNewPassword.getText().toString();
-                String confirmPw = editCofirmPassword.getText().toString();
-                if (!confirmPw.equals(newPw)) {
-                    inputConfirmPassword.setError("비밀번호가 일치하지 않습니다.");
-                }
-                else {
                     inputConfirmPassword.setError(null);
-                }
-
             }
         });
 
@@ -345,9 +305,14 @@ public class ProfileFragment extends Fragment {
                 String newPw = editNewPassword.getText().toString();
                 String confirmPw = editCofirmPassword.getText().toString();
 
+                Employee newPassword = new Employee();
+                newPassword.setEmpId(Employee.getInstance().getEmpId());
+                newPassword.setPassword(presentPw);
+                newPassword.setNewPassword(confirmPw);
+
                 // 입력이 되어 있지 않으면 Error
                 if (TextUtils.isEmpty(presentPw)) {
-                    inputPresentPassword.setError("현재 비밀번호를 입력해주세요.");
+                    inputPresentPassword.setError("기존 비밀번호를 입력해주세요.");
                 }
                 if (TextUtils.isEmpty(newPw)) {
                     inputNewPassword.setError("새 비밀번호를 입력해주세요.");
@@ -356,8 +321,41 @@ public class ProfileFragment extends Fragment {
                     inputConfirmPassword.setError("비밀번호를 확인해주세요.");
                 }
                 else {
-                    Employee.getInstance().getPassword();
+                    Log.d(TAG, "입력받은 비밀번호: " + newPassword.getPassword());
+                    Log.d(TAG, "바꿀 비밀번호: " + newPassword.getNewPassword());
 
+                    if (newPw.equals(presentPw)) {
+                        inputNewPassword.setError("기존 비밀번호와 동일합니다. 새로운 비밀번호를 입력해주세요.");
+                    }
+                    else if (!confirmPw.equals(newPw)) {
+                        // 새 비밀번호와 확인 비밀번호가 일치하지 않을 경우 처리
+                        inputConfirmPassword.setError("비밀번호가 일치하지 않습니다.");
+                    } else {
+                        // 새 비밀번호를 서버로 전송하여 변경
+                        retrofitAPI.reqChangePassword(Employee.getInstance().getEmpId().toString(), newPassword).enqueue(new Callback<Employee>() {
+                            @Override
+                            public void onResponse(Call<Employee> call, Response<Employee> response) {
+                                if (response.isSuccessful()) {
+                                    Log.d(TAG, "결과 코드: " + newPassword.getResultCode());
+                                    // 비밀번호 변경 성공 처리
+                                    Log.d(TAG, "New PASSWORD: " + newPassword.getNewPassword());
+                                    Employee.getInstance().setPassword(newPassword.getNewPassword());
+                                    ChangePasswordDialog.dismiss();
+                                } else {
+                                    // 비밀번호 변경 실패 처리
+                                    Log.d(TAG, "Failed to change password." + newPassword.getResultCode());
+                                    // 여기서 적절한 오류 처리를 수행하세요.
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Employee> call, Throwable t) {
+                                // 통신 실패 처리
+                                Log.d(TAG, "Network error. Password change request failed.");
+                                // 여기서 적절한 오류 처리를 수행하세요.
+                            }
+                        });
+                    }
                 }
             }
         });

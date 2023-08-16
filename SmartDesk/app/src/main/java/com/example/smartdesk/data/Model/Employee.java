@@ -22,6 +22,9 @@ public class Employee {
     @SerializedName("password")
     private String password;
 
+    @SerializedName("newpassword")
+    private String newpassword;
+
     @SerializedName("nickname")
     private String nickname;
 
@@ -75,6 +78,10 @@ public class Employee {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getNewPassword() { return newpassword; }
+
+    public void setNewPassword(String newpassword) { this.newpassword = newpassword; }
 
     public String getNickname() {
         return nickname;
@@ -160,6 +167,7 @@ public class Employee {
     public String printEmpData() {
         return "empId: " + getEmpId()
                 + ", password" + getPassword()
+                + ", newPassword" + getNewPassword()
                 + ", nickname: " + getNickname()
                 + ", workAttTime: " + getWorkAttTime()
                 + ", schStart: " + getSchStart()

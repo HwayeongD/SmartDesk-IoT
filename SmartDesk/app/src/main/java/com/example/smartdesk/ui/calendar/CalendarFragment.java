@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
@@ -20,7 +21,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -32,7 +32,6 @@ import com.example.smartdesk.data.RetrofitClient;
 import com.example.smartdesk.databinding.FragmentCalendarBinding;
 import com.example.smartdesk.ui.dialog.CheckDialog;
 import com.example.smartdesk.ui.dialog.ConfirmDialog;
-import com.google.android.material.datepicker.DayViewDecorator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -144,6 +143,10 @@ public class CalendarFragment extends Fragment {
                 addSchedule();
             }
         });
+
+
+
+
         return root;
     }
 

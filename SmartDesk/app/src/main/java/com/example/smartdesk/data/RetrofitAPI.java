@@ -81,11 +81,7 @@ public interface RetrofitAPI {
     @DELETE("schedule/{empId}/{schId}")
     Call<Schedule> reqDeleteSchedule(@Path("empId") String empId, @Path("schId") String schId);
 
-    // 비밀번호 변경 페이지 - 비밀번호 데이터 요청
-    @GET("profile/{password}")
-    Call<Employee> getCurrentPassword(@Path("password") String password);
-
-    // 비밀번호 변경 요청
-    @PUT("profile/{password}/change")
-    Call<Employee> reqChangePassword(@Path("password") String password, @Body Employee employee);
+    // 비밀번호 변경
+    @PUT("home/{empId}/password")
+    Call<Employee> reqChangePassword(@Path("empId") String empId, @Body Employee newPassword);
 }
