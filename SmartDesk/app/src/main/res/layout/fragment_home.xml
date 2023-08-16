@@ -113,25 +113,23 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="60dp"
+                        android:layout_gravity="center"
                         android:layout_marginTop="15dp">
 
                         <TextView
                             android:id="@+id/today_schedule_time"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
-                            android:layout_weight="3"
+                            android:text="일정 없음"
                             android:textColor="@color/navi_dark_gray"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/today_schedule_content"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="20dp"
-                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"
                             android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
