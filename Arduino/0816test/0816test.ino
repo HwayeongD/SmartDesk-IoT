@@ -176,7 +176,6 @@ void loop()
     dflag = 1;
   }
   else if(xflag == 1){
-    sonicvalue();
     dp_init();
     xflag=0;
   }
