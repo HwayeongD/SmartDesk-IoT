@@ -90,6 +90,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         System.out.println("[자정 전체 초기화]");
     }
 
+    // 5분 마다 체크!
+    //@Scheduled(cron = "0 */5 6-23 * * ?")
     // 1분 마다 체크!
     @Scheduled(cron = "0 * 6-23 * * ?")
     public void CheckAFK(){
@@ -121,9 +123,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
         for(Long SendEmpId : set){
             SendChangeStatus(SendEmpId);
-            System.out.println("[상태 전송]");
+            System.out.println("[(5분)상태 전송]");
         }
-        System.out.println("[자리비움 체크]");
+        System.out.println("[(5분)자리비움 체크]");
     }
 
     @Override
