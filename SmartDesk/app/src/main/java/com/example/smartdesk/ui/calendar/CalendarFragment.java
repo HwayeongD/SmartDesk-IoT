@@ -1,6 +1,7 @@
 package com.example.smartdesk.ui.calendar;
 
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,6 +56,9 @@ public class CalendarFragment extends Fragment {
     private List<String> titleList;
 
     private Calendar selected;
+
+    private TimePicker timePickerStart;
+    private TimePicker timePickerFinish;
 
     private String[] scheduleField = {"", "제목", "시작시간", "종료시간", "자리비움", "내용"};
 
@@ -214,18 +219,65 @@ public class CalendarFragment extends Fragment {
         scheduleDialog.show();
 
         EditText scheduleTitle = scheduleDialog.findViewById(R.id.schedule_title);
-        EditText startScheduleTime = scheduleDialog.findViewById(R.id.start_schedule_time);
-        EditText finishScheduleTime = scheduleDialog.findViewById(R.id.finish_schedule_time);
+        TextView startScheduleTime = scheduleDialog.findViewById(R.id.start_schedule_time);
+        TextView finishScheduleTime = scheduleDialog.findViewById(R.id.finish_schedule_time);
         Switch status = scheduleDialog.findViewById(R.id.status_switch);
         EditText scheduleMemo = scheduleDialog.findViewById(R.id.schedule_memo);
 
         TextView cancelAddSchedule = scheduleDialog.findViewById(R.id.cancel_add_schedule);
         TextView confirmAddSchedule = scheduleDialog.findViewById(R.id.confirm_add_schedule);
 
+        timePickerStart = scheduleDialog.findViewById(R.id.timepicker_start);
+        timePickerFinish = scheduleDialog.findViewById(R.id.timepicker_finish);
+
         TextView startScheduleDay = scheduleDialog.findViewById(R.id.start_schedule_day);
         TextView finishScheduleDay = scheduleDialog.findViewById(R.id.finish_schedule_day);
         startScheduleDay.setText((selected.get(Calendar.MONTH) + 1) + "월 " + selected.get(Calendar.DATE) + "일 (" + getEachDay() + ")");
         finishScheduleDay.setText((selected.get(Calendar.MONTH) + 1) + "월 " + selected.get(Calendar.DATE) + "일 (" + getEachDay() + ")");
+
+        startScheduleTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(timePickerFinish.getVisibility() == View.VISIBLE) timePickerFinish.setVisibility(View.GONE);
+                timePickerStart.setVisibility(View.VISIBLE);
+            }
+        });
+
+        finishScheduleTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(timePickerStart.getVisibility() == View.VISIBLE) timePickerStart.setVisibility(View.GONE);
+                timePickerFinish.setVisibility(View.VISIBLE);
+            }
+        });
+
+        timePickerStart.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
+                int hourOfDay = hour;
+                int nearestFiveMinute = Math.round(minute / 5) * 5;
+                if (nearestFiveMinute == 60) {
+                    nearestFiveMinute = 0;
+                    hourOfDay++;
+                }
+                startScheduleTime.setText(hourOfDay + ":" + nearestFiveMinute);
+                Log.d(TAG, "timePicker: " + hourOfDay + ":" + nearestFiveMinute);
+            }
+        });
+
+        timePickerFinish.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
+                int hourOfDay = hour;
+                int nearestFiveMinute = Math.round(minute / 5) * 5;
+                if (nearestFiveMinute == 60) {
+                    nearestFiveMinute = 0;
+                    hourOfDay++;
+                }
+                finishScheduleTime.setText(hourOfDay + ":" + nearestFiveMinute);
+                Log.d(TAG, "timePicker: " + hourOfDay + ":" + nearestFiveMinute);
+            }
+        });
 
         confirmAddSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,7 +297,7 @@ public class CalendarFragment extends Fragment {
                     //Log.d(TAG, "Before: " + selected.toString());
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     selected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startScheduleTime.getText().toString().substring(0, 2)));
-                    selected.set(Calendar.MINUTE, Integer.parseInt(startScheduleTime.getText().toString().substring(2, 4)));
+                    selected.set(Calendar.MINUTE, Integer.parseInt(startScheduleTime.getText().toString().substring(3, 5)));
                     selected.set(Calendar.SECOND, Integer.parseInt("00"));
                     String startDateTime = format.format(selected.getTime());
                     newSchedule.setStart(startDateTime);
@@ -257,7 +309,7 @@ public class CalendarFragment extends Fragment {
                 } else {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     selected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(finishScheduleTime.getText().toString().substring(0, 2)));
-                    selected.set(Calendar.MINUTE, Integer.parseInt(finishScheduleTime.getText().toString().substring(2, 4)));
+                    selected.set(Calendar.MINUTE, Integer.parseInt(finishScheduleTime.getText().toString().substring(3, 5)));
                     String finishDateTime = format.format(selected.getTime());
                     newSchedule.setEnd(finishDateTime);
                 }
