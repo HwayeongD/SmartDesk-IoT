@@ -283,28 +283,20 @@ public class CalendarFragment extends Fragment {
         timePickerStart.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
-                int hourOfDay = hour;
-                int nearestFiveMinute = Math.round(minute);
-                if (nearestFiveMinute == 60) {
-                    nearestFiveMinute = 0;
-                    hourOfDay++;
-                }
-                startScheduleTime.setText(hourOfDay + ":" + nearestFiveMinute);
-                Log.d(TAG, "timePicker: " + hourOfDay + ":" + nearestFiveMinute);
+                String textHour = hour < 10 ? "0" + hour : "" + hour;
+                String textMinute = minute < 10 ? "0" + minute : "" + minute;
+                startScheduleTime.setText(textHour + ":" + textMinute);
+                Log.d(TAG, "timePicker: " + textHour + ":" + textMinute);
             }
         });
 
         timePickerFinish.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
-                int hourOfDay = hour;
-                int nearestFiveMinute = Math.round(minute);
-                if (nearestFiveMinute == 60) {
-                    nearestFiveMinute = 0;
-                    hourOfDay++;
-                }
-                finishScheduleTime.setText(hourOfDay + ":" + nearestFiveMinute);
-                Log.d(TAG, "timePicker: " + hourOfDay + ":" + nearestFiveMinute);
+                String textHour = hour < 10 ? "0" + hour : "" + hour;
+                String textMinute = minute < 10 ? "0" + minute : "" + minute;
+                finishScheduleTime.setText(textHour + ":" + textMinute);
+                Log.d(TAG, "timePicker: " + textHour + ":" + textMinute);
             }
         });
 
@@ -325,8 +317,9 @@ public class CalendarFragment extends Fragment {
                 } else {
                     //Log.d(TAG, "Before: " + selected.toString());
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    selected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startScheduleTime.getText().toString().substring(0, 2)));
-                    selected.set(Calendar.MINUTE, Integer.parseInt(startScheduleTime.getText().toString().substring(3, 5)));
+                    String[] hourAndMinute = startScheduleTime.getText().toString().split(":");
+                    selected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourAndMinute[0]));
+                    selected.set(Calendar.MINUTE, Integer.parseInt(hourAndMinute[1]));
                     selected.set(Calendar.SECOND, Integer.parseInt("00"));
                     String startDateTime = format.format(selected.getTime());
                     newSchedule.setStart(startDateTime);
@@ -337,8 +330,9 @@ public class CalendarFragment extends Fragment {
                     return;
                 } else {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    selected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(finishScheduleTime.getText().toString().substring(0, 2)));
-                    selected.set(Calendar.MINUTE, Integer.parseInt(finishScheduleTime.getText().toString().substring(3, 5)));
+                    String[] hourAndMinute = finishScheduleTime.getText().toString().split(":");
+                    selected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourAndMinute[0]));
+                    selected.set(Calendar.MINUTE, Integer.parseInt(hourAndMinute[1]));
                     String finishDateTime = format.format(selected.getTime());
                     newSchedule.setEnd(finishDateTime);
                 }
