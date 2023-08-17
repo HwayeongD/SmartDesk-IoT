@@ -1,14 +1,11 @@
 package com.example.smartdesk.ui.calendar;
 
 import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
@@ -241,16 +238,45 @@ public class CalendarFragment extends Fragment {
         startScheduleTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(timePickerFinish.getVisibility() == View.VISIBLE) timePickerFinish.setVisibility(View.GONE);
-                timePickerStart.setVisibility(View.VISIBLE);
+
+                if(timePickerFinish.getVisibility() == View.VISIBLE) {
+                    timePickerFinish.setVisibility(View.GONE);
+                    timePickerStart.setVisibility(View.VISIBLE);
+
+                    startScheduleTime.setBackgroundResource(R.drawable.time_box_gray);
+                    finishScheduleTime.setBackgroundResource(R.drawable.time_box);
+                }
+                else if(timePickerStart.getVisibility() == View.VISIBLE) {
+                    timePickerStart.setVisibility(View.GONE);
+                    startScheduleTime.setBackgroundResource(R.drawable.time_box);
+                }
+                else if (timePickerStart.getVisibility() == View.GONE){
+                    timePickerStart.setVisibility(View.VISIBLE);
+                    startScheduleTime.setBackgroundResource(R.drawable.time_box_gray);
+                    finishScheduleTime.setBackgroundResource(R.drawable.time_box);
+                }
             }
         });
 
         finishScheduleTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(timePickerStart.getVisibility() == View.VISIBLE) timePickerStart.setVisibility(View.GONE);
-                timePickerFinish.setVisibility(View.VISIBLE);
+                if(timePickerStart.getVisibility() == View.VISIBLE) {
+                    timePickerStart.setVisibility(View.GONE);
+                    timePickerFinish.setVisibility(View.VISIBLE);
+
+                    startScheduleTime.setBackgroundResource(R.drawable.time_box);
+                    finishScheduleTime.setBackgroundResource(R.drawable.time_box_gray);
+                }
+                else if(timePickerFinish.getVisibility() == View.VISIBLE) {
+                    timePickerFinish.setVisibility(View.GONE);
+                    finishScheduleTime.setBackgroundResource(R.drawable.time_box);
+                }
+                else if (timePickerFinish.getVisibility() == View.GONE){
+                    timePickerFinish.setVisibility(View.VISIBLE);
+                    startScheduleTime.setBackgroundResource(R.drawable.time_box);
+                    finishScheduleTime.setBackgroundResource(R.drawable.time_box_gray);
+                }
             }
         });
 
@@ -258,7 +284,7 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
                 int hourOfDay = hour;
-                int nearestFiveMinute = Math.round(minute / 5) * 5;
+                int nearestFiveMinute = Math.round(minute);
                 if (nearestFiveMinute == 60) {
                     nearestFiveMinute = 0;
                     hourOfDay++;
@@ -272,7 +298,7 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onTimeChanged(TimePicker timePicker, int hour, int minute) {
                 int hourOfDay = hour;
-                int nearestFiveMinute = Math.round(minute / 5) * 5;
+                int nearestFiveMinute = Math.round(minute);
                 if (nearestFiveMinute == 60) {
                     nearestFiveMinute = 0;
                     hourOfDay++;
@@ -340,7 +366,12 @@ public class CalendarFragment extends Fragment {
                                 Log.d(TAG, "일정 제목이 없습니다");
                             } else if(data.getResultCode().equals("S202")) {
                                 Log.d(TAG, "일정의 정보가 부족합니다");
+                            } else if(data.getResultCode().equals("S203")) {
+                                Log.d(TAG, "일정의 시간이 부족합니다" + data.getResultCode());
+                                Toast.makeText(requireContext(), "시작 시간은 종료 시간 이전이어야 합니다.", Toast.LENGTH_SHORT).show();
+                                return;
                             }
+
 
                             scheduleDialog.dismiss();
                         } else {
@@ -367,18 +398,18 @@ public class CalendarFragment extends Fragment {
 
     // 일정 수정 및 삭제
     private void updateSchedule(Schedule schedule) {
+
         Dialog updateDialog = new Dialog(requireContext(), R.style.Theme_Login);
         updateDialog.setContentView(R.layout.schedule_dialog_update);
 
         EditText schedule_title_update = updateDialog.findViewById(R.id.schedule_title_update);
         EditText schedule_memo_update = updateDialog.findViewById(R.id.schedule_memo_update);
-        EditText start_schedule_time_update = updateDialog.findViewById(R.id.start_schedule_time_update);
-        EditText finish_schedule_time_update = updateDialog.findViewById(R.id.finish_schedule_time_update);
+        TextView start_schedule_time_update = updateDialog.findViewById(R.id.start_schedule_time_update);
+        TextView finish_schedule_time_update = updateDialog.findViewById(R.id.finish_schedule_time_update);
         Switch status_update = updateDialog.findViewById(R.id.status_switch_update);
 
         TextView delete_schedule = updateDialog.findViewById(R.id.delete_schedule);
         TextView confirm_update_schedule = updateDialog.findViewById(R.id.confirm_update_schedule);
-
         // 기존 스케줄 정보를 다이얼로그에 표시
         // 1. 제목과 메모 표시
         schedule_title_update.setText(schedule.getHead());
@@ -415,6 +446,7 @@ public class CalendarFragment extends Fragment {
                 updatedSchedule.setHead(newTitle);
                 updatedSchedule.setDetail(newMemo);
                 updatedSchedule.setStatus(newStatus ? 2 : 1);
+
 
                 // Format start time
                 // 수정 dialog에 띄워주기 위해서 시간의 형태를 00:00으로 표기

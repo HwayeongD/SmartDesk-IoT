@@ -67,7 +67,7 @@
                     android:padding="10dp"
                     android:text="00:00"
                     android:textSize="20dp"
-                    android:backgroundTint="@color/white"/>
+                    android:background="@drawable/time_box"/>
 
             </LinearLayout>
 
@@ -100,7 +100,7 @@
                     android:padding="10dp"
                     android:text="00:00"
                     android:textSize="20dp"
-                    android:backgroundTint="@color/white"/>
+                    android:background="@drawable/time_box"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -112,6 +112,7 @@
         android:layout_width="match_parent"
         android:layout_height="2px"
         android:visibility="gone"
+        android:layout_marginVertical="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:background="@color/comm_light_gray"
@@ -150,6 +151,7 @@
         android:layout_height="2px"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
+        android:layout_marginVertical="20dp"
         android:background="@color/comm_light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -242,6 +244,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/memo_section">
@@ -250,8 +253,8 @@
             android:id="@+id/confirm_add_schedule"
             android:layout_width="150dp"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_marginRight="50dp"
+            android:gravity="center"
             android:padding="30dp"
             android:text="확인"
             android:textColor="@color/comm_black"

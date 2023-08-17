@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -336,11 +337,18 @@ public class ProfileFragment extends Fragment {
                             @Override
                             public void onResponse(Call<Employee> call, Response<Employee> response) {
                                 if (response.isSuccessful()) {
-                                    Log.d(TAG, "결과 코드: " + newPassword.getResultCode());
-                                    // 비밀번호 변경 성공 처리
-                                    Log.d(TAG, "New PASSWORD: " + newPassword.getNewPassword());
-                                    Employee.getInstance().setPassword(newPassword.getNewPassword());
-                                    ChangePasswordDialog.dismiss();
+                                    Employee data = response.body();
+                                    Log.d(TAG, "결과 코드: " + data.getResultCode());
+                                    if (!data.getResultCode().equals("P201")) {
+                                        // 비밀번호 변경 성공 처리
+                                        Log.d(TAG, "New PASSWORD: " + newPassword.getNewPassword());
+                                        Employee.getInstance().setPassword(newPassword.getNewPassword());
+                                        ChangePasswordDialog.dismiss();
+                                        Toast.makeText(requireContext(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        inputPresentPassword.setError("비밀번호가 일치하지 않습니다.");
+                                    }
                                 } else {
                                     // 비밀번호 변경 실패 처리
                                     Log.d(TAG, "Failed to change password." + newPassword.getResultCode());
