@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 //import java.sql.Date;
+import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
@@ -752,6 +755,17 @@ public class EmployeeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     
+    // 책상 높이 초기화
+    @GetMapping("reset/{empId}")
+    public ResponseEntity<String> ResetHeight(@PathVariable long empId){
+        DeskDTO deskDTO = deskService.findByEmpId(empId);
 
+        String message = "a,,,,";
+        webSocketChatHandler.sendMessageToSpecificIP(deskDTO.getSeatIp(), message);
+
+        System.out.println("[책상 높이 초기화] 성공");
+        String json = "{ \"resultCode\": \"S101\" }";
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
 
 }

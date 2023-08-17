@@ -19,7 +19,7 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
             "    WHERE empId = :empId AND start <= NOW() AND end > NOW()\n" +
             "    UNION\n" +
             "    SELECT * FROM SERVER.Schedule \n" +
-            "    WHERE empId = :empId AND start > NOW()\n" +
+            "    WHERE empId = :empId AND start > NOW()\n AND DATE(start) = CURDATE()" +
             "    ORDER BY start ASC\n" +
             ") AS combined\n" +
             "LIMIT 1", nativeQuery = true)
