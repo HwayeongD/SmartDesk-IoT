@@ -569,7 +569,7 @@ public class EmployeeController {
     }
 
 
-    // 개인 스케쥴 확인 (일별로)
+    // 개인 스케줄 확인 (일별로)
     @GetMapping("schedule/{empId}/{year}/{month}/{day}")
     public ResponseEntity<String> GetScheduleDay(@PathVariable Long empId, @PathVariable Long year, @PathVariable Long month, @PathVariable Long day){
 
@@ -582,7 +582,7 @@ public class EmployeeController {
             json.put("resultCode","S201");
             jsonArray.put(json);
             String jsonstring = jsonArray.toString();
-            System.out.println("[스케쥴 일 조회] 스케쥴 없음");
+            System.out.println("[스케줄 일 조회] 스케줄 없음");
             return new ResponseEntity<>(jsonstring,HttpStatus.OK);
         }
         
@@ -604,13 +604,13 @@ public class EmployeeController {
             jsonArray.put(json);
         }
         String jsonString = jsonArray.toString();
-        System.out.println("[스케쥴 일 조회] 성공");
+        System.out.println("[스케줄 일 조회] 성공");
         return new ResponseEntity<>(jsonString,HttpStatus.OK);
 
     }
 
 
-    // 개인 스케쥴 확인하기 (월별로)
+    // 개인 스케줄 확인하기 (월별로)
     @GetMapping("schedule/{empId}/{year}/{month}")
     public ResponseEntity<String> GetScheduleMonth(@PathVariable Long empId,@PathVariable Long year, @PathVariable Long month){
         List<ScheduleDTO> scheduleDTOList = scheduleService.findByMonth(year, month, empId);
@@ -622,7 +622,7 @@ public class EmployeeController {
             JSONObject json = new JSONObject();
             json.put("resultCode","S201");
             String jsonstring = json.toString();
-            System.out.println("[스케쥴 월 조회] 스케쥴 없음");
+            System.out.println("[스케줄 월 조회] 스케줄 없음");
             return new ResponseEntity<>(jsonstring,HttpStatus.OK);
         }
         for(ScheduleDTO scheduleDTO : scheduleDTOList){
@@ -642,22 +642,28 @@ public class EmployeeController {
             jsonArray.put(json);
         }
         String jsonString = jsonArray.toString();
-        System.out.println("[스케쥴 월 조회] 성공");
+        System.out.println("[스케줄 월 조회] 성공");
         return new ResponseEntity<>(jsonString,HttpStatus.OK);
     }
 
-    // 스케쥴 등록하기
+    // 스케줄 등록하기
     @PostMapping("schedule/{empId}")
     public ResponseEntity<String> RegistSchedule(@PathVariable Long empId, @RequestBody Map<String,Object> requestBody){
 
         if(requestBody.get("head") == null || requestBody.get("head")==""){
-            System.out.println("[스케쥴 등록] 제목이 없습니다.");
+            System.out.println("[스케줄 등록] 제목이 없습니다.");
             String json = "{ \"resultCode\": \"S201\" }";
             return new ResponseEntity<>(json, HttpStatus.OK);
         }
         String head = requestBody.get("head").toString();
         java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
         java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
+        if(start.after(end)){
+            System.out.println("[스케줄 등록] 종료 시간이 시작 시간보다 빠릅니다.");
+            String json = "{ \"resultCode\": \"S203\" }";
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }
+
         Byte status = Byte.valueOf(requestBody.get("status").toString());
         String detail ="";
         if(requestBody.get("detail")!=null)
@@ -683,22 +689,28 @@ public class EmployeeController {
         webSocketChatHandler.CheckAFK();
         webSocketChatHandler.SendChangeStatus(empId);
         
-        System.out.println("[스케쥴 등록] 성공");
+        System.out.println("[스케줄 등록] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     
-    // 스케쥴 수정하기
+    // 스케줄 수정하기
     @PutMapping("schedule/{empId}/{schId}")
     public ResponseEntity<String> EditSchedule(@PathVariable Long empId, @PathVariable Long schId, @RequestBody Map<String,Object> requestBody){
         if(requestBody.get("head") == null || requestBody.get("head")==""){
-            System.out.println("[스케쥴 수정] 제목이 없습니다.");
+            System.out.println("[스케줄 수정] 제목이 없습니다.");
             String json = "{ \"resultCode\": \"S201\" }";
             return new ResponseEntity<>(json, HttpStatus.OK);
         }
         String head = requestBody.get("head").toString();
         java.sql.Timestamp start = Timestamp.valueOf(requestBody.get("start").toString());
         java.sql.Timestamp end = Timestamp.valueOf(requestBody.get("end").toString());
+        if(start.after(end)){
+            System.out.println("[스케줄 수정] 종료 시간이 시작 시간보다 빠릅니다.");
+            String json = "{ \"resultCode\": \"S203\" }";
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }
+        
         Byte status = Byte.valueOf(requestBody.get("status").toString());
         String detail ="";
         if(requestBody.get("detail")!=null)
@@ -729,16 +741,16 @@ public class EmployeeController {
 
         webSocketChatHandler.SendChangeStatus(empId);
 
-        System.out.println("[스케쥴 수정] 성공");
+        System.out.println("[스케줄 수정] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
-    // 스케쥴 삭제하기
+    // 스케줄 삭제하기
     @DeleteMapping("schedule/{empId}/{schId}")
     public ResponseEntity<String> DeleteSchedule(@PathVariable Long empId, @PathVariable Long schId){
         if(scheduleService.findBySchId(schId) == null){
-            System.out.println("[스케쥴 삭제] 없는 사용자");
+            System.out.println("[스케줄 삭제] 없는 사용자");
             String json = "{ \"resultCode\": \"S201\" }";
             return new ResponseEntity<>(json, HttpStatus.OK);
         }
@@ -750,7 +762,7 @@ public class EmployeeController {
         webSocketChatHandler.SendChangeStatus(empId);
 
         scheduleService.deleteSchedule(schId);
-        System.out.println("[스케쥴 삭제] 성공");
+        System.out.println("[스케줄 삭제] 성공");
         String json = "{ \"resultCode\": \"S101\" }";
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
