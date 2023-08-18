@@ -434,7 +434,6 @@ public class EmployeeController {
             String json = "{ \"resultCode\": \"S201\" }";
             return new ResponseEntity<>(json, HttpStatus.OK);
         }
-
         EMPAttendanceDTO empAttendanceDTO = empAttendanceService.findByempId(empId);
         if(empAttendanceDTO.getWorkAttTime() == null){  // 출근 x
             System.out.println("[좌석 예약] 출근 안한 상태");
@@ -449,7 +448,6 @@ public class EmployeeController {
 
         EMPSeatDTO empSeatDTO = empSeatService.findByempId(empId);
 
-
         deskDTO.setEmpId(empId);
         empSeatDTO.setSeatId(seatId);
         empSeatDTO.setPrevSeat(seatId);
@@ -461,7 +459,6 @@ public class EmployeeController {
 
         EmployeeDTO employeeDTO = employeeService.findByempId(empId);
         DepartmentDTO departmentDTO = departmentService.findByTeamId(employeeDTO.getTeamId());
-
 
         String nickname = employeeDTO.getNickname();
         Long personalDeskHeight = empSeatDTO.getPersonalDeskHeight();
@@ -770,7 +767,7 @@ public class EmployeeController {
     // 책상 높이 초기화
     @GetMapping("reset/{empId}")
     public ResponseEntity<String> ResetHeight(@PathVariable long empId){
-        DeskDTO deskDTO = deskService.findByEmpId(empId);
+        DeskDTO deskDTO = deskService.findByseatId(201l);
 
         String message = "a,,,,";
         webSocketChatHandler.sendMessageToSpecificIP(deskDTO.getSeatIp(), message);
