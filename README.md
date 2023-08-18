@@ -56,3 +56,41 @@
 
 ---
 <div align=center><h2> 기술 상세 </h2></div>
+<br>
+
+- IoT
+
+| Board | Arduino UNO R4 WIFI | https://www.arduino.cc/ 설치 후 이용 |
+| --- | --- | --- |
+|  | Raspberry PI 4 | https://www.raspberrypi.com/software/ 설치 후 CLI 환경에서 사용 |
+| IDE | Arduino IDE 2.1.1 | https://www.arduino.cc/en/software/ |
+| Library | ArduinoHttpClient(0.5.0) | https://github.com/arduino-libraries/ArduinoHttpClient |
+| Module | 2.9inch e-paper module | https://www.waveshare.com/wiki/2.9inch_e-Paper_Module_Manual#Working_With_Arduino 설치 후 사용 |
+|  | RFID | sudo raspi-config // 해당 창으로 이동
+Interface Options 선택
+SPI 선택 후 해당 내용 enable
+lsmod | grep spi // 입력 후 spi_bcm2835 나온다면 성공
+sudo apt-get install python3-dev python3-pip
+sudo pip3 install spidev
+sudo pip3 install mfrc522 설치 후 이용 |
+- Backend
+
+| OS | Ubuntu, Window 10 |
+| --- | --- |
+| Server | AWS EC2 Ubuntu 20.04 LTS |
+| Database | MySQL |
+| IDE | IntelliJ |
+| Build Tool | Gradle |
+| Framework | Spring Boot |
+| Communication Protocol | HTTP(for REST), WebSocket |
+| Language | Java(Kotlin) |
+- App
+
+| OS | Android OS |
+| --- | --- |
+| SDK Version | min SDK 24
+target SDK  33 |
+| Language | Java  SE 17 |
+| IDE | Android Studio Flamingo | 2022.2.1 |
+| Communicationo Protocol | HTTP (Retrofit2) |
+| Test Virtual Device Manager | Pixel 4 API 30 |
