@@ -58,9 +58,9 @@
 <div align=center><h2> 기술 상세 </h2></div>
 <br>
 
-- IoT
 
-<div align=center>
+<h3>- IoT</h3>
+
 | Board | Arduino UNO R4 WIFI | https://www.arduino.cc/ 설치 후 이용 |
 | --- | --- | --- |
 |  | Raspberry PI 4 | https://www.raspberrypi.com/software/ 설치 후 CLI 환경에서 사용 |
@@ -74,12 +74,9 @@ lsmod | grep spi // 입력 후 spi_bcm2835 나온다면 성공
 sudo apt-get install python3-dev python3-pip
 sudo pip3 install spidev
 sudo pip3 install mfrc522 설치 후 이용 |
-</div>
-<br>
 
-- Backend
+<h3>- Backend</h3>
 
-<div align=center>
 | OS | Ubuntu, Window 10 |
 | --- | --- |
 | Server | AWS EC2 Ubuntu 20.04 LTS |
@@ -89,11 +86,9 @@ sudo pip3 install mfrc522 설치 후 이용 |
 | Framework | Spring Boot |
 | Communication Protocol | HTTP(for REST), WebSocket |
 | Language | Java(Kotlin) |
-</div>
 
-- App
+<h3>- App</h3>
 
-<div align=center>
 | OS | Android OS |
 | --- | --- |
 | SDK Version | min SDK 24
@@ -102,4 +97,3 @@ target SDK  33 |
 | IDE | Android Studio Flamingo | 2022.2.1 |
 | Communicationo Protocol | HTTP (Retrofit2) |
 | Test Virtual Device Manager | Pixel 4 API 30 |
-</div>
