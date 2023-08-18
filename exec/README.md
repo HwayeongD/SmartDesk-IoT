@@ -12,13 +12,13 @@
 | IDE | Arduino IDE 2.1.1 | https://www.arduino.cc/en/software/ |
 | Library | ArduinoHttpClient(0.5.0) | https://github.com/arduino-libraries/ArduinoHttpClient |
 | Module | 2.9inch e-paper module | https://www.waveshare.com/wiki/2.9inch_e-Paper_Module_Manual#Working_With_Arduino 설치 후 사용 |
-|  | RFID | sudo raspi-config // 해당 창으로 이동
-Interface Options 선택
-SPI 선택 후 해당 내용 enable
-lsmod | grep spi // 입력 후 spi_bcm2835 나온다면 성공
-sudo apt-get install python3-dev python3-pip
-sudo pip3 install spidev
-sudo pip3 install mfrc522 설치 후 이용 |
+| |  RFID | sudo raspi-config // 해당 창으로 이동
+|||Interface Options 선택
+|||SPI 선택 후 해당 내용 enable
+|||lsmod | grep spi // 입력 후 spi_bcm2835 나온다면 성공
+|||sudo apt-get install python3-dev python3-pip
+|||sudo pip3 install spidev
+|||sudo pip3 install mfrc522 설치 후 이용 |
 - Backend
 
 | OS | Ubuntu, Window 10 |
@@ -56,7 +56,7 @@ target SDK  33 |
     
 - 앱 배포
     
-    ```markup
+    ```markdown
     1. JDK 설치 및 경로 설정
     2. Android Studio 설치
     3. ./SmartDesk 프로젝트 Open
@@ -71,13 +71,13 @@ target SDK  33 |
         3. Library Manager - ArduinoHttpClient 설치
         4. `src.ino` 파일의 <tableID> 변경
             
-            ```markdown
-            #define TABLE_ID 201
+            ```cpp
+            #define TABLE_ID <tableID>
             ```
             
         5. `arduino_secrets.h` 파일의 <ssid>, <password> 변경
             
-            ```markdown
+            ```cpp
             #define SECRET_SSID <ssid>
             #define SECRET_PASS <password>
             ```
@@ -93,7 +93,7 @@ target SDK  33 |
             
         2. Raspberry PI 부팅 시 프로그램 자동 실행
             
-            ```jsx
+            ```bash
             sudo vi /etc/rc.local 
             // 해당 파일에서 exit 0 바로 윗줄에 아래 코드 추가
             	sudo python3 /home/pi/RFIDlast.py&
@@ -122,7 +122,7 @@ spring.jpa.hibernate.naming.physical-strategy = org.hibernate.boot.model.naming.
 
 - application.yml
 
-```java
+```markup
 # database 연동 설정
 spring:
   datasource:
