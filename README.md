@@ -49,9 +49,6 @@
 |:white_large_square:| | |6.1.2. 팀 정보 표기|- 좌석 예약이 완료되면 DP에 예약자의 소속이 표시됩니다.| |
 |:white_large_square:| | |6.1.3. 현재 상태 표기|- 좌석 예약이 완료되면 예약자 어플에 등록된 개인 일정에 따라 상태가 업데이트 됩니다|- Present / Absence|
 |:white_large_square:|| |6.1.4. 책상 높이 표기|- 좌석 예약이 완료되면 책상의 높낮이가 자동으로 조절되고 DP에 책상 높이가 표시됩니다|
----
-# Desk Image
-![desk](3A06657D-0F19-4EF3-BF7A-BB398DC19E74.jpg)
 
 ---
 # ERD
