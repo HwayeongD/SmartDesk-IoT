@@ -51,5 +51,8 @@
 |:white_large_square:|| |6.1.4. 책상 높이 표기|- 좌석 예약이 완료되면 책상의 높낮이가 자동으로 조절되고 DP에 책상 높이가 표시됩니다|
 
 ---
-# ERD
+<div align=center><h2> ERD </h2></div>
 ![untitled](ERD_0.3.png)
+
+---
+<div align=center><h2> 기술 상세 </h2></div>
