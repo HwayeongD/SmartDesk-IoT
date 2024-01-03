@@ -1,5 +1,5 @@
-<div align=center><h1> 현직자 </h1></div>
-<div align=center><h2> 현명한 직장인의 자리 </h2></div>
+<h1> 현직자 </h1>
+<h2> 현명한 직장인의 자리 </h2>
 
 
 
